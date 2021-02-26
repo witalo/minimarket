@@ -1,0 +1,169 @@
+<div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+        <div class="modal-header" style="background-color: rgba(7, 134, 193, 1); font-size: 12px;">
+            <h6 class="modal-title  text-warning">Cierre de Caja</h6>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <form id="id-form-closing-casing" class="embed-responsive p-0" action="{% url 'accounting:closing_casing_c' %}"
+              method="POST">
+            {% csrf_token %}
+
+            <div class="modal-body">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="row col-md-12 m-0 p-0">
+                            <div class="col-md-6 p-1">
+                                <label>Fecha de cierre</label>
+                                <input type="date" class="form-control form-control-sm" id="id-date-closing"
+                                       name="date-closing"
+                                       value="{{ date_now }}" required>
+                            </div>
+                            <div class="col-md-6 p-1">
+                                <label>Caja a cerrar</label>
+                                <select id="id-closing-cash" name="closing-cash"
+                                        class="form-control form-control-sm" required>
+                                    <option value="0">Seleccione</option>
+                                    {% for c in casing_set %}
+                                        <option value="{{ c.id }}">{{ c.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row col-md-12 m-0 p-0">
+                            <div class="col-md-6 p-1">
+                                <label>Total Apertura</label>
+                                <input type="text"
+                                       class="form-control form-control-sm text-right"
+                                       name="amount-aperture-closing-casing"
+                                       id="id-amount-aperture-closing-casing" placeholder="S/. 0.00"
+                                       readonly required>
+                            </div>
+                            <div class="col-md-6 p-1">
+                                <label>Total Credito</label>
+                                <input type="text"
+                                       class="form-control form-control-sm text-right"
+                                       name="amount-credit-closing-casing"
+                                       id="id-amount-credit-closing-casing" placeholder="S/. 0.00"
+                                       readonly required>
+                            </div>
+                        </div>
+                        <div class="row col-md-12 m-0 p-0">
+                            <div class="col-md-6 p-1">
+                                <label>Total Efectivo</label>
+                                <input type="text"
+                                       class="form-control form-control-sm text-right" name="amount-cash-closing-casing"
+                                       id="id-amount-cash-closing-casing" placeholder="S/. 0.00"
+                                       readonly required>
+                            </div>
+                            <div class="col-md-6 p-1">
+                                <label>Total Deposito</label>
+                                <input type="text"
+                                       class="form-control form-control-sm text-right"
+                                       name="amount-deposit-closing-casing"
+                                       id="id-amount-deposit-closing-casing" placeholder="S/. 0.00"
+                                       readonly required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <button id="btn-closing-casing" type="submit" class="btn btn-sm btn-warning col-md-12">
+                            <i class="fas fa-box fa-1x"> </i> <b> cerrar caja</b>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div class="modal-footer">
+            <button type="button" id="id-btn-closing-casing-closed" class="btn btn-sm btn-secondary"
+                    data-dismiss="modal">Cerrar
+            </button>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $('#id-form-closing-casing').submit(function (event) {
+        event.preventDefault();
+        if ($('#id-closing-cash').val() === '0') {
+            toastr.warning('Seleccione la caja que desea cerrar', 'Mensaje')
+            return false;
+        }
+        if ($('#id-date-closing').val() === '') {
+            toastr.warning('Seleccione la fecha de cierre', 'Mensaje')
+            return false;
+        }
+        if ($('#id-amount-aperture-closing-casing').val() === '') {
+            toastr.warning('No puede hacer un cierre sin aperturar la caja, aperture la caja antes de cerrarla', 'Mensaje')
+            return false;
+        }
+        let data = new FormData($('#id-form-closing-casing').get(0));
+        $.ajax({
+            url: $(this).attr('action'),
+            type: $(this).attr('method'),
+            data: data,
+            cache: false,
+            processData: false,
+            contentType: false,
+            headers: {"X-CSRFToken": '{{ csrf_token }}'},
+            success: function (response) {
+                if (response.success) {
+                    toastr.success(response.message, 'Mensaje');
+                    $('#id-btn-closing-casing-closed').trigger('click');
+                    if (response.pk) {
+                        window.open("/accounting/print_ticket_closing_cash/" + response.pk + "/", '_blank');
+                    }
+                }
+            },
+            error: function (response) {
+                toastr.error('¡Problemas con el cierre de caja!', 'Mensaje');
+            }
+        });
+    });
+
+    $("#id-amount-opening-cash").keyup(function (e) {
+        let val = $(this).val();
+        if (isNaN(val)) {
+            $(this).val('');
+        }
+    });
+    $("#id-closing-cash").change(function () {
+        if ($('#id-date-closing').val() == '') {
+            toastr.warning('Seleccione la fecha del cierre', 'Mensaje');
+            return false;
+        }
+        if ($("#id-closing-cash").val() != '0') {
+            $.ajax({
+                url: '/accounting/get_total_casing/',
+                async: true,
+                dataType: 'json',
+                type: 'GET',
+                data: {'pk_cash': $("#id-closing-cash").val(), 'date_closing': $('#id-date-closing').val()},
+                contentType: 'application/json;charset=UTF-8',
+                headers: {"X-CSRFToken": '{{ csrf_token }}'},
+                success: function (response, textStatus, xhr) {
+                    if (xhr.status == 200) {
+                        $('#id-amount-aperture-closing-casing').val(response.total_aperture);
+                        $('#id-amount-credit-closing-casing').val(response.total_credit);
+                        $('#id-amount-cash-closing-casing').val(response.total_cash);
+                        $('#id-amount-deposit-closing-casing').val(response.total_deposit);
+                    }
+                },
+                error: function (jqXhr, textStatus, xhr) {
+                    toastr.error(jqXhr.responseJSON.error, 'Mensaje');
+                    $('#id-amount-aperture-closing-casing').val('');
+                    $('#id-amount-credit-closing-casing').val('');
+                    $('#id-amount-cash-closing-casing').val('');
+                    $('#id-amount-deposit-closing-casing').val('');
+                }
+            });
+        } else {
+            $('#id-amount-aperture-closing-casing').val('');
+            $('#id-amount-credit-closing-casing').val('');
+            $('#id-amount-cash-closing-casing').val('');
+            $('#id-amount-deposit-closing-casing').val('');
+        }
+    });
+</script>

@@ -1,0 +1,68 @@
+{% extends 'index.html' %}
+
+{% block title %}
+    System | Clientes
+{% endblock title %}
+
+{% block body %}
+    <div class="card-header p-1 m-0 small">
+        <button type="button" onclick="showModalView('get_client_form')"
+                class="btn btn-outline-success" style="font-size: 12px;"><i class="fas fa-database"></i> Nuevo cliente
+        </button>
+    </div>
+    <div class="container-fluid p-0 small">
+        <div id="client-grid-list">{% include "sale/client_grid_list.html" %}</div>
+    </div>
+    <!-- Content -->
+    <div class="container-fluid">
+        <div class="table-responsive bg-info small" id="table-client_list"></div>
+    </div>
+    <div class="modal fade small" id="modal-client-form" tabindex="-1" role="dialog" aria-labelledby="ModalHelpTitle"
+         aria-hidden="true"></div>
+
+{% endblock body %}
+
+{% block extrajs %}
+
+    <script type="text/javascript">
+       $('#table-client-list').DataTable({
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.10.15/i18n/Spanish.json"
+            }
+        });
+        function showModalView(route) {
+            $.ajax({
+                url: '/sale/' + route + '/',
+                dataType: 'json',
+                type: 'GET',
+                data: {'pk': 1},
+                success: function (response) {
+                    $('#modal-client-form').html(response.form);
+                    $('#modal-client-form').modal('show');
+                },
+                fail: function (response) {
+                    toastr.error('Problemas al abrir el formulario', '¡Mensaje!');
+                }
+            });
+        };
+      $(document).on('click', '.btn-update-client', function () {
+            let search = $(this).attr('pk');
+            $.ajax({
+                url: '/sale/get_client_update_form/',
+                dataType: 'json',
+                type: 'GET',
+                data: {'pk': search},
+                success: function (response) {
+                    console.log(response);
+                    if (response.success) {
+                        $('#modal-client-form').html(response.form);
+                        $('#modal-client-form').modal('show');
+                    }
+                },
+                fail: function (response) {
+                   toastr.error('Problemas al mostrar formulario', '¡Mensaje!');
+                }
+            });
+        });
+    </script>
+{% endblock extrajs %}

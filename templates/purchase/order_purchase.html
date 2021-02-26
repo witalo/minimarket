@@ -1,0 +1,429 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block title %}
+    Orden | Compras
+{% endblock title %}
+{% block body %}
+    <div class="container h-100 w-100 p-0">
+        <div class="row justify-content-center h-100 w-100 m-0 p-0">
+            <div class="col-md-8 align-self-center p-0">
+                <div class="card shadow h-100">
+                    <div class="card-header d-flex flex-row align-items-center justify-content-between p-2 bt-2 pb-2"
+                         style="background: #048ed9;">
+                        <h6 class="m-0 font-weight-bold text-gray-200 pb-2 pt-1"><i
+                                class="fas fa-cart-plus fa-x text-gray-200"></i>
+                            Orden de compra</h6>
+                        <div class="dropdown no-arrow">
+                            <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                                 aria-labelledby="dropdownMenuLink">
+                                <div class="dropdown-header">Operaciones caja:</div>
+                                <a class="dropdown-item" href="#" onclick="Opening_Casing('A')">Apertura
+                                    caja</a>
+                                <a class="dropdown-item" href="#" onclick="Closing_Casing('C')">Cerrar caja</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="#">Detalle caja</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="col-md-12 p-1 pb-0">
+                            {% include "purchase/order_purchase_header.html" %}
+                        </div>
+                        <div class="dropdown-divider m-1"></div>
+                        <div class="col-md-12 p-2">
+                            {% include "purchase/order_purchase_detail.html" %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal-add-details" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+    </div>
+    <div class="modal fade small" id="id-modal-casing" tabindex="-1" role="dialog" aria-labelledby="ModalHelpTitle"
+         aria-hidden="true"></div>
+    <div class="text-center align-self-center" style="
+        display: none;
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        background: #e9ecef;
+        opacity: 0.5;
+        width: 100%;
+        height: 46em;
+        padding-top: 21em;" id="id-loading">
+    </div>
+    <style>
+        .button {
+            border-radius: 4px;
+            background-color: #a92929;
+            border: none;
+            text-align: center;
+            font-size: 14px;
+            padding: 5px;
+            width: 100%;
+            transition: all 0.5s;
+            cursor: pointer;
+            margin: 0px;
+        }
+
+        .button span {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            transition: 0.5s;
+        }
+
+        .button span:after {
+            content: '\00bb';
+            position: absolute;
+            opacity: 0;
+            top: 0;
+            right: -20px;
+            transition: 0.5s;
+        }
+
+        .button:hover span {
+            padding-right: 20px;
+        }
+
+        .button:hover span:after {
+            opacity: 1;
+            right: 0;
+        }
+    </style>
+{% endblock body %}
+{% block extrajs %}
+    <script type="text/javascript">
+        $('#sum-total').val('0.00')
+
+        function Opening_Casing($a) {
+            $('#id-modal-casing').empty();
+            $.ajax({
+                url: '/accounting/get_opening_casing/',
+                async: true,
+                dataType: 'json',
+                type: 'GET',
+                data: {'operation': $a},
+                success: function (response) {
+                    $('#id-modal-casing').html(response.grid);
+                    $('#id-modal-casing').modal('show');
+                },
+                error: function (response) {
+                    toastr.error('Problemas al abrir la caja', 'Mensaje')
+                }
+            });
+        };
+
+        function Closing_Casing($a) {
+            $('#id-modal-casing').empty();
+            $.ajax({
+                url: '/accounting/get_closing_casing/',
+                async: true,
+                dataType: 'json',
+                type: 'GET',
+                data: {'operation': $a},
+                success: function (response) {
+                    $('#id-modal-casing').html(response.grid);
+                    $('#id-modal-casing').modal('show');
+                },
+                error: function (response) {
+                    toastr.error('Problemas al abrir la caja', 'Mensaje')
+                }
+            });
+        };
+        {#al cargar la pagina#}
+        loader = '<div class="container">' +
+            '<div class="row">' +
+            '<div class="col-md-12">' +
+            '<div class="loader">' +
+            '<p><strong>Cargando...</strong></p>' +
+            '<div class="loader-inner"></div>' +
+            '<div class="loader-inner"></div>' +
+            '<div class="loader-inner"></div>' +
+            '</div>' +
+            '</div>' +
+            '</div>' +
+            '</div>';
+        $("#id-nro-document-sender").attr('maxlength', 8);
+
+        {#Seleccionar combo tipo de pago#}
+        $(document).on('change', '#id-type-payment', function () {
+            let _val = $(this).val();
+            if (_val === 'E') {
+                $('.mod-cash').css('display', '');
+                $('.mod-deposit').css('display', 'none');
+                $('.mod-credit').css('display', 'none');
+                $('#id-cash').trigger('change');
+                $('#id-amount-deposit').val('0.00');
+                $('#id-code-operation').val('');
+            } else if (_val === 'D') {
+                $('.mod-deposit').css('display', '');
+                $('.mod-cash').css('display', 'none');
+                $('.mod-credit').css('display', 'none');
+                $('#id-deposit').trigger('change');
+                $('#id-amount-cash').val('0.00');
+                $('#id-coin').val(2);
+            } else if (_val === 'C') {
+                $('.mod-credit').css('display', '');
+                $('.mod-cash').css('display', 'none');
+                $('.mod-deposit').css('display', 'none');
+                $('#id-amount-cash').val('0.00');
+                $('#id-amount-deposit').val('0.00');
+            } else if (_val === 'Q') {
+                $('.mod-credit').css('display', 'none');
+                $('.mod-cash').css('display', 'none');
+                $('.mod-deposit').css('display', 'none');
+                $('#id-amount-cash').val('0.00');
+                $('#id-amount-deposit').val('0.00');
+            } else {
+                $('.mod-credit').css('display', 'none');
+                $('.mod-cash').css('display', 'none');
+                $('.mod-deposit').css('display', 'none');
+                $('#id-amount-cash').val('0.00');
+                $('#id-amount-deposit').val('0.00');
+            }
+        });
+        {#Cambiar el combo efectivo#}
+        $("#id-cash").change(function () {
+            $('#id-amount-cash').val($('#sum-total').val());
+            if ($("#id-cash").val() != '0') {
+                $.ajax({
+                    url: '/accounting/get_valid_opening_cash/',
+                    async: true,
+                    dataType: 'json',
+                    type: 'GET',
+                    data: {'cash-id': $("#id-cash").val(), 'date-now': $("#id-date").val()},
+                    contentType: 'application/json;charset=UTF-8',
+                    headers: {"X-CSRFToken": '{{ csrf_token }}'},
+                    success: function (response) {
+                        if (response.success) {
+                            if (response.pk === 1) {
+                                toastr.info('Caja disponible', 'Mensaje');
+                            } else {
+                                if (response.pk === 0) {
+                                    toastr.error('Aperture la caja antes de hacer el pago', 'Caja');
+                                    $('#id-cash').val(0);
+                                    $('#id-cash').trigger('change');
+                                }
+                            }
+                        }
+                    },
+                    error: function (response) {
+                        toastr.error('Problemas al verificar la caja', 'Caja');
+                        $('#id-cash').val(0);
+                        $('#id-cash').trigger('change');
+                    }
+                });
+            }
+        });
+        {#Cambiar el combo efectivo#}
+        $("#id-deposit").change(function () {
+            $('#id-amount-deposit').val($('#sum-total').val());
+        });
+        {#Ver modal#}
+        $(document).on('click', '#btn-add-detail', function () {
+            $('#modal-add-details').empty();
+            $.ajax({
+                url: '/purchase/get_details_purchase/',
+                dataType: 'json',
+                type: 'GET',
+                data: {},
+                success: function (response) {
+                    if (response.success) {
+                        $('#modal-add-details').html(response.form);
+                        $('#modal-add-details').modal('show');
+                    }
+                },
+                fail: function (response) {
+                    toastr.error('Problemas al abrir el formulario', '¡Mensaje!');
+                }
+            });
+        });
+
+        function AddDetail() {
+            let product_id = parseInt($('#id-product-add').val());
+            let product_text = $('#id-product-add option:selected').text();
+            let unit_id = parseInt($('#id-unit-add').val());
+            let unit_text = $('#id-unit-add option:selected').text();
+            let quantity_ = parseFloat($('#id-quantity-add').val());
+            let price_ = parseFloat($('#id-price-add').val());
+            let store_id = parseInt($('#id-store-add').val());
+            if ($("#order-purchase-detail tr[product=" + product_id + "][pu=" + unit_id + "]").length) {
+                let $msg = 'El producto con este tipo de unidad ya se encuentra en el registro.';
+                toastr.warning($msg, 'Mensaje');
+                return false;
+            }
+            let _total = quantity_ * price_;
+            $('#order-purchase-detail').append(
+                '<tr product="' + product_id + '" pu="' + unit_id + '" store="' + store_id + '" class="text-uppercase small text-center">' +
+                '<td class="align-middle">' + '</td>' +
+                '<td class="align-middle text-left">' + product_text + '</td>' +
+                '<td class="align-middle item-quantity">' + quantity_ + '</td>' +
+                '<td class="align-middle item-unit" pu="' + unit_id + '">' + unit_text + '</td>' +
+                '<td class="align-middle text-right item-price">' + price_.toFixed(2) + '</td>' +
+                '<td class="align-middle text-right item-total">' + _total.toFixed(2) + '</td>' +
+                '<td class="align-middle">' + '<button type="button" onclick="deleteItem(' + product_id + ',' + unit_id + ')" class="btn btn-danger btn-sm">' +
+                '<i class="fas fa-trash-alt"></i></button>' + '</td>' +
+                '</tr>'
+            );
+            calculateTotal();
+            counterStrike();
+        };
+        {#sumar total de los detalles#}
+
+        function calculateTotal() {
+            let sum = 0;
+            $('#order-purchase-detail tr td.item-total').each(function () {
+                sum = sum + parseFloat($(this).text());
+            });
+            $('#sum-total').val(sum.toFixed(2));
+            if ($('#id-type-payment').val() === 'E') {
+                $('#id-amount-cash').val(sum.toFixed(2));
+            }
+            if ($('#id-type-payment').val() === 'D') {
+                $('#id-amount-deposit').val(sum.toFixed(2));
+            }
+        };
+        {#eliminar un detalle segun id producto#}
+
+        function deleteItem($product, $unit) {
+            $('#order-purchase-detail').find("tr[product=" + $product + "][pu=" + $unit + "]").remove();
+            calculateTotal();
+            counterStrike();
+        };
+        {#reasigna numero de fila a los detalles#}
+
+        function counterStrike() {
+            let index = 1;
+            $('#order-purchase-detail tr').each(function () {
+                $(this).attr('i', index);
+                $(this).children('td:first').text(index);
+                index++;
+            });
+        };
+        $(document).on('click', '#btn-new', function () {
+            location.reload();
+        });
+        {#crear orden de compra#}
+
+        function hasRowDetails() {
+            let _response = false;
+            if ($("table#id-table-order-purchase-detail tbody#order-purchase-detail tr").length > 0) {
+                _response = true;
+            }
+            return _response;
+        };
+        {#Registrar la compra#}
+
+        function CreatePurchase() {
+            if ($('#id-type-payment').val() == '0') {
+                toastr.warning('Seleccione la modalidad de pago', 'Mensaje');
+                return false;
+            }
+            ;
+            if ($('#id-type-payment').val() === 'E') {
+                if ($('#id-cash').val() === '0') {
+                    toastr.warning('Es necesario aperturar la caja para registrar la compra', 'Mensaje');
+                    return false;
+                }
+            } else {
+                if ($('#id-type-payment').val() === 'D') {
+                    if ($('#id-deposit').val() === '0') {
+                        toastr.warning('Seleccione el banco porfavor', 'Mensaje');
+                        return false;
+                    }
+                    if ($('#id-code-operation').val() === '') {
+                        toastr.warning('Ingrese el numero de operación', 'Mensaje');
+                        return false;
+                    }
+                }
+            }
+            if ($('#id_document_provider').val() == '0' || $('#id_names_provider').val() == '0') {
+                toastr.warning('Seleccione el proveedor por favor', 'Mensaje');
+                return false;
+            }
+            ;
+            {#Comprobar si hay filas en el detalle de la compra#}
+            if (hasRowDetails() == false) {
+                toastr.warning('Necesita registrar un producto almenos', 'Mensaje');
+                return false;
+            }
+            ;
+            {#Encabezado de la compra#}
+            let order_purchase = {
+                "Details": [],
+                "provider": $('#id_document_provider').val(),
+                "date_order": $('#id-date').val(),
+                "invoice_order": $('#id-invoice').val(),
+                "purchase_total": $('#sum-total').val(),
+                "purchase_discount": '0.00',
+                "type_payment": $('#id-type-payment').val(),
+                "cash": $('#id-cash').val(),
+                "amount_cash": $('#id-amount-cash').val(),
+                "amount_coin": $('#id-coin').val(),
+                "deposit": $('#id-deposit').val(),
+                "amount_deposit": $('#id-amount-deposit').val(),
+                "code_operation": $('#id-code-operation').val(),
+            };
+            {#Detalle de la compra#}
+            $("table#id-table-order-purchase-detail tbody#order-purchase-detail tr").each(function () {
+                let order_details = {
+                    "product": $(this).attr('product'),
+                    "unit": $(this).find("td.item-unit").attr('pu'),
+                    "quantity": $(this).find("td.item-quantity").text(),
+                    "price": $(this).find("td.item-price").text(),
+                    "store": $(this).attr('store'),
+                };
+                order_purchase.Details.push(order_details);
+            });
+            $.ajax({
+                url: '/purchase/create_order_purchase/',
+                async: true,
+                dataType: 'json',
+                type: 'GET',
+                data: {'order_purchase': JSON.stringify(order_purchase)},
+                contentType: 'application/json;charset=UTF-8',
+                headers: {"X-CSRFToken": '{{ csrf_token }}'},
+                success: function (response, textStatus, xhr) {
+                    if (xhr.status == 200) {
+                        toastr.success(response.message, '¡Mensaje!');
+                        setTimeout(() => {
+                            location.reload();
+                        }, 200);
+                    }
+                },
+                error: function (jqXhr, textStatus, xhr) {
+                    toastr.error(jqXhr.responseJSON.error, 'Sunat');
+                }
+            });
+        };
+        {#$('.combo').select2({#}
+        {#    theme: 'classic',#}
+        {#placeholder: "Seleccione",#}
+        {#allowClear: true#}
+        {# });#}
+        $('#id_document_provider').change(function () {
+            let _pk = $(this).val();
+            if (_pk != '0') {
+                $('#id_names_provider').val(_pk);
+            } else {
+                $('#id_names_provider').val(0);
+            }
+        })
+        $('#id_names_provider').change(function () {
+            let _pk = $(this).val();
+            if (_pk != '0') {
+                $('#id_document_provider').val(_pk);
+            } else {
+                $('#id_document_provider').val(0);
+            }
+        })
+    </script>
+{% endblock extrajs %}

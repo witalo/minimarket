@@ -1,0 +1,121 @@
+<div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+        <div class="modal-header" style="background-color: rgba(7, 134, 193, 1); font-size: 12px;">
+            <h5 class="modal-title  text-white" style="font-size: 12px;">Formulario de registro</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+
+        <form id="form-client" class="embed-responsive p-0" action="{% url 'sale:save_client' %}" method="POST" style="font-size: 12px;">
+            {% csrf_token %}
+            <div class="modal-body  m-1 p-0">
+                <div class="card border-success">
+                    <div class="card-header" style="background-color: rgba(55, 194, 11,0.7);">
+                        <h6 class="card-title text-center text-white mb-0" style="font-size: 12px;">Registre datos del cliente</h6>
+                    </div>
+                    <div class="card-body table-responsive m-0 p-1">
+                        <table class="table table-sm " style="width: 100%;">
+                           <tbody>
+                              <tr>
+                                <td class="align-middle" style="width: 15%">Nombres</td>
+                                <td colspan="3" style="width: 85%">
+                                    <input type="text"
+                                           class="form-control form-control-sm text-uppercase" name="full_names" id="id_full_names"
+                                           placeholder="Nombres Apellidos/Razon Social" style="font-size: 12px;" required>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="align-middle">Tipo</td>
+                                <td>
+                                    <select id="document_type_sender" name="document_type_sender"
+                                            class="form-control form-control-sm"
+                                            style="font-size: .8375rem;" required>
+                                        {% for type in type_document %}
+                                            <option value="{{ type.0 }}">{{ type.1 }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td class="align-middle">Documento</td>
+                                <td>
+                                    <input type="text"
+                                           class="form-control form-control-sm text-uppercase" name="document" id="id_document"
+                                           placeholder="Documento" style="font-size: 12px;" required>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="align-middle">Telefono</td>
+                                <td>
+                                    <input type="text"
+                                           class="form-control form-control-sm text-uppercase" name="telephone" id="id_telephone"
+                                           placeholder="Telefono" style="font-size: 12px;">
+                                </td>
+                                <td colspan="4" class="align-middle">
+                                    <input type="text"
+                                           class="form-control form-control-sm text-uppercase" name="email" id="id_email"
+                                           placeholder="correocliente@email.com" style="font-size: 12px;">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="align-middle">Direccion</td>
+                                <td colspan="3">
+                                    <input type="text"
+                                           class="form-control form-control-sm text-uppercase" name="address" id="id_address"
+                                           placeholder="Direccion de domicilio" style="font-size: 12px;">
+                                </td>
+                            </tr>
+                           </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div><!-- modal-body -->
+            <div class="modal-footer p-1">
+                <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Cerrar</button> &nbsp;
+                <button id="save-client" type="submit" class="btn btn-sm text-white" style="background-color: rgba(7, 134, 193, 1);">Registrar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript">
+    sessionStorage.setItem('document', '01')
+        {#seleccionar tipo documento#}
+        $(document).on('change', '#document_type_sender', function () {
+            let _val = $(this).val();
+            if (_val === '01') {
+                $("#id_document").attr('maxlength', 8);
+                sessionStorage.setItem('document', '01')
+            } else if (_val === '06') {
+                $("#id_document").attr('maxlength', 11);
+                sessionStorage.setItem('document', '06')
+            } else if (_val === '04' || _val === '07') {
+                $("#id_document").attr('maxlength', 15);
+                sessionStorage.setItem('document', '')
+            }
+            $('#id_document').val('');
+        });
+    $('#form-client').submit(function (event) {
+        event.preventDefault();
+        let data = new FormData($('#form-client').get(0));
+        $.ajax({
+            url: $(this).attr('action'),
+            type: $(this).attr('method'),
+            data: data,
+            cache: false,
+            processData: false,
+            contentType: false,
+            headers: {"X-CSRFToken": '{{ csrf_token }}'},
+            success: function (response) {
+                if (response.success) {
+                    toastr.success(response.success, '¡Cliente registrado con exito!!');
+                    setTimeout(() => {
+                        location.reload();
+                    }, 500);
+                }
+            },
+            error: function (response) {
+                toastr.error('¡Problemas al registrar el cliente!', 'Mensaje');
+            }
+        });
+    });
+</script>

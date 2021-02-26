@@ -1,0 +1,228 @@
+{% if product_presenting %}
+    <div class="justify-content-center">
+        <table class="table table-responsive{-sm|-md|-lg|-xl} table-bordered"
+               style="width: 100%;">
+            <thead>
+            <tr class="text-center text-white m-0"
+                style="background-color: rgb(10,139,239); font-size: 11px; height: 7px;">
+{#                <th class="th-sm text-center align-middle" style="width: 6%;">#}
+{#                     <div class="form-check-inline">#}
+{#                        <label class="form-check-label customcheck">#}
+{#                            <input type="checkbox" class="form-check-input" value="">#}
+{#                            <span class="checkmark"></span>#}
+{#                        </label>#}
+{#                     </div>#}
+{#                </th>#}
+                <th class="th-sm" style="width: 14%;">Unidad</th>
+                <th class="th-sm" style="width: 16%;">Cantidad</th>
+                <th class="th-sm" style="width: 14%;">Moneda</th>
+                <th class="th-sm" style="width: 20%;">Precio</th>
+                <th class="th-sm" style="width: 10%;">Estado</th>
+                <th class="th-sm" style="width: 13%;">Eliminar</th>
+                <th class="th-sm" style="width: 13%;">Edit</th>
+            </tr>
+            </thead>
+            <tbody class="presenting_details">
+
+            {% for obj in product_presenting %}
+
+                <tr  product_presenting_id="{{ obj.id }}">
+{#                    <td class="text-center align-middle">#}
+{#                         <div class="form-check-inline">#}
+{#                            <label class="form-check-label customcheck">#}
+{#                                <input type="checkbox" class="form-check-input" value="">#}
+{#                                <span class="checkmark"></span>#}
+{#                            </label>#}
+{#                         </div>#}
+{#                    </td>#}
+                    <td class="text-center align-middle" style="font-size: 13px;">{{ obj.unit.description }}</td>
+                     <td class="presenting_decimal text-center align-middle" style="font-size: 13px;">{{ obj.quantity_minimum|floatformat:2 }}</td>
+                    <td class="text-center align-middle" style="font-size: 14px;">{{ obj.coin }}</td>
+
+                    <td class="presenting_decimal" style="font-size: 13px;">{{ obj.price_sale|floatformat:2 }}</td>
+                    <td class="text-center align-middle">
+                         <div class="form-check-inline">
+                            <label class="form-check-label customcheck">
+                                <input type="checkbox" class="form-check-input align-middle text-center check-enabled" {% if obj.is_enabled %}checked{% endif %} value="{{ obj.id }}">
+                                <span class="checkmark"></span>
+                            </label>
+                         </div>
+                    </td>
+                    <td class="text-center align-middle p-0 m-0">
+                        {#                    <a class="delete-product-detail" pk="{{ obj.id }}"><i class="fa fa-trash"></i></a>#}
+                        <button type="button" pk="{{ obj.id }}" class="btn btn-danger btn-sm  delete-product-detail"><i
+                                class="fa fa-trash"></i></button>
+                    </td>
+                    <td class="text-center align-middle p-0 m-0">
+                        {#                    <a class="edit-product-detail" pk="{{ obj.id }}"><i class="fa fa-pencil-alt"></i></a>#}
+                        <button type="button" pk="{{ obj.id }}" class="btn btn-success btn-sm  edit-product-detail"><i
+                                class="fa fa-pencil-alt"></i></button>
+                    </td>
+                </tr>
+
+            {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+{% else %}
+<div class="col-md-12">
+    <span class="badge  badge-pill p-2 text-white" style="font-size: 13px; background-color: rgb(221,137,82); width: 100%;">Lo sentimos, no hay presentaciones registradas</span>
+</div>
+
+{% endif %}
+<style>
+.customcheck {
+    display: block;
+    position: relative;
+    padding-left: 0px;
+    margin-bottom: 0px;
+    cursor: pointer;
+    font-size: 12px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* Hide the browser's default checkbox */
+.customcheck input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+/* Create a custom checkbox */
+.checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 18px;
+    width: 18px;
+    background-color: #eee;
+    border-radius: 2px;
+}
+
+/* On mouse-over, add a grey background color */
+.customcheck:hover input ~ .checkmark {
+    background-color: #f8b563;
+}
+
+/* When the checkbox is checked, add a blue background */
+.customcheck input:checked ~ .checkmark {
+    background-color: #469f17;
+    border-radius: 2px;
+}
+
+/* Create the checkmark/indicator (hidden when not checked) */
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+/* Show the checkmark when checked */
+.customcheck input:checked ~ .checkmark:after {
+    display: block;
+}
+
+/* Style the checkmark/indicator */
+.customcheck .checkmark:after {
+    left: 6px;
+    top: 3px;
+    width: 5px;
+    height: 10px;
+    border: solid #ffffff;
+    border-width: 0 3px 3px 0;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+</style>
+<script type="text/javascript">
+    $('table tbody.presenting_details tr td.presenting_decimal').each(function () {
+        let _str = $(this).text();
+        _str = _str.replace(',', '.');
+        $(this).text(_str);
+    });
+    $('.edit-product-detail').on('click', function () {
+        $('#btn-product-presenting-save').fadeOut();
+        $('#btn-product-presenting-update').fadeIn();
+        let search = $(this).attr('pk');
+        $.ajax({
+            url: '/sale/get_product_presenting/',
+            dataType: 'json',
+            type: 'GET',
+            data: {'pk': search},
+            success: function (response, textStatus, xhr) {
+                if (xhr.status == 200) {
+                    let myObj = JSON.parse(response._object);
+                    $('#id_product_presenting').val(myObj[0]['pk']);
+                    $('#id_product').val(myObj[0]['fields']['product']);
+                    $('#id_unit option[value="' + myObj[0]['fields']['unit'] + '"]').prop('selected', true);
+                    $('#id_price_sale').val(TwoDecimal(myObj[0]['fields']['price_sale']));
+                    $('#id_quantity_minimum').val(TwoDecimal(myObj[0]['fields']['quantity_minimum']));
+                    $('#id_coin_sale option[value="' + myObj[0]['fields']['coin'] + '"]').prop('selected', true);
+                }
+            },
+            fail: function (response) {
+                toastr.error(response.message, '¡Mensaje!');
+            }
+        });
+    });
+    function TwoDecimal(n) {
+      let t=n.toString();
+      let regex=/(\d*.\d{0,2})/;
+      return t.match(regex)[0];
+    }
+
+    $(".check-enabled").on("click", function () {
+
+        let pk = $(this).attr('value');
+        let status = 'False';
+        if ($(this).is(':checked')) {
+            status = 'True';
+        }
+        console.log('status: ' + status);
+        console.log('pk: ' + pk);
+        $.ajax({
+            url: '/sale/status_product_presenting/',
+            async: true,
+            dataType: 'json',
+            type: 'GET',
+            data: {'pk': pk, 'status': status},
+            success: function (response, textStatus, xhr) {
+                if (xhr.status == 200) {
+                    toastr.success(response['message'], '¡Mensaje!');
+                }
+
+            },
+            fail: function (response) {
+                toastr.error(response['message'], '¡Mensaje!');
+            }
+        });
+
+    });
+     $('.delete-product-detail').on('click', function () {
+        let search = $(this).attr('pk');
+        let message_delete = confirm("¿Esta seguro de eliminar la presentación?");
+        if (message_delete) {
+           $.ajax({
+            url: '/sale/delete_product_presenting/',
+            dataType: 'json',
+            type: 'GET',
+            data: {'pk': search},
+            success: function (response) {
+                if(response.success){
+                     $('.presenting_details').find("tr[product_presenting_id=" + search + "]").remove();
+                     toastr.success('Registro eliminado correctamente!', 'Mensaje');
+                }
+            },
+            fail: function (response) {
+                toastr.error('¡Problemas al eliminar!', 'Mensaje');
+            }
+           });
+        }
+    });
+
+</script>

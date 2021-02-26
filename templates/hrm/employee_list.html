@@ -1,0 +1,150 @@
+{% extends 'index.html' %}
+
+{% block title %}
+    System | Trabajador
+{% endblock title %}
+
+{% block body %}
+
+    <div class="card-header p-1 m-0 small">
+        <button type="button" onclick="showModalView('get_employee_form')"
+                class="btn btn-outline-success" style="font-size: 12px;"><i class="fas fa-database"></i> Nuevo empleado
+        </button>
+    </div>
+    <div class="container-fluid p-0 pb-4">
+        <div id="employee-grid-list" class="small">{% include "hrm/employee_grid_list.html" %}</div>
+    </div>
+    <!-- Content -->
+    <div class="container-fluid">
+        <div class="table-responsive bg-info" id="table-fuel_list"></div>
+    </div>
+    <div class="modal fade" id="modal-employee-form" tabindex="-1" role="dialog" aria-labelledby="ModalHelpTitle"
+         aria-hidden="true"></div>
+
+{% endblock body %}
+
+{% block extrajs %}
+
+    <script type="text/javascript">
+        $('#table-employee-list').DataTable({
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.10.15/i18n/Spanish.json"
+            },
+            fixedHeader: {
+                header: true,
+                {#footer: true#}
+            }
+        });
+
+        function showModalView(route) {
+            $.ajax({
+                url: '/hrm/' + route + '/',
+                dataType: 'json',
+                type: 'GET',
+                data: {'pk': 1},
+                success: function (response) {
+                    $('#modal-employee-form').html(response.form);
+                    $('#modal-employee-form').modal('show');
+                },
+                fail: function (response) {
+                    toastr.error('Problemas al abrir el formulario', '¡Mensaje!');
+                }
+            });
+
+        };
+
+        $(document).on('click', '.btn-assignment-subsidiary', function () {
+            let search = $(this).attr('pk');
+            $.ajax({
+                url: '/hrm/get_employee_by_id/',
+                dataType: 'json',
+                type: 'GET',
+                data: {'pk': search},
+                success: function (response) {
+                    console.log(response);
+                    if (response.success) {
+                        $('#modal-employee-form').html(response.form);
+                        $('#modal-employee-form').modal('show');
+                    }
+                },
+                fail: function (response) {
+                    toastr.error('Problemas al abrir el formulario', '¡Mensaje!');
+                }
+            });
+        });
+        $(document).on('click', '.btn-create-user', function () {
+            let search = $(this).attr('pk');
+            $.ajax({
+                url: '/hrm/get_create_user/',
+                dataType: 'json',
+                type: 'GET',
+                data: {'pk': search},
+                success: function (response) {
+                    console.log(response);
+                    if (response.success) {
+                        $('#modal-employee-form').html(response.form);
+                        $('#modal-employee-form').modal('show');
+                    }
+                },
+                fail: function (response) {
+                    toastr.error('Problemas al mostrar formulario', '¡Mensaje!');
+                }
+            });
+        });
+
+        $(document).on('click', '.btn-update-user', function () {
+            let search = $(this).attr('pk');
+            $.ajax({
+                url: '/hrm/get_update_user/',
+                dataType: 'json',
+                type: 'GET',
+                data: {'pk': search},
+                success: function (response) {
+                    console.log(response);
+                    if (response.success) {
+                        $('#modal-employee-form').html(response.form);
+                        $('#modal-employee-form').modal('show');
+                    }
+                },
+                fail: function (response) {
+                    toastr.error('Problemas al mostrar formulario', '¡Mensaje!');
+                }
+            });
+        });
+        $(document).on('click', '.btn-update-employee', function () {
+            let search = $(this).attr('pk');
+            $.ajax({
+                url: '/hrm/get_employee_update_form/',
+                dataType: 'json',
+                type: 'GET',
+                data: {'pk': search},
+                success: function (response) {
+                    console.log(response);
+                    if (response.success) {
+                        $('#modal-employee-form').html(response.form);
+                        $('#modal-employee-form').modal('show');
+                    }
+                },
+                fail: function (response) {
+                    toastr.error('Problemas al mostrar formulario', '¡Mensaje!');
+                }
+            });
+        });
+
+        /*
+        $(document).ready(function () {
+            gridviewScroll();
+        });
+
+        function gridviewScroll() {
+            let gridView1 = $('#table-employee-list').gridviewScroll({
+                    width: "100%",
+                    height: 700,
+                    freezesize: 0,
+                    headerrowcount: 1
+            });
+        }*/
+
+
+    </script>
+{% endblock extrajs %}

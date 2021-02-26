@@ -1,0 +1,102 @@
+<div class="card-group p-0">
+    <div class="col-md-12 mt-3 mb-3">
+        <div class="card">
+            <div class="card-body text-center font-weight-bold">
+                <div class="input-group p-1 m-0">
+                    <input type="text" class="form-control form-control-sm text-center font-weight-bolder"
+                           value="{{ product_store.product.names }}" id="id-product-name-rates"
+                           aria-label="Recipient's username" aria-describedby="button-addon2"
+                           readonly="true">
+                    <input type="hidden" class="form-control form-control-sm" id="id-product-rates"
+                           value="{{ product_store.product.id }}">
+                </div>
+            </div>
+        </div>
+        <div class="card  mt-1">
+            <div class="card-body p-2 m-0 text-center">
+                <input type="text" class="form-control form-control-sm text-center font-weight-bolder"
+                       value="stock almacen {{ product_store.subsidiary_store.name }} : {{ product_store.stock|floatformat:2 }}" id="id-stock-product"
+                       readonly="true">
+                <input type="hidden" class="form-control form-control-sm"
+                       value="{{ product_store.id }}" id="id-product-store"
+                       readonly="true">
+            </div>
+        </div>
+        <div class="card p-0  mt-1">
+            <div class="card-body p-1 m-0">
+                <table class="table-sm rounded table-responsive m-0"
+                       style="width: 100%; font-size: 13px;">
+                    <thead class="table-light text-center">
+                    <tr class="text-white" style="background: #056ca2;">
+                        <th style="width: 33%;" class="font-weight-normal p-1">Unidad</th>
+                        <th style="width: 33%;" class="font-weight-normal p-1">Precio</th>
+                        <th style="width: 22%;" class="font-weight-normal p-1">Cantidad</th>
+                        <th style="width: 12%;" class="font-weight-normal p-1">Acción</th>
+                    </tr>
+                    </thead>
+                    <tbody id="product-rates">
+                    {% for item in product_presenting_set %}
+                        <tr product_presenting_id="{{ item.id }}"
+                            unit_id="{{ item.unit.id }}" unit_name="{{ item.unit.name }}" product_id="{{ item.product.id }}">
+                            <td class="text-center align-middle item-unit p-1">{{ item.unit.description }}
+                                ({{ item.get_quantity_minimum_with_dot|floatformat:2 }})
+                            </td>
+                            <td class="text-center align-middle item-price p-1">
+                                <div class="dollar">
+                                    <input type="text"
+                                           class="form-control form-control-sm price text-center money"
+                                           value="{{ item.price_sale|floatformat:2 }}">
+                                </div>
+                            </td>
+                            <td class="text-center align-middle item-quantity p-1">
+                                <input type="text" class="form-control form-control-sm quantity">
+                            </td>
+                            <td class="text-center align-middle item-add p-1">
+                                <button class="btn btn-sm btn-danger text-white card-add-product btn-block text-center"
+                                        disabled data-dismiss="modal"><i
+                                        class="fas fa-cart-plus"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    round2Fixed();
+    $("input.quantity").keyup(function (e) {
+        let val = $(this).val();
+        if (isNaN(val)) {
+            $(this).val('');
+        } else {
+            let qt = parseFloat($(this).val());
+            let _product_presenting_id = $(this).parent('td').parent('tr').attr('product_presenting_id');
+            let _unit_id = $(this).parent('td').parent('tr').attr('unit_id');
+            if (qt > 0) {
+                $('tr[product_presenting_id=' + _product_presenting_id + '] button.card-add-product').removeAttr('disabled');
+            } else {
+                $('tr[product_presenting_id=' + _product_presenting_id + '] button.card-add-product').attr('disabled', 'disabled');
+            }
+        }
+    });
+    $("button.card-add-product").click(function () {
+        $("#btn-add-details-rate").trigger('click');
+    });
+
+    function round2Fixed() {
+        $('.money').each(function () {
+            $(this).val(parseFloat($(this).val()).toFixed(2));
+            $(this).addClass('text-right font-weight-normal');
+        });
+    }
+
+    $("input.money").keyup(function (e) {
+        let val = $(this).val();
+        if (isNaN(val)) {
+            $(this).val('');
+        }
+    });
+</script>

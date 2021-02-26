@@ -1,0 +1,214 @@
+{% extends 'index.html' %}
+
+{% block title %}
+    System | Productos
+{% endblock title %}
+
+{% block body %}
+    <div class="card shadow h-100">
+        <div class="card-header d-flex flex-row align-items-center justify-content-between p-0 pt-2 pb-2"
+             style="background: #027fde;">
+            <div class="row col-md-12 m-0 p-0">
+                <div class="col-md-2">
+                    <button type="button" class="button text-white" onclick="showModalView('product_form')"><i
+                            class="fas fa-database"></i> <span>  Nuevo producto </span></button>
+                </div>
+                <div class="col-md-7 text-center">
+                    <label class="text-white text-center">Lista de productos</label>
+                </div>
+                <div class="col-md-3 align-self-center">
+                    <input type="text" class="form-control form-control-sm quicksearch" placeholder="Buscar"
+                           style="width: 100%;">
+                </div>
+            </div>
+        </div>
+        <div class="card body p-0 border-0">
+            <div id="product-grid-list" class="rounded-bottom">
+                {% include "sale/product_grid_list.html" %}
+            </div>
+        </div>
+    </div>
+    <div class="modal fade small" id="modal-product-form" tabindex="-1" role="dialog" aria-labelledby="ModalHelpTitle"
+         aria-hidden="true"></div>
+    <div class="modal fade" id="modal-product-detail" tabindex="-1" role="dialog" aria-labelledby="ModalHelpTitle"
+         aria-hidden="true"></div>
+    <div class="modal fade" id="modal-initial-stock" tabindex="-1" role="dialog" aria-labelledby="ModalHelpTitle"
+         aria-hidden="true"></div>
+    <div class="modal fade" id="show-kardex" tabindex="-1" role="dialog" aria-labelledby="ModalHelpTitle"
+         aria-hidden="true"></div>
+    <style>
+        .button {
+            border-radius: 6px;
+            background-color: #f3bf03;
+            border: none;
+            text-align: center;
+            font-size: 14px;
+            padding: 5px;
+            width: 100%;
+            transition: all 0.5s;
+            cursor: pointer;
+            margin: 0px;
+        }
+
+        .button span {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            transition: 0.5s;
+        }
+
+        .button span:after {
+            content: '\00bb';
+            position: absolute;
+            opacity: 0;
+            top: 0;
+            right: -30px;
+            transition: 0.5s;
+        }
+
+        .button:hover span {
+            padding-right: 20px;
+        }
+
+        .button:hover span:after {
+            opacity: 1;
+            right: 0;
+        }
+    </style>
+{% endblock body %}
+
+{% block extrajs %}
+    <script type="text/javascript">
+        function showModalView(route) {
+            $.ajax({
+                url: '/sale/' + route + '/',
+                dataType: 'json',
+                type: 'GET',
+                data: {'pk': 1},
+                success: function (response) {
+                    $('#modal-product-form').html(response.form);
+                    $('#modal-product-form').modal('show');
+                },
+                fail: function (response) {
+                    toastr.error('Formulario con problemas', '¡Mensaje!');
+                }
+            });
+
+        };
+        /*complementos*/
+        //$("#grid-products").mCustomScrollbar();
+        /******* ISOTOPE *******/
+            // quick search regex
+        let qsRegex;
+
+        // init Isotope
+        let $grid = $('.grid').isotope({
+            itemSelector: '.element-item',
+            layoutMode: 'fitRows',
+            filter: function () {
+                return qsRegex ? $(this).text().match(qsRegex) : true;
+            }
+        });
+
+        // use value of search field to filter
+        let $quicksearch = $('.quicksearch').keyup(debounce(function () {
+            qsRegex = new RegExp($quicksearch.val(), 'gi');
+            $grid.isotope();
+        }, 200));
+
+        // debounce so filtering doesn't happen every millisecond
+        function debounce(fn, threshold) {
+            let timeout;
+            threshold = threshold || 100;
+            return function debounced() {
+                clearTimeout(timeout);
+                let args = arguments;
+                let _this = this;
+
+                function delayed() {
+                    fn.apply(_this, args);
+                }
+
+                timeout = setTimeout(delayed, threshold);
+            };
+        }
+
+        $(document).on('click', '.btn-update-product', function () {
+            let id_ = $(this).attr('pk');
+            $.ajax({
+                url: '/sale/get_product_update_form/',
+                dataType: 'json',
+                type: 'GET',
+                data: {'pk_': id_},
+                success: function (response) {
+                    console.log(response);
+                    if (response.success) {
+                        $('#modal-product-form').html(response.form);
+                        $('#modal-product-form').modal('show');
+                    }
+                },
+                fail: function (response) {
+                    toastr.error('Problemas al mostrar formulario', '¡Mensaje!');
+                }
+            });
+        });
+
+        $(document).on('click', '.btn-product-presenting', function () {
+            let search = $(this).attr('pk');
+            $.ajax({
+                url: '/sale/product_presenting_operation/',
+                dataType: 'json',
+                type: 'GET',
+                data: {'pk': search},
+                success: function (response) {
+                    if (response.success) {
+                        $('#modal-product-detail').html(response.form);
+                        $('#product-presenting-detail').html(response.grid);
+                        $('#modal-product-detail').modal('show');
+                    }
+                },
+                fail: function (response) {
+                    toastr.error('Problemas al mostrar formulario', '¡Mensaje!');
+                }
+            });
+        });
+        $(document).on('click', '.btn-initial-stock', function () {
+            let product_id = $(this).attr('pk');
+            $.ajax({
+                url: '/sale/template_initial_stock/',
+                dataType: 'json',
+                type: 'GET',
+                data: {'pk': product_id},
+                success: function (response) {
+                    if (response.success) {
+                        $('#modal-initial-stock').html(response.form);
+                        $('#product-store-detail').html(response.grid);
+                        $('#modal-initial-stock').modal('show');
+                    }
+                },
+                fail: function (response) {
+                    toastr.error('Problemas al mostrar el modal', '¡Mensaje!');
+                }
+            });
+        });
+        $(document).on('click', '.btn-kardex-product', function () {
+            let _pk = $(this).attr('pk');
+            $.ajax({
+                url: '/sale/get_kardex_by_product/',
+                dataType: 'json',
+                type: 'GET',
+                data: {'pk': _pk},
+                success: function (response) {
+                    console.log(response);
+                    if (response.success) {
+                        $('#show-kardex').html(response.form);
+                        $('#show-kardex').modal('show');
+                    }
+                },
+                fail: function (response) {
+                    console.log(response);
+                }
+            });
+        });
+    </script>
+{% endblock extrajs %}

@@ -1,0 +1,139 @@
+<div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+        <div class="modal-header" style="background: #0959ba;">
+            <h6 class="modal-title text-white">Stock del producto</h6>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body p-1">
+            {% if product %}
+                <div class="card" style="border-color: #0a74d0; background: #ffffff;">
+                    <div class="card-body p-0">
+                        <div class="row">
+                            <div class="col-md-6 text-center align-self-center">
+                                <h6 class="text-primary text-uppercase">{{ product.names }}</h6>
+                            </div>
+                            <div class="col-md-6 text-center">
+                                <ul class="list-group  m-1" id="product-list"
+                                    style="font-size: 12px;">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Stock Minimo
+                                        <span class="badge badge-primary badge-pill p-1">{{ product.stock_min }}</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Stock Maximo
+                                        <span class="badge badge-primary badge-pill p-1">{{ product.stock_max }}</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            <div class="card mt-1" style="border-color: #0764d4; background: #ffffff;">
+                <div class="card-header text-center p-1" style="background: #0269e7;">
+                    <label class="text-white  font-weight-normal">{{ subsidiary.name }}</label>
+                </div>
+                <div class="card-body p-1 m-1" style="background: #ffffff">
+                    <form action="" method="POST" id="form-create-stock" style="font-size: 13px;">
+                        {% csrf_token %}
+                        <div class="card" style="border-color: #0a74d0">
+                            <div class="row m-2">
+                                <div class="col-md-3 align-middle  p-1 m-0">
+                                    <input type="hidden" id="id-product" name="product"
+                                           class="form-control" value="{{ product.id }}">
+                                    <label for="id_unit">Almacen sede</label>
+                                    <select id="id-subsidiary-store" name="subsidiary-store"
+                                            class="form-control form-control-sm custom-select" required>
+                                        <option selected value="0">Seleccione</option>
+                                        {% for st in subsidiary_store_set %}
+                                            <option value="{{ st.id }}">{{ st.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-3 align-middle p-1 m-0">
+                                    <label for="id_quantity-store">Cantidad</label>
+                                    <input type="text" id="id-quantity-store" name="quantity-store"
+                                           class="form-control decimal" required>
+                                </div>
+                                <div class="col-md-3 align-middle  p-1 m-0">
+                                    <label for="id_unit">Unidades</label>
+                                    <select id="id-unit-store" name="unit-store"
+                                            class="form-control form-control-sm custom-select" required>
+                                        <option selected value="0">Seleccione</option>
+                                        {% for u in units %}
+                                            <option value="{{ u.id }}">{{ u.description }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-3 align-self-md-center text-center  p-1 m-0">
+                                    <label><i class="fas fa-home pr-0"></i> Stock </label>
+                                    <button id="add-changes-store" type="submit" class="btn btn-success pl-3 p3-2">
+                                        Guardar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="mt-1 table-responsive" id="product-store-detail"></div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Cerrar</button>
+            {#                            <button id="save-changes" type="button" class="btn btn-sm btn-primary">Guardar</button>#}
+        </div>
+
+
+    </div>
+</div>
+
+<script type="text/javascript">
+    $('#form-create-stock').submit(function (event) {
+        event.preventDefault();
+        let _message = confirm("¿Esta seguro de asignar stock al almcen?");
+        if (_message) {
+            let data = new FormData($('#form-create-stock').get(0));
+            $('#product-store-detail').empty();
+            $.ajax({
+                url: '/sale/get_template_initial/',
+                type: "POST",
+                data: data,
+                cache: false,
+                processData: false,
+                contentType: false,
+                success: function (response, textStatus, xhr) {
+                    if (xhr.status == 200) {
+                        $('#product-store-detail').html(response.grid);
+                        toastr.success(response['message'], '¡Mensaje!');
+                    }
+                },
+                error: function (jqXhr, textStatus, xhr) {
+                    if (jqXhr.status == 500) {
+                        toastr.error(jqXhr.responseJSON.error, '¡Mensaje!');
+                    }
+                }
+            });
+            empty_store();
+        }
+    });
+
+    function empty_store() {
+        $('#id-quantity-store').val('');
+        $('#id-subsidiary-store').val(0);
+        $('#id-unit-store').val(0);
+    }
+
+    $(document).on('keyup', '.decimal', function () {
+
+        let val = $(this).val();
+        if (isNaN(val)) {
+            val = val.replace(/[^0-9\.]/g, '');
+            if (val.split('.').length > 2)
+                val = val.replace(/\.+$/, "");
+        }
+        $(this).val(val);
+    });
+
+</script>

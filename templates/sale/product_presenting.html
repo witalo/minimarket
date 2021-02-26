@@ -1,0 +1,188 @@
+<div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+
+    <div class="modal-content">
+
+        <div class="modal-header" style="background-color: rgb(3,99,162);">
+            <h6 class="modal-title text-white">Presentaciones - Producto</h6>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+
+        <form id="product-presenting-form" action="" method="POST" style="font-size: 0.8rem;">
+            {% csrf_token %}
+
+            <div class="modal-body m-1 p-0">
+                {% if products %}
+                    <ul class="list-group" id="product-list" pk="{{ product.id }}">
+                        <li class="list-group-item d-flex justify-content-between align-items-center border-dark text-white" style="background-color: rgb(222,110,36); font-size: 1.0rem;">
+                            <b>{{ product.names }}</b>
+                            <span class="badge badge-light badge-pill p-2" ><b>{{ product.code }}</b></span>
+                        </li>
+                    </ul>
+                {% endif %}
+                <div class="card border-dark mt-1">
+                    <div class="card-body">
+                        <div class="row">
+
+                            <div class="col-md-4 border-right  text-center align-middle">
+                                 <div>
+                                    <button type="submit" id="btn-product-presenting-save" class="btn btn-sm btn-primary">
+                                        Registrar
+                                    </button>
+                                    <button type="button" id="btn-product-presenting-update" class="btn btn-sm btn-success">
+                                        Actualizar
+                                    </button>
+                                 </div>
+                                 <h5 class="mt-2">{{ product.names }}</h5>
+                            </div>
+
+                            <div class="col-md-4  border-right p-0 m-0">
+                              <div class="col p-0 m-0">
+                                   <div class="col">
+                                        <label for="id_quantity_minimum">Cantidad</label>
+                                        <input type="text" id="id_quantity_minimum" name="quantity_minimum"
+                                               class="form-control form-control-sm decimal" required>
+                                   </div>
+                                   <div class="col">
+                                        <label for="id_unit">Unidades</label>
+                                        <select id="id_unit" name="unit" class="form-control form-control-sm custom-select">
+                                            <option selected value="0">Seleccione</option>
+                                            {% for u in units %}
+                                                <option value="{{ u.id }}">{{ u.description }}</option>
+                                            {% endfor %}
+                                        </select>
+                                   </div>
+                              </div>
+                            </div>
+
+                            <div class="col-md-4 p-0">
+
+                                <input type="hidden" id="id_product" name="product" value="{{ product.id }}">
+                                <input type="hidden" id="id_product_presenting" name="product_presenting"  value="{{ product.id }}">
+
+                                <div class="col p-0 m-0">
+                                    <div class="col">
+                                        <label for="id_price_sale">Precio</label>
+                                        <input type="text" id="id_price_sale" name="price_sale"
+                                               class="form-control form-control-sm decimal" required>
+                                    </div>
+                                    <div class="col">
+                                        <label for="id_coin_sale">Moneda</label>
+                                        <select id="id_coin_sale" name="coin_sale"
+                                                class="form-control form-control-sm custom-select">
+                                            <option selected value="0">Seleccione</option>
+                                            {% for c in coins %}
+                                                <option value="{{ c.id }}">{{ c.name_coin }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+{#                        <div class="row" id="product-presenting-detail"></div>#}
+                    </div>
+                </div>
+                <div class="mt-1 table-responsive" id="product-presenting-detail"></div>
+            </div><!-- modal-body -->
+
+            <div class="modal-footer">
+                <button type="button" id="btn-closed-modal" class="btn btn-secondary btn-sm" data-dismiss="modal">Cerrar</button>
+            </div>
+        </form>
+
+    </div>
+</div>
+ <style>
+    .custom-select {
+      position: relative;
+      font-family: Arial;
+      font-size: 14px;
+    }
+  </style>
+<script type="text/javascript">
+
+    $(document).on('keyup', '.decimal', function () {
+
+        let val = $(this).val();
+        if (isNaN(val)) {
+            val = val.replace(/[^0-9\.]/g, '');
+            if (val.split('.').length > 2)
+                val = val.replace(/\.+$/, "");
+        }
+        $(this).val(val);
+    });
+    $('#btn-product-presenting-update').fadeOut();
+
+    $('#product-presenting-form').submit(function (event) {
+        event.preventDefault();
+        let data = new FormData($('#product-presenting-form').get(0));
+        $("#btn-product-presenting-save").attr("disabled", "true");
+        let inputValue = data.get("product");
+        $.ajax({
+            url: '/sale/product_presenting_operation/',
+            type: "POST",
+            data: data,
+            cache: false,
+            processData: false,
+            contentType: false,
+            success: function (response, textStatus, xhr) {
+                if (xhr.status == 200) {
+                    $('#product-presenting-detail').html(response.grid);
+                    toastr.success(response['message'], '¡Mensaje!');
+                }
+            },
+            error: function (jqXhr, textStatus, xhr) {
+                if (jqXhr.status == 500) {
+                    toastr.error(jqXhr.responseJSON.error, '¡Mensaje!');
+                }
+            }
+        });
+        $("#btn-product-presenting-save").removeAttr("disabled", "false");
+        empty();
+    });
+
+    $('#btn-product-presenting-update').on('click', function () {
+        let _data = new FormData($('#product-presenting-form').get(0));
+        $("#btn-product-presenting-update").attr("disabled", "true");
+        $.ajax({
+            url: '/sale/update_product_presenting/',
+            type: "POST",
+            data: _data,
+            cache: false,
+            processData: false,
+            contentType: false,
+            success: function (response, textStatus, xhr) {
+                if (xhr.status == 200) {
+                    $('#product-presenting-detail').html(response.grid);
+                    toastr.success(response['message'], '¡Mensaje!');
+                }
+            },
+            error: function (jqXhr, textStatus, xhr) {
+                if (jqXhr.status == 500) {
+                    toastr.error(jqXhr.responseJSON.error, '¡Mensaje!');
+                }
+            }
+        });
+        $("#btn-product-presenting-update").removeAttr("disabled", "false");
+        $('#btn-product-presenting-save').fadeIn();
+        $('#btn-product-presenting-update').fadeOut();
+        empty();
+    });
+    function empty()
+    {
+        $('#id_price_sale').val('');
+        $('#id_quantity_minimum').val('');
+        $('#id_unit').val(0);
+        $('#id_coin_sale').val(0);
+    }
+    $('#btn-closed-modal').on('click', function () {
+            location.reload();
+    });
+
+    $('.close').on('click', function () {
+            location.reload();
+    });
+</script>

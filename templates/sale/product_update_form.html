@@ -1,0 +1,185 @@
+<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+        <div class="modal-header" style="background-color: rgba(7, 134, 193, 1); font-size: 13px;">
+            <h5 class="modal-title  text-white" style="font-size: 13px;">Formulario de actualización</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <form id="form-product-update" class="embed-responsive p-1" action="{% url 'sale:update_product' %}" method="POST" enctype="multipart/form-data" style="font-size: 13px;">
+            {% csrf_token %}
+
+            <div class="modal-body p-1">
+{#            <div id="mistakes"></div>Errores#}
+                <div class="card border-danger">
+                    <div class="card-header" style="background-color: rgb(176,38,26);">
+                        <h6 class="card-title text-center text-white mb-0" style="font-size: 13px;">Actualice información del producto</h6>
+                    </div>
+                    <div class="card-body table-responsive">
+                        <table class="table-sm table-update-product" style="width: 100%">
+                           <tbody>
+                                <tr>
+                                <td class="align-middle" style="width: 22%">Nombre producto</td>
+                                    <input type="hidden"
+                                           class="form-control form-control-sm" name="pk" id="id_pk"
+                                           value="{{ product_obj.id }}"  required>
+                                <td style="width: 36%">
+                                    <input type="text"
+                                           class="form-control form-control-sm text-uppercase" name="name" id="id_name"
+                                           placeholder="Producto" style="font-size: 13px; width: 150px;" value="{{ product_obj.names }}" required>
+                                </td>
+                                <td class="align-middle text-center" rowspan="3" colspan="4" style="width: 42%">
+                                    <label class="new_btn border rounded-lg">
+                                        <img id="blah" class="img-thumbnail form-control-sm"
+                                             src="{% if product_obj %}{{ product_obj.photo.url }}{% else %}http://placehold.it/120x120{% endif %}" style="width: 150px; height: 145px;">
+                                    </label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="align-middle">Codigo producto</td>
+                                <td>
+                                    <input type="text"
+                                           class="form-control form-control-sm text-uppercase" name="code" id="id_code"
+                                           placeholder="Codigo" style="font-size: 13px; width: 150px;" value="{{ product_obj.code }}" required>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="align-middle">Categoria</td>
+                                <td>
+                                    <select class="form-control form-control-sm custom-select" id="id_category" name="category" style="width: 150px;" required>
+                                        <option disabled selected value="">Seleccione</option>
+                                        {% for c in category_set %}
+                                            {% if product_obj.product_category.id == c.id %}
+                                                 <option selected value="{{ c.id }}">{{ c.name }}</option>
+                                            {% else %}
+                                                 <option value="{{ c.id }}">{{ c.name }}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="align-middle">Tipo producto</td>
+                                <td>
+                                    <select class="form-control form-control-sm custom-select" id="id_type" name="type" style="width: 150px;"  required>
+                                        <option disabled selected value="">Seleccione</option>
+                                        {% for item in type %}
+                                             {% if product_obj.type == item.0 %}
+                                                 <option selected value="{{ item.0 }}">{{ item.1 }}</option>
+                                            {% else %}
+                                                 <option value="{{ item.0 }}">{{ item.1 }}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td colspan="4"  class="text-center">
+                                    <div class="custom-file" style="width: 300px;">
+                                        <input type="file" class="custom-file-update" id="customFile" name="route"
+                                               onchange="readURL(this);">
+                                        <label class="custom-file-label" for="customFile" name="label_route">{% if product_obj %}{{ product_obj.photo.url }}{% else %}Seleccione archivo{% endif %}</label>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="mt-2">
+                                <td class="align-middle">Estado producto</td>
+                                <td class="align-middle text-center">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input"
+                                               id="customCheck" name="state" {% if product_obj.is_state %} checked="{{ product_obj.is_state }}" {% endif %}>
+                                        <label class="custom-control-label"
+                                               for="customCheck">Activo</label>
+                                    </div>
+                                </td>
+
+                                <td class="align-middle" style="width: 22px;">Stock Minimo</td>
+                                <td  style="width: 23px;">
+                                    <input type="text"
+                                           class="form-control form-control-sm stock_decimal" name="minimum" id="id_minimum"
+                                           placeholder="00.00" style="font-size: 14px;" value="{{ product_obj.stock_min|floatformat:2 }}" required>
+                                </td>
+                                <td class="align-middle" style="width: 22px;">Stock Maximo</td>
+                                <td  style="width: 23px;" >
+                                    <input type="text"
+                                           class="form-control form-control-sm stock_decimal" name="maximum" id="id_maximum"
+                                           placeholder="00.00" style="font-size: 14px;" value="{{ product_obj.stock_max|floatformat:2 }}" required>
+                                </td>
+                            </tr>
+                           </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div><!-- modal-body -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Cerrar</button> &nbsp;
+                <button id="update-product" type="submit" class="btn btn-sm text-white" style="background-color: rgb(43,146,25);">Actualizar</button>
+            </div>
+        </form>
+
+    </div>
+</div>
+<style>
+    .custom-select {
+      position: relative;
+      font-family: Arial;
+      font-size: 14px;
+    }
+</style>
+
+<script type="text/javascript">
+    $('table.table-update-product tbody tr td input.stock_decimal').each(function () {
+        let _str = $(this).val();
+        _str = _str.replace(',', '.');
+        $(this).val(_str);
+    });
+    $('#form-product-update').submit(function (event) {
+
+        event.preventDefault();
+        let data = new FormData($('#form-product-update').get(0));
+        $.ajax({
+            url: $(this).attr('action'),
+            type: $(this).attr('method'),
+            data: data,
+            cache: false,
+            processData: false,
+            contentType: false,
+            headers: {"X-CSRFToken": '{{ csrf_token }}'},
+            success: function (response) {
+                if (response.success) {
+                    toastr.success(response.success, '¡Producto actualizado con exito!!');
+                    setTimeout(() => {
+                        location.reload();
+                    }, 300);
+                    {#NotificationSuccess(response.message)#}
+                }
+            },
+            error: function (response) {
+                {#MessageError(response.error)#}
+                toastr.error('¡Problemas al actualizar el producto!', 'Mensaje');
+            }
+        });
+    });
+    $(".custom-file-update").on("change", function () {
+        let fileName = $(this).val().split("\\").pop();
+        $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+    });
+    function readURL(input) {
+        let url = input.value;
+        let ext = url.substring(url.lastIndexOf('.') + 1).toLowerCase();
+        if (input.files && input.files[0]&& (ext == "gif" || ext == "png" || ext == "jpeg" || ext == "jpg")) {
+            let reader = new FileReader();
+
+            reader.onload = function (e) {
+                $('#blah').attr('src', e.target.result);
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+        else{
+             $('#blah').attr('src', 'http://placehold.it/120x120');
+             {#$('.custom-file-label').text('Seleccione archivo');#}
+          }
+        }
+        $('.new_btn').bind("click" , function () {
+        $('#blah').attr("onchange","readURL(this);");
+        $('#customFile').trigger('click');
+        });
+</script>

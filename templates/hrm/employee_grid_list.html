@@ -1,0 +1,187 @@
+{% if employee_set %}
+    <div class="card border-primary">
+        <div class="card-header" style="background-color: rgba(7, 134, 193, 1.0);">
+            <h6 class="card-title text-center text-white mb-0" style="font-size: 12px;">Lista de trabajadores de la
+                empresa</h6>
+        </div>
+        <div class="card-body pb-1">
+            <div class="table-responsive small dataTables_wrapper">
+                <table id="table-employee-list"
+                       class="table  table-striped align-content-center table-bordered response"
+                       cellspacing="0" width="100%" style="border-collapse:collapse;">
+                    <thead>
+                    <tr class="text-center  text-white  GridviewScrollHeader"
+                        style="background-color: rgba(7, 134, 193, 1.0); font-size: 11px;">
+                        <th class="th-sm">N°</th>
+                        <th class="th-sm">Información</th>
+                        <th class="th-sm">Fecha nacimiento</th>
+                        <th class="th-sm">Genero</th>
+                        <th class="th-sm">Telefono</th>
+                        <th class="th-sm">Correo</th>
+                        <th class="th-sm">Dirección</th>
+                        <th class="th-sm">Foto</th>
+                        <th class="th-sm">Acción</th>
+                    </tr>
+                    </thead>
+                    <tbody style="font-size: 11px;">
+                    {% for e in employee_set %}
+                        <tr class="text-center text-black GridviewScrollItem">
+                            <td class="align-middle"><strong>{{ e.id }}</strong></td>
+                            <td>
+                                <address class="text-left">
+                                    <strong>Trabajador</strong><br>
+                                    <strong>Apellido Paterno:</strong> <i>{{ e.paternal_last_name }}</i><br>
+                                    <strong>Apellido Materno:</strong> <i>{{ e.maternal_last_name }}</i><br>
+                                    <strong>Nombres:</strong> <i>{{ e.names }}</i><br>
+                                    <strong>Documento:</strong> <i>{{ e.document_number }}</i>
+                                </address>
+                            </td>
+                            <td>{{ e.birth_date }}</td>
+                            <td>{{ e.get_gender_display }}</td>
+                            <td>{{ e.telephone_number }}</td>
+                            <td>{{ e.email }}</td>
+                            <td>{{ e.address }}</td>
+                            <td>
+                                <img class="img-thumbnail" src="{{ e.photo.url }}" id="img-photo-employee" width="100px"
+                                     height="80px">
+                            </td>
+                            <td class="p-1">
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-success  dropdown-toggle"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                            style="font-size: 11px;">
+                                        Acción
+                                    </button>
+                                    <div class="dropdown-menu border-info font-italic">
+                                        <a class="dropdown-item btn-assignment-subsidiary"
+                                           style="cursor: pointer; font-size: 11px;" pk="{{ e.id }}"><i
+                                                class="fas fa-save pr-1"></i> Asignar sucursal </a>
+                                        <a class="dropdown-item btn-update-employee"
+                                           style="cursor: pointer; font-size: 11px;" pk="{{ e.id }}"><i
+                                                class="fas fa-edit pr-1"></i> Modificar datos </a>
+                                        {% if e.user %}
+                                            <a class="dropdown-item btn-update-user"
+                                               style="cursor: pointer; font-size: 11px;"
+                                               pk="{{ e.user.id }}">
+                                                <i class="fas fa-sync-alt"></i> Modificar usuario
+                                            </a>
+                                        {% else %}
+                                            <a class="dropdown-item btn-create-user"
+                                               style="cursor: pointer; font-size: 11px;" pk="{{ e.id }}">
+                                                <i class="fas fa-sync-alt"></i> Creacion de usuario
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                    <tfoot>
+                    <tr class="text-center text-white" style="background-color: rgba(7, 134, 193, 1.0);">
+                        <th class="th-sm">N°</th>
+                        <th class="th-sm">Información</th>
+                        <th class="th-sm">Fecha nacimiento</th>
+                        <th class="th-sm">Genero</th>
+                        <th class="th-sm">Telefono</th>
+                        <th class="th-sm">Correo</th>
+                        <th class="th-sm">Dirección</th>
+                        <th class="th-sm">Foto</th>
+                        <th class="th-sm">Acción</th>
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+    <style>
+        #img-photo-employee {
+            border-radius: 50%;
+            vertical-align: middle;
+        }
+
+        /*
+        .GridviewScrollHeader TH, .GridviewScrollHeader TD
+        {
+            padding: 3px;
+            white-space: nowrap;
+            border-right: 1px solid #AAAAAA;
+            border-bottom: 1px solid #AAAAAA;
+           vertical-align: middle;
+            background-color:#03579D;
+            color:#FFF;
+            font-size:20px;
+        }
+        .GridviewScrollItem TD
+        {
+            padding: 3px;
+            white-space: nowrap;
+            border-right: 1px solid #AAAAAA;
+            border-bottom: 0.7px solid #AAAAAA;
+            font-size:20px;
+
+        }
+        .GridviewScrollPager
+        {
+            border-top: 1px solid #AAAAAA;
+            background-color: #FFFFFF;
+        }
+        .GridviewScrollPager TD
+        {
+            padding-top: 3px;
+            font-size: 14px;
+            padding-left: 5px;
+            padding-right: 5px;
+        }
+        .GridviewScrollPager A
+        {
+            color: #666666;
+        }.GridviewScrollPager SPAN
+        {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .container {
+        background-color: #03579D;
+          height: auto;
+          margin-top:0;
+          line-height: 60px;
+          width: 100%;
+          display: inline-block;
+          border-radius: 15px;
+        }
+
+        .container2 {
+        background-color: #03579D;
+         height: auto;
+          margin-top:0;
+          width: 100%;
+          display: inline-block;
+          border-radius: 15px;
+        }
+
+        .GridviewScrollHeader2 TH, .GridviewScrollHeader TD
+        {
+            padding: 3px;
+            white-space: nowrap;
+            border-right: 1px solid #AAAAAA;
+            border-bottom: 1px solid #AAAAAA;
+            vertical-align: middle;
+            background-color:#03579D;
+            color:#FFF;
+            font-size:14px;
+        }
+        .GridviewScrollItem2 TD
+         {
+            padding: 3px;
+            white-space: nowrap;
+            border-right: 1px solid #AAAAAA;
+            border-bottom: 0.7px solid #AAAAAA;
+            font-size:14px;
+
+        }*/
+    </style>
+{% else %}
+    <h6>No existen registros de empleados</h6>
+{% endif %}

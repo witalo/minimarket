@@ -1,0 +1,107 @@
+<div class="modal-dialog modal-dialog-centered" role="document">
+
+    <div class="modal-content">
+
+        <div class="modal-header" style="background-color: rgba(7, 134, 193, 1.0);">
+            <h6 class="modal-title  text-white">Asignacion de sucursal</h6>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+
+        <form id="form-employee-subsidiary" action="{% url 'hrm:update_subsidiary_employee' %}" method="POST">
+            {% csrf_token %}
+
+            <div class="modal-body">
+                <div class="card border-primary">
+                    <div class="card-header" style="background-color: rgba(7, 134, 193, 1.0);">
+                        <h6 class="card-title text-center text-white mb-0 font-weight-normal">Empleado - Sucursal</h6>
+                    </div>
+                    <div class="card-body table-responsive">
+                        <table class="table table-responsive table-sm" style="width: 430px;">
+                             <tr>
+                                <td style="width: 30%;">
+                                    <input type="hidden"
+                                           class="form-control text-center" name="pk" id="id_pk"
+                                           required readonly value="{{ employee_obj.id }}">
+                                    <input type="text"
+                                           class="form-control form-control-sm text-center" name="document" id="id_document"
+                                           placeholder="Documento"  required readonly value="{{ employee_obj.document_number }}">
+                                </td>
+                                <td style="width: 70%;">
+                                    <input type="text"
+                                           class="form-control form-control-sm text-center" name="full_names" id="id_full_names"
+                                           placeholder="Nombres" required readonly value="{{ employee_obj.full_name }}">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="align-middle text-center">Nueva sucursal</td>
+                                <td>
+                                    <select class="form-control form-control-sm" id="id_subsidiary" name="subsidiary" required>
+                                        <option disabled selected value="">Seleccione</option>
+                                        {% for s in subsidiary_set %}
+                                            <option value="{{ s.id }}">
+                                                {{ s.name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div><!-- modal-body -->
+            <div class="modal-footer table-responsive">
+                <table class="table table-responsive table-sm" style="width: 460px;">
+                     <tr>
+                        <td style="width: 10%;">Sucursal</td>
+                        <td style="width: 70%;">
+                            <input type="text"
+                                   class="form-control form-control-sm text-center" name="current_subsidiary" id="id_current_subsidiary"
+                                   placeholder="Actualmente el trabajdor se encuantra sin sede"  required readonly value="{{ employee_obj.subsidiary.name }}">
+                        </td>
+                         <td class="pl-2">
+                             <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Cerrar</button> &nbsp;
+                         </td>
+                         <td>
+                             <button id="update-employee" type="submit" class="btn btn-sm text-white" style="background-color: rgba(7, 134, 193, 1.0);">Registrar</button>
+                         </td>
+                     </tr>
+                </table>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    $('#id_subsidiary').select2({
+            theme: 'bootstrap4',
+    });
+    $('#form-employee-subsidiary').submit(function (event) {
+        event.preventDefault();
+        let data = new FormData($('#form-employee-subsidiary').get(0));
+        $.ajax({
+            url: $(this).attr('action'),
+            type: $(this).attr('method'),
+            data: data,
+            cache: false,
+            processData: false,
+            contentType: false,
+            headers: {"X-CSRFToken": '{{ csrf_token }}'},
+            success: function (response) {
+                if (response.success) {
+                    toastr.success(response.success, '¡Empleado asignado a la sede correctamente!');
+                    setTimeout(() => {
+                        location.reload();
+                    }, 500);
+                }
+            },
+            error: function (response) {
+                toastr.error('¡Problemas al asignar a la sede!', 'Mensaje');
+            }
+        });
+    });
+
+
+</script>

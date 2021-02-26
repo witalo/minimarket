@@ -1,0 +1,81 @@
+<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+        <div class="modal-header" style="background: #0367d2">
+            <h6 class="modal-title text-white">Kardex del producto</h6>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="card p-0" style="border-color: #0a74d0">
+                <div class="card-header">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <input type="text"
+                                   class="form-control form-control-sm text-center font-weight-normal text-uppercase"
+                                   id="id-product-kardex"
+                                   pk="{% if product %}{{ product.id }}{% endif %}"
+                                   value="{% if product %}{{ product.names }}{% endif %}" readonly>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body pb-1">
+                    <form>
+                        {% csrf_token %}
+                        <div class="form-group row mx-sm-3">
+                            <label for="id_subsidiary_store mt-1"
+                                   class="col-sm-2 col-form-label align-self-md-center text-center font-weight-normal">Almacen
+                            </label>
+                            <div class="col-sm-4 align-self-md-center mt-2">
+                                <select class="form-control form-control-sm" id="id_subsidiary_store" required>
+                                    <option value=""> Seleccione</option>
+                                    {% for subsidiary_store in subsidiaries_stores %}
+                                        <option value="{{ subsidiary_store.id }}"
+                                                data-chained="{{ subsidiary_store.subsidiary.id }}">{{ subsidiary_store.name }}</option>
+                                    {% empty %}
+                                        Lo sentimos, no hay almacenes registradas.
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-sm-4 text-center align-self-md-center mt-2">
+                                <input type="month" class="form-control form-control-sm" id="id-month-kardex" name="month-kardex"
+                                   value="{{ date_now }}" required>
+                            </div>
+                            <div class="col-sm-2 text-center align-self-md-center mt-2">
+                                <button type="button" id="btn-search" class="btn btn-sm btn-primary pl-3 pr-3"><i
+                                        class="fas fa-search pr-2"></i>Buscar
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="card mt-2" style="border-color: #047ee9" id="kardex-grid-list">{% include "sale/kardex_grid_list.html" %}</div>
+        </div><!-- modal-body -->
+        <div class="modal-footer">
+            <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $('#btn-search').on('click', function () {
+        let _pk = $("#id-product-kardex").attr('pk');
+        let _date = $("#id-month-kardex").val();
+        $.ajax({
+            url: '/sale/get_list_kardex/',
+            dataType: 'json',
+            type: 'GET',
+            data: {'pk': _pk, 'subsidiary_store': $("#id_subsidiary_store").val(),'mount':_date},
+            success: function (response) {
+                console.log(response);
+                if (response.success) {
+                    $('#kardex-grid-list').html(response.form);
+                }
+            },
+            fail: function (response) {
+                console.log(response);
+            }
+        });
+    });
+</script>

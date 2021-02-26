@@ -1,0 +1,174 @@
+<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+        <div class="modal-header" style="background-color: rgba(7, 134, 193, 1); font-size: 13px;">
+            <h5 class="modal-title  text-white" style="font-size: 13px;">Formulario de registro</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <form id="form-product" class="embed-responsive p-1" action="{% url 'sale:save_product' %}" method="POST" enctype="multipart/form-data" style="font-size: 13px;">
+            {% csrf_token %}
+
+            <div class="modal-body p-1">
+            <div id="mistakes">
+
+            </div>
+                <div class="card border-success table-responsive">
+                    <div class="card-header" style="background-color: rgba(51,162,16,0.7);">
+                        <h6 class="card-title text-center text-white mb-0" style="font-size: 13px;">Registre nuevo producto</h6>
+                    </div>
+                    <div class="card-body table-responsive">
+                        <table class="table-sm table-responsive" style="width: 100%">
+                           <tbody>
+                                <tr>
+                                <td class="align-middle" style="width: 22%">Nombre producto</td>
+                                <td style="width: 32%">
+                                    <input type="text"
+                                           class="form-control form-control-sm text-uppercase" name="name" id="id_name"
+                                           placeholder="Producto" style="font-size: 13px; width: 150px" required>
+                                </td>
+                                <td class="align-middle text-center" rowspan="3" colspan="4" style="width: 46%">
+                                    <label class="new_btn border rounded-lg">
+                                        <img id="blah" class="img-thumbnail form-control-sm"
+                                             src="http://placehold.it/120x120" style="width: 150px; height: 145px;">
+                                    </label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="align-middle">Codigo producto</td>
+                                <td>
+                                    <input type="text"
+                                           class="form-control form-control-sm text-uppercase" name="code" id="id_code"
+                                           placeholder="Codigo" style="font-size: 13px; width: 150px;" required>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="align-middle">Categoria</td>
+                                <td>
+                                    <select class="form-control form-control-sm custom-select" id="id_category" name="category" style="width: 150px;" required>
+                                        <option disabled selected value="">Seleccione</option>
+                                        {% for c in category_set %}
+                                            <option value="{{ c.id }}">
+                                                {{ c.name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="align-middle">Tipo producto</td>
+                                <td>
+                                    <select class="form-control form-control-sm custom-select" id="id_type" name="type"  style="width: 150px;" required>
+                                        <option disabled selected value="">Seleccione</option>
+                                        {% for item in type %}
+                                            <option value="{{ item.0 }}">
+                                                {{ item.1 }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td colspan="4"  class="text-center">
+                                    <div class="custom-file" style="width: 300px;">
+                                        <input type="file" class="custom-file-input form-control-sm" id="customFile" name="route"
+                                               onchange="readURL(this);">
+                                        <label class="custom-file-label form-control-sm" for="customFile" name="label_route">Seleccione</label>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="mt-2">
+                                <td class="align-middle">Estado producto</td>
+                                <td class="align-middle text-center">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input"
+                                               id="customCheck" name="state">
+                                        <label class="custom-control-label"
+                                               for="customCheck">Activo</label>
+                                    </div>
+                                </td>
+
+                                <td class="align-middle" style="width: 22px;">Stock Minimo</td>
+                                <td  style="width: 23px;">
+                                    <input type="text"
+                                           class="form-control form-control-sm" name="minimum" id="id_minimum"
+                                           placeholder="00.00" style="font-size: 13px;" required>
+                                </td>
+                                <td class="align-middle" style="width: 22px;">Stock Maximo</td>
+                                <td  style="width: 23px;" >
+                                    <input type="text"
+                                           class="form-control form-control-sm" name="maximum" id="id_maximum"
+                                           placeholder="00.00" style="font-size: 13px;" required>
+                                </td>
+                            </tr>
+                           </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div><!-- modal-body -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Cerrar</button> &nbsp;
+                <button id="save-product" type="submit" class="btn btn-sm text-white" style="background-color: rgb(41,155,21);">Registrar</button>
+            </div>
+        </form>
+
+    </div>
+</div>
+<style>
+    .custom-select {
+      position: relative;
+      font-family: Arial;
+      font-size: 14px;
+    }
+</style>
+
+<script type="text/javascript">
+    $('#form-product').submit(function (event) {
+
+        event.preventDefault();
+        let data = new FormData($('#form-product').get(0));
+        $.ajax({
+            url: $(this).attr('action'),
+            type: $(this).attr('method'),
+            data: data,
+            cache: false,
+            processData: false,
+            contentType: false,
+            headers: {"X-CSRFToken": '{{ csrf_token }}'},
+            success: function (response) {
+                if (response.success) {
+                    toastr.success(response.success, '¡Producto registrado con exito!!');
+                    setTimeout(() => {
+                        location.reload();
+                    }, 300);
+                    {#NotificationSuccess(response.message)#}
+                }
+            },
+            error: function (response) {
+                {#MessageError(response.error)#}
+                toastr.error('¡Problemas al registrar el producto!', 'Mensaje');
+            }
+        });
+    });
+    $(".custom-file-input").on("change", function () {
+        let fileName = $(this).val().split("\\").pop();
+        $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+    });
+    function readURL(input) {
+        let url = input.value;
+        let ext = url.substring(url.lastIndexOf('.') + 1).toLowerCase();
+        if (input.files && input.files[0]&& (ext == "gif" || ext == "png" || ext == "jpeg" || ext == "jpg")) {
+            let reader = new FileReader();
+
+            reader.onload = function (e) {
+                $('#blah').attr('src', e.target.result);
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+        else{
+             $('#blah').attr('src', 'http://placehold.it/120x120');
+          }
+        }
+        $('.new_btn').bind("click" , function () {
+        // $('#id_photo').attr("onchange","readURL(this);");
+        $('#customFile').trigger('click');
+        });
+</script>

@@ -1,0 +1,101 @@
+<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+
+    <div class="modal-content">
+
+        <div class="modal-header" style="background-color: rgb(3,105,172);">
+            <h5 class="modal-title  text-white">Creacion de accesos a sistema</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+
+        <form id="form-create-worker" class="" action="{% url 'user:create_user' %}" method="POST">
+            {% csrf_token %}
+
+            <div class="modal-body">
+                <div class="card border-primary">
+                    <div class="card-header" style="background-color: rgb(3,105,172);">
+                        <h6 class="card-title text-center text-white mb-0">Empleado - Usuario</h6>
+                    </div>
+                    <div class="card-body table-responsive">
+                        <table class="table table-responsive table-sm small" style="width: 100%">
+                             <tr>
+                                <td class="align-middle" style="width: 10%">Documento</td>
+                                <td style="width: 25%">
+                                    <input type="hidden"
+                                           class="form-control form-control-sm text-center" name="pk" id="id_pk"
+                                           required readonly value="{{ employee_obj.id }}">
+                                    <input type="text" style="width: 150px;"
+                                           class="form-control form-control-sm text-center" name="document" id="id_document"
+                                           placeholder="Documento"  required readonly value="{{ employee_obj.document_number }}">
+                                </td>
+                                <td class="align-middle" style="width: 10%">Nombres</td>
+                                <td colspan="3">
+                                    <input type="text"
+                                           class="form-control form-control-sm text-center" name="full_names" id="id_full_names"
+                                           placeholder="Nombres" required readonly value="{{ employee_obj.full_name }}">
+                                </td>
+                            </tr>
+                            <tr class="justify-content-center">
+                                <td class="align-middle">Usuario</td>
+                                <td class="align-middle">
+                                    <input type="text" class="form-control form-control-sm" id="id_username" style="width: 150px;"
+                                      name="username" required value="{{ employee_obj.paternal_last_name }}">
+                                </td>
+                                <td class="align-middle">Contraseña</td>
+                                <td class="align-middle" style="width: 150px;">
+                                    <input type="password" class="form-control form-control-sm" minlength="6" style="width: 150px;"
+                                     id="id_password" name="password" required value="">
+                                </td>
+                                <td class="align-middle text-center" style="width: 100px">Acceso panel</td>
+                                <td class="align-middle text-center pb-5" style="width: 100px;">
+                                    <input type="checkbox" class="form-check-input form-control-sm" id="id_is_staff" name="is_staff"
+                                           value="True">
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div><!-- modal-body -->
+            <div class="modal-footer">
+                 <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Cerrar</button> &nbsp;
+                 <button id="create-worker" type="submit" class="btn btn-sm text-white" style="background-color: rgb(2,94,165);">Registrar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    $('#form-create-worker').submit(function (event) {
+        event.preventDefault();
+        let data = new FormData($('#form-create-worker').get(0));
+        $.ajax({
+            url: $(this).attr('action'),
+            type: $(this).attr('method'),
+            data: data,
+            cache: false,
+            processData: false,
+            contentType: false,
+            headers: {"X-CSRFToken": '{{ csrf_token }}'},
+            success: function (response, textStatus, xhr) {
+                if(xhr.status==200){
+                    toastr.success('¡Usuario creado correctamente!','¡Mensaje!');
+                    setTimeout(() => {location.reload();}, 400);
+                }
+            },
+             error : function(jqXhr, textStatus, xhr) {
+                if(jqXhr.status==500){
+                    toastr.error (jqXhr.responseJSON.error, '¡Error!');
+                }
+                else{
+                    console.log(" STATUS: " + xhr + " " + textStatus);
+                }
+
+            }
+        });
+    });
+
+
+</script>

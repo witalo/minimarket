@@ -1,0 +1,680 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block title %}
+    Orden | Ventas
+{% endblock title %}
+{% block body %}
+    <div class="row">
+        <div class="col-md-6 pl-1 pr-1">
+            <div class="card shadow h-100">
+                <div class="card-header d-flex flex-row align-items-center justify-content-between"
+                     style="background: #0297e7">
+                    <h6 class="m-0 font-weight-bold text-warning"><i
+                            class="fas fa-cart-plus fa-x text-gray-300"></i>
+                        Orden de venta</h6>
+                    <div class="dropdown no-arrow">
+                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                             aria-labelledby="dropdownMenuLink">
+                            <div class="dropdown-header">Complementarios:</div>
+                            <a class="dropdown-item" href="#" onclick="Opening_Casing('A')">Apertura de
+                                caja</a>
+                            <a class="dropdown-item" href="#" onclick="Closing_Casing('C')">Cierre de caja</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#" onclick="Register_Client('get_client_form')">Registrar cliente</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="col-md-12 p-1 pb-0">
+                        {% include "sale/order_sale_header.html" %}
+                    </div>
+                    <div class="dropdown-divider m-1"></div>
+                    <div class="col-md-12 p-2">
+                        {% include "sale/order_sale_detail.html" %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 pl-1 pr-1">
+            <div class="card shadow h-100">
+                <div class="card-header d-flex flex-row align-items-center justify-content-between p-2"
+                     style="background: #0297e7">
+                    <div class="row m-0 p-0 col-md-12">
+                        <div class="col-md-4 align-self-center text-center">
+                            <h6 class="font-weight-bold text-warning"><i
+                                    class="fas fa-calendar fa-x text-gray-300"></i>
+                                Lista - Productos</h6>
+                        </div>
+                        <div class="col-md-8 p-0 m-0 align-self-center">
+                            <input type="text" class="form-control form-control-sm quicksearch" placeholder="Buscar"
+                                   style="width: 100%; border: 0px;">
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div id="order-sale-product-grid-list" class="rounded-bottom" style="height: 465px;">
+                        {% include "sale/order_sale_products_grid_list.html" %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade modal-prices" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header p-2 text-center" style="background-color: #135d94;">
+                    <h6 class="modal-title text-white" id="exampleModalLabel">TARIFARIO</h6>
+                    <button type="button" class="close ml-0" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body p-0 m-0" id="id-detail-prices">
+                    ...
+                </div>
+                <div class="modal-footer p-1" style="background-color: #135d94;">
+                    <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Cerrar</button> &nbsp;
+                    <button type="button" id="btn-add-details-rate" class="btn btn-sm btn-success float-left">
+                        <i class="fas fa-cart-plus"></i> Agregar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="modal-voucher" tabindex="-1" role="dialog" aria-labelledby="ModalHelpTitle"
+         aria-hidden="true">
+        <div class="modal-dialog  modal-dialog-centered  modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header align-content-md-center" style="background: #0389ef">
+                    <h6 class="modal-title  text-white">MODALIDAD DE DOCUMENTO</h6>
+                    {#                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">#}
+                    {#                        <span aria-hidden="true">&times;</span>#}
+                    {#                    </button>#}
+                </div>
+                <div class="modal-body m-0 p-2">
+                    <div class="card m-0 p-0" style="border-color: #c6421a; border-width: medium">
+                        <div class="card-body p-1 m-0">
+                            <div class="col-md-12 p-0 m-0">
+                                <div class="col-md-12 m-0 p-2">
+                                    <button type="button" id="save-order" onclick="create_voucher('I')"
+                                            class="btn btn-sm btn-outline-success col-md-12 p-1">
+                                        <i class="fas fa-registered fa-2x text-success-300"></i><span> &nbsp;Registrar Documento Interno</span>
+                                    </button>
+                                </div>
+                                <div class="col-md-12 m-0 p-2">
+                                    <button type="button" id="btn-invoice" onclick="create_voucher('F')"
+                                            class="btn btn-sm btn-outline-success col-md-12 p-1">
+                                        <i class="fas fa-university fa-2x text-success-300"></i><span> &nbsp;Generar Factura Electronica</span>
+                                    </button>
+                                </div>
+                                <div class="col-md-12 m-0 p-2">
+                                    <button type="button" id="save-order" onclick="create_voucher('B')"
+                                            class="btn btn-sm btn-outline-success col-md-12 p-1">
+                                        <i class="fab fa-buy-n-large fa-2x text-success-300"></i><span> Generar Boleta Electronica</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer p-3 m-0" style="background-color: #0389ef;">
+                    <div class="col-md-12 p-0 m-0">
+                        <button type="button" class="btn btn-sm col-md-12 text-white" data-dismiss="modal"
+                                style="background: #e24b1d">Cerrar
+                        </button> &nbsp;
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade small" id="id-modal-casing" tabindex="-1" role="dialog" aria-labelledby="ModalHelpTitle"
+         aria-hidden="true"></div>
+    <div class="modal fade small" id="id-modal-client" tabindex="-1" role="dialog" aria-labelledby="ModalHelpTitle"
+         aria-hidden="true"></div>
+    <div class="text-center align-self-center" style="
+        display: none;
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        background: #e9ecef;
+        opacity: 0.5;
+        width: 100%;
+        height: 46em;
+        padding-top: 21em;" id="id-loading">
+    </div>
+    <style>
+        .button {
+            border-radius: 4px;
+            background-color: #fa5204;
+            border: none;
+            text-align: center;
+            font-size: 14px;
+            padding: 5px;
+            width: 100%;
+            transition: all 0.5s;
+            cursor: pointer;
+            margin: 0px;
+        }
+
+        .button span {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            transition: 0.5s;
+        }
+
+        .button span:after {
+            content: '\00bb';
+            position: absolute;
+            opacity: 0;
+            top: 0;
+            right: -30px;
+            transition: 0.5s;
+        }
+
+        .button:hover span {
+            padding-right: 20px;
+        }
+
+        .button:hover span:after {
+            opacity: 1;
+            right: 0;
+        }
+    </style>
+{% endblock body %}
+{% block extrajs %}
+    <script type="text/javascript">
+        $('#sum-total').val('0.00')
+        $('.quicksearch').focus();
+        /******* ISOTOPE *******/
+            {#quick search regex#}
+        let qsRegex;
+        {#init Isotope#}
+        let $grid = $('.grid').isotope({
+            itemSelector: '.element-item',
+            layoutMode: 'fitRows',
+            filter: function () {
+                return qsRegex ? $(this).text().match(qsRegex) : true;
+            }
+        });
+        {#use value of search field to filter#}
+        let $quicksearch = $('.quicksearch').keyup(debounce(function () {
+            qsRegex = new RegExp($quicksearch.val(), 'gi');
+            $grid.isotope();
+        }, 200));
+
+        {#debounce so filtering doesn't happen every millisecond#}
+
+        function debounce(fn, threshold) {
+            let timeout;
+            threshold = threshold || 100;
+            return function debounced() {
+                clearTimeout(timeout);
+                let args = arguments;
+                let _this = this;
+                function delayed() {
+                    fn.apply(_this, args);
+                }
+                timeout = setTimeout(delayed, threshold);
+            };
+        };
+
+        function Opening_Casing($a) {
+            $('#id-modal-casing').empty();
+            $.ajax({
+                url: '/accounting/get_opening_casing/',
+                async: true,
+                dataType: 'json',
+                type: 'GET',
+                data: {'operation': $a},
+                success: function (response) {
+                    $('#id-modal-casing').html(response.grid);
+                    $('#id-modal-casing').modal('show');
+                },
+                error: function (response) {
+                    toastr.error('Problemas al abrir la caja', 'Mensaje')
+                }
+            });
+        };
+        function Closing_Casing($a) {
+            $('#id-modal-casing').empty();
+            $.ajax({
+                url: '/accounting/get_closing_casing/',
+                async: true,
+                dataType: 'json',
+                type: 'GET',
+                data: {'operation': $a},
+                success: function (response) {
+                    $('#id-modal-casing').html(response.grid);
+                    $('#id-modal-casing').modal('show');
+                },
+                error: function (response) {
+                    toastr.error('Problemas al abrir la caja', 'Mensaje')
+                }
+            });
+        };
+        function Register_Client(route) {
+            $('#id-modal-client').empty();
+              $.ajax({
+                url: '/sale/' + route + '/',
+                dataType: 'json',
+                type: 'GET',
+                data: {'pk': 1},
+                success: function (response) {
+                    $('#id-modal-client').html(response.form);
+                    $('#id-modal-client').modal('show');
+                },
+                fail: function (response) {
+                    toastr.error('Problemas al abrir el formulario', '¡Mensaje!');
+                }
+            });
+        };
+        {#al cargar la pagina#}
+        loader = '<div class="container">' +
+            '<div class="row">' +
+            '<div class="col-md-12">' +
+            '<div class="loader">' +
+            '<p><strong>Cargando...</strong></p>' +
+            '<div class="loader-inner"></div>' +
+            '<div class="loader-inner"></div>' +
+            '<div class="loader-inner"></div>' +
+            '</div>' +
+            '</div>' +
+            '</div>' +
+            '</div>';
+        $("#id-nro-document-sender").attr('maxlength', 8);
+        sessionStorage.setItem('document', '01')
+        {#seleccionar tipo documento#}
+        $(document).on('change', '#document_type_sender', function () {
+            let _val = $(this).val();
+            if (_val === '01') {
+                $("#id-nro-document-sender").attr('maxlength', 8);
+                sessionStorage.setItem('document', '01')
+            } else if (_val === '06') {
+                $("#id-nro-document-sender").attr('maxlength', 11);
+                sessionStorage.setItem('document', '06')
+            } else if (_val === '04' || _val === '07') {
+                $("#id-nro-document-sender").attr('maxlength', 15);
+                sessionStorage.setItem('document', '')
+            }
+            $('#id-names-sender').val('');
+            $('#id-nro-document-sender').val('');
+        });
+        {#presionar tecla enter en el documento del cliente#}
+        $('#id-nro-document-sender').keypress(function (e) {
+            if (e.keyCode === 13) {
+                e.preventDefault()
+                $(this).trigger("enterKey");
+                let _document_number = $('#id-nro-document-sender').val();
+                if ((sessionStorage.getItem('document') === '01') && (_document_number.length !== 8)) {
+                    toastr.warning('El DNI debe contener 8 digitos', 'Mensaje');
+                    return false;
+                } else {
+                    if ((sessionStorage.getItem('document') === '06') && (_document_number.length !== 11)) {
+                        toastr.warning('El RUC debe contener 11 digitos', 'Mensaje');
+                        return false;
+                    }
+                }
+                $('#id-loading').html(loader).show()
+                $.ajax({
+                    url: '/sale/get_client_by_document/',
+                    async: true,
+                    dataType: 'json',
+                    type: 'GET',
+                    data: {
+                        'number_document': $('#id-nro-document-sender').val(),
+                        'type_document': $('#document_type_sender').val()
+                    },
+                    contentType: 'application/json;charset=UTF-8',
+                    headers: {"X-CSRFToken": '{{ csrf_token }}'},
+                    success: function (response, textStatus, xhr) {
+                        if (xhr.status === 200) {
+                            toastr.success(response.message, '¡Bien hecho!');
+                            $("#id-names-sender").val(response.names);
+                            $("#id-client-sender").val(response.pk);
+                            $('#id-loading').hide();
+                        }
+                    },
+                    error: function (jqXhr, textStatus, xhr) {
+                        if (jqXhr.status === 500) {
+                            toastr.error(jqXhr.responseJSON.error, 'Mensaje');
+                        } else {
+                            if (textStatus === 'timeout') {
+                                toastr.error('Fallo al consultar', 'Mensaje');
+                            } else {
+                                toastr.error(" STATUS: " + xhr + " " + textStatus);
+                            }
+                        }
+                        $('#id-loading').hide();
+                    }
+                });
+                return false;
+            }
+        });
+        {#Seleccionar combo tipo de pago#}
+        $(document).on('change', '#id-type-payment', function () {
+            let _val = $(this).val();
+            if (_val === 'E') {
+                $('.mod-cash').css('display', '');
+                $('.mod-deposit').css('display', 'none');
+                $('.mod-credit').css('display', 'none');
+                $('#id-cash').trigger('change');
+                $('#id-amount-deposit').val('0.00');
+                $('#id-code-operation').val('');
+            } else if (_val === 'D') {
+                $('.mod-deposit').css('display', '');
+                $('.mod-cash').css('display', 'none');
+                $('.mod-credit').css('display', 'none');
+                $('#id-deposit').trigger('change');
+                $('#id-amount-cash').val('0.00');
+                $('#id-coin').val(2);
+            } else if (_val === 'C') {
+                $('.mod-credit').css('display', '');
+                $('.mod-cash').css('display', 'none');
+                $('.mod-deposit').css('display', 'none');
+                $('#id-amount-cash').val('0.00');
+                $('#id-amount-deposit').val('0.00');
+            } else if (_val === 'Q') {
+                $('.mod-credit').css('display', 'none');
+                $('.mod-cash').css('display', 'none');
+                $('.mod-deposit').css('display', 'none');
+                $('#id-amount-cash').val('0.00');
+                $('#id-amount-deposit').val('0.00');
+            } else {
+                $('.mod-credit').css('display', 'none');
+                $('.mod-cash').css('display', 'none');
+                $('.mod-deposit').css('display', 'none');
+                $('#id-amount-cash').val('0.00');
+                $('#id-amount-deposit').val('0.00');
+            }
+        });
+        {#Cambiar el combo efectivo#}
+        $("#id-cash").change(function () {
+            $('#id-amount-cash').val($('#sum-total').val());
+            if ($("#id-cash").val() != '0') {
+                $.ajax({
+                    url: '/accounting/get_valid_opening_cash/',
+                    async: true,
+                    dataType: 'json',
+                    type: 'GET',
+                    data: {'cash-id': $("#id-cash").val(), 'date-now': $("#id-date").val()},
+                    contentType: 'application/json;charset=UTF-8',
+                    headers: {"X-CSRFToken": '{{ csrf_token }}'},
+                    success: function (response) {
+                        if (response.success) {
+                            if (response.pk === 1) {
+                                toastr.info('Caja disponible', 'Mensaje');
+                            } else {
+                                if (response.pk === 0) {
+                                    toastr.error('Aperture la caja antes de hacer el pago', 'Caja');
+                                    $('#id-cash').val(0);
+                                    $('#id-cash').trigger('change');
+                                }
+                            }
+                        }
+                    },
+                    error: function (response) {
+                        toastr.error('Problemas al verificar la caja', 'Caja');
+                        $('#id-cash').val(0);
+                        $('#id-cash').trigger('change');
+                    }
+                });
+            }
+        });
+        {#Cambiar el combo efectivo#}
+        $("#id-deposit").change(function () {
+            $('#id-amount-deposit').val($('#sum-total').val());
+        });
+        {#Ver Precios#}
+        $(document).on('click', '#btn-prices', function () {
+            let _product_id = $(this).attr('pk');
+            sessionStorage.setItem("product_id", _product_id);
+            $('#id-detail-prices').empty();
+            $.ajax({
+                url: '/sale/get_prices_by_product/',
+                async: true,
+                dataType: 'json',
+                type: 'GET',
+                data: {'pk': _product_id},
+                success: function (response) {
+                    $('#id-detail-prices').html(response.grid);
+                },
+                fail: function (response) {
+                    toastr.error('Problemas al mostrar la tarifa', 'Mensaje');
+                }
+            });
+        });
+        {#Agregar detalle de precios#}
+        $('#btn-add-details-rate').click(function () {
+            let _sum_detail_quantity = 0;
+            let _sum_product_rate_quantity = 0;
+            let _detail_quantity = 0;
+            $("#order-sale-detail tr[product=" + sessionStorage.product_id + "]").each(function () {
+                _detail_quantity = parseFloat($(this).find('td.item-quantity').text());
+                _sum_detail_quantity = _sum_detail_quantity + _detail_quantity;
+            })
+            let _product = $('#id-product-rates').val();
+            $('table tbody#product-rates tr').each(function () {
+                let _input_quantity = parseFloat($(this).find("td.item-quantity input.quantity").val());
+                let _input_price = $(this).find("td.item-price input.price").val();
+                if ((_input_quantity !== '' && _input_price !== '') && (_input_quantity > 0 && _input_price > 0)) {
+                    let _unit = $(this).attr('unit_id');
+                    let _stock = parseFloat($('#id-stock-product').val());
+                    _sum_product_rate_quantity = _sum_product_rate_quantity + _input_quantity;
+                    if (_input_quantity > _stock || _sum_product_rate_quantity > _stock ||
+                        (_sum_detail_quantity > 0 && _sum_detail_quantity + _sum_product_rate_quantity > _stock)) {
+                        toastr.warning('Stock Insuficiente', 'Mensaje');
+                        $('.modal-prices').modal('hide');
+                        return false;
+                    }
+                    if ($("#order-sale-detail tr[product=" + _product + "][pu=" + _unit + "]").length) {
+                        let $msg = 'El producto con este tipo de unidad ya se encuentra en el registro.';
+                        $('#id-detail-prices').html($msg);
+                        $('.modal-prices').modal('hide');
+                        toastr.warning($msg, 'Mensaje');
+                        return false;
+                    }
+                    AddDetail($(this));
+                }
+            });
+            $('.modal-prices').modal('hide');
+        });
+
+        function AddDetail($tr) {
+            let _unit_id = $tr.attr('unit_id');
+            let _product_id = $('#id-product-rates').val();
+            let _product_name = $('#id-product-name-rates').val();
+            let _quantity = parseFloat($tr.find("td input.quantity").val());
+            let _price = parseFloat($tr.find("td input.price").val());
+            let _total = _quantity * _price;
+            let _unit = $tr.attr('unit_name');
+            let _product_store = $('#id-product-store').val();
+            $('#order-sale-detail').append(
+                '<tr product="' + _product_id + '" product_store_pk="' + _product_store + '" pu="' + _unit_id + '" class="text-uppercase small text-center">' +
+                '<td class="align-middle">' + '</td>' +
+                '<td class="align-middle text-left">' + _product_name + '</td>' +
+                '<td class="align-middle item-quantity">' + _quantity + '</td>' +
+                '<td class="align-middle item-unit" pu="' + _unit_id + '">' + _unit + '</td>' +
+                '<td class="align-middle text-right item-price">' + _price.toFixed(2) + '</td>' +
+                '<td class="align-middle text-right item-total">' + _total.toFixed(2) + '</td>' +
+                '<td class="align-middle">' + '<button type="button" onclick="deleteItem(' + _product_id + ',' + _unit_id + ')" class="btn btn-danger btn-sm">' +
+                '<i class="fas fa-trash-alt"></i></button>' + '</td>' +
+                '</tr>'
+            );
+            calculateTotal();
+            counterStrike();
+        };
+        {#sumar total de los detalles#}
+
+        function calculateTotal() {
+            let sum = 0;
+            $('#order-sale-detail tr td.item-total').each(function () {
+                sum = sum + parseFloat($(this).text());
+            });
+            $('#sum-total').val(sum.toFixed(2));
+            if ($('#id-type-payment').val() === 'E') {
+                $('#id-amount-cash').val(sum.toFixed(2));
+            }
+            if ($('#id-type-payment').val() === 'D') {
+                $('#id-amount-deposit').val(sum.toFixed(2));
+            }
+        };
+        {#eliminar un detalle segun id producto#}
+        function deleteItem($product, $unit) {
+            $('#order-sale-detail').find("tr[product=" + $product + "][pu=" + $unit + "]").remove();
+            calculateTotal();
+            counterStrike();
+        };
+        {#reasigna numero de fila a los detalles#}
+        function counterStrike() {
+            let index = 1;
+            $('#order-sale-detail tr').each(function () {
+                $(this).attr('i', index);
+                $(this).children('td:first').text(index);
+                index++;
+            });
+        };
+        $(document).on('click', '#btn-new', function () {
+            location.reload();
+        });
+        {#crear orden de venta#}
+        function create_voucher($value) {
+            if ($('#id-type-payment').val() === 'E') {
+                if ($('#id-cash').val() === '0') {
+                    toastr.warning('Es necesario aperturar la caja para registrar el pago correspondiente', 'Mensaje');
+                    return false;
+                }
+            }
+            if ($('#id-client-sender').val() === '') {
+                toastr.warning('Se requiere de un cliente, seleccione o registre')
+            }
+            if ($value == 'I') {
+                CreateSales('I')
+            } else {
+                if ($value == 'F') {
+                    if ($("#document_type_sender").val() == '06') {
+                        let _document_number = $('#id-nro-document-sender').val();
+                        if (_document_number.length !== 11) {
+                            toastr.warning('El Numero de RUC debe contener 11 digitos', 'Mensaje');
+                            return false;
+                        }
+                    } else {
+                        toastr.warning('Necesita un numero de RUC para generar Facturas', 'Mensaje');
+                        return false;
+                    }
+                    let r = confirm("¿Esta seguro de generar la Factura?");
+                    sessionStorage.setItem('BillType', 'F');
+                    if (r == true) {
+                        CreateSales('F');
+                    }
+                } else {
+                    if ($value == 'B') {
+                        if ($("#document_type_sender").val() == '01') {
+                            let _document_number = $('#id-nro-document-sender').val();
+                            if (_document_number.length !== 8) {
+                                toastr.warning('El Numero de DNI debe contener 8 digitos', 'Mensaje');
+                                return false;
+                            }
+                        } else {
+                            toastr.warning('Necesita un numero de DNI para generar Boletas', 'Mensaje');
+                            return false;
+                        }
+                        let r = confirm("¿Esta seguro de generar la Boleta?");
+                        sessionStorage.setItem('BillType', 'B');
+                        if (r == true) {
+                            CreateSales('B');
+                        }
+                    }
+                }
+            }
+        };
+
+        function hasRowDetails() {
+            let _response = false;
+            if ($("table#id-table-order-sale-detail tbody#order-sale-detail tr").length > 0) {
+                _response = true;
+            }
+            return _response;
+        };
+        {#Registrar la venta#}
+
+        function CreateSales($type_voucher) {
+            if ($('#id-type-payment').val() == '0') {
+                toastr.warning('Seleccione la modalidad de pago', 'Mensaje');
+                return false;
+            }
+            ;
+            {#Comprobar si selecciono serie#}
+            if ($('#id_serial').val() === '') {
+                toastr.warning('Necesita registrar un numero de serie', 'Mensaje');
+                return false;
+            }
+            ;
+            {#Comprobar si hay filas en el detalle de la venta#}
+            if (hasRowDetails() == false) {
+                toastr.warning('Necesita registrar un producto almenos', 'Mensaje');
+                return false;
+            }
+            ;
+            {#Encabezado de la venta#}
+            let order_sales = {
+                "Details": [],
+                "client": $('#id-client-sender').val(),
+                "serial_order": $('#id-serial').val(),
+                "date_order": $('#id-date').val(),
+                "sale_total": $('#sum-total').val(),
+                "sale_discount": '0.00',
+                "type_payment": $('#id-type-payment').val(),
+                "cash": $('#id-cash').val(),
+                "amount_cash": $('#id-amount-cash').val(),
+                "amount_coin": $('#id-coin').val(),
+                "deposit": $('#id-deposit').val(),
+                "amount_deposit": $('#id-amount-deposit').val(),
+                "code_operation": $('#id-code-operation').val(),
+                "type_voucher": $type_voucher,
+            };
+            {#Detalle de la venta#}
+            $("table#id-table-order-sale-detail tbody#order-sale-detail tr").each(function () {
+                let order_details = {
+                    "product": $(this).attr('product'),
+                    "unit": $(this).find("td.item-unit").attr('pu'),
+                    "quantity": $(this).find("td.item-quantity").text(),
+                    "price": $(this).find("td.item-price").text(),
+                    "store_pk": $(this).attr("product_store_pk")
+                };
+                order_sales.Details.push(order_details);
+            });
+            $.ajax({
+                url: '/sale/create_order_sales/',
+                async: true,
+                dataType: 'json',
+                type: 'GET',
+                data: {'order_sales': JSON.stringify(order_sales)},
+                contentType: 'application/json;charset=UTF-8',
+                headers: {"X-CSRFToken": '{{ csrf_token }}'},
+                success: function (response, textStatus, xhr) {
+                    if (xhr.status == 200) {
+                        toastr.success(response.message + response.message_s, '¡Mensaje!');
+                        if (response.link) {
+                            window.open(response.link, '_blank');
+                        } else {
+                            if (response._pk) {
+                                window.open("/sale/print_ticket_order_sales/" + response._pk + "/", '_blank');
+                            }
+                        }
+                        setTimeout(() => {
+                            location.reload();
+                        }, 400);
+                    }
+                },
+                error: function (jqXhr, textStatus, xhr) {
+                    toastr.error(jqXhr.responseJSON.error, 'Sunat');
+                }
+            });
+        };
+    </script>
+{% endblock extrajs %}

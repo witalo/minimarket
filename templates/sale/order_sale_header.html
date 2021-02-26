@@ -1,0 +1,101 @@
+<div class="row pl-3 pr-3">
+    <div class="col-md-2 p-1">
+        <input type="text" class="form-control form-control-sm text-center" id="id-serial"
+               value="{{ subsidiary_obj.serial }}" readonly>
+    </div>
+    <div class="col-md-3 p-1">
+        <input type="date" class="form-control form-control-sm" id="id-date"
+               value="{{ date_now }}">
+    </div>
+    <div class="col-md-1 p-1">
+
+    </div>
+    <div class="col-md-3 p-1">
+        <button type="button" class="button text-white" id="btn-new"><i
+                class="fab fa-neos"></i> <span>  Nuevo </span>
+        </button>
+    </div>
+    <div class="col-md-3 p-1">
+        <button type="button" class="button text-white" id="btn-save" data-toggle="modal"
+               data-target="#modal-voucher"><i class="fa fa-database"></i> <span>  Registrar </span>
+        </button>
+    </div>
+</div>
+<div class="row pl-3 pr-3">
+    <div class="col-md-2 p-1">
+        <select id="document_type_sender" name="document_type_sender"
+                class="form-control form-control-sm"
+                style="font-size: .8375rem;">
+            {% for type in type_document %}
+                <option value="{{ type.0 }}">{{ type.1 }}</option>
+            {% endfor %}
+        </select>
+        <input type="hidden" class="form-control form-control-sm"
+               id="id-client-sender"
+               name="client-sender">
+    </div>
+    <div class="col-md-3 p-1">
+        <input type="text" class="form-control form-control-sm text-uppercase"
+               id="id-nro-document-sender"
+               name="nro-document-sender"
+               placeholder="">
+    </div>
+    <div class="col-md-7 p-1">
+        <input type="text" class="form-control form-control-sm text-uppercase"
+               id="id-names-sender" readonly
+               name="names-sender" style="font-size: 0.8rem;">
+    </div>
+{#    <div class="col-md-1 p-1">#}
+{#        <button type="button" id="btn-new-client"#}
+{#                class="btn btn-sm btn-warning col-md-12">#}
+{#            <i class="fas fa-user-secret"></i>#}
+{#        </button>#}
+{#    </div>#}
+</div>
+<div class="row pl-3 pr-3">
+    <div class="col-md-2 p-1">
+        <select id="id-type-payment" name="type-payment"
+                class="form-control form-control-sm">
+            <option selected value="0">T-PAGO</option>
+            {% for py in type_payment %}
+                <option value="{{ py.0 }}">{{ py.1 }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-3 p-1">
+        <select id="id-cash" name="cash"
+                class="form-control form-control-sm text-uppercase mod-cash" style="display: none">
+                <option value="0">SELECCIONE</option>
+            {% for c in casing_set %}
+                <option value="{{ c.id }}">{{ c.name }}</option>
+            {% endfor %}
+        </select>
+        <select id="id-deposit" name="deposit"
+                class="form-control form-control-sm text-uppercase mod-deposit" style="display: none">
+            {% for b in bank_set %}
+                <option value="{{ b.0 }}">{{ b.1 }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-4 p-1">
+        <input type="text"
+               id="id-amount-cash"
+               name="amount-cash" value="0.00"
+               class="form-control form-control-sm font-weight-bold text-right mod-cash" style="display: none">
+        <input type="text"
+               id="id-amount-deposit"
+               name="amount-deposit" value="0.00"
+               class="form-control form-control-sm font-weight-bold text-right mod-deposit" style="display: none">
+    </div>
+    <div class="col-md-3 p-1">
+        <select id="id-coin" name="coin"
+                class="form-control form-control-sm text-uppercase mod-cash" style="display: none">
+            {% for o in coin_set %}
+                <option value="{{ o.id }}">{{ o.name_coin }}</option>
+            {% endfor %}
+        </select>
+        <input type="text" class="form-control form-control-sm mod-deposit" id="id-code-operation" name="code-operation"
+               placeholder="NRO OPERACÓN" style="display: none">
+    </div>
+</div>
+

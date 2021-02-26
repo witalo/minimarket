@@ -1,0 +1,141 @@
+<div class="card-body rounded p-1"
+     style="background-color: rgb(255,255,255)!important; overflow-y: scroll; height:100%; width: 100%;">
+    <div class="container" id="grid-products">
+        <div class="row grid">
+            {% for product in product_set %}
+
+                <div class="col-sm-4 p-1 m-0 element-item" data-category="{{ product.names }}">
+                    <div class="card w-100"
+                         style="background-color: #ffffff; border: 2px solid #2f78b0; height: 250px;">
+                        <div class="card-body p-0" id="id-container">
+                            <div class="col-md-12 text-center p-0 m-0 pt-4"
+                                 style="display: flex; align-items: center; justify-content: center;">
+                                <img src="{{ product.photo_thumbnail.url }}"
+                                     class="img-thumbnail mx-auto d-block border-0"
+                                     alt="{{ product.photo }}" id="id-img">
+                            </div>
+                            <div class="col-md-12 text-center mt-2 mb-0 p-0">
+                                <p class="text-center m-0  p-0 font-weight-bold"
+                                   style="font-size: 0.7rem;text-transform: uppercase;">
+                                    {{ product.names }}</p>
+                                {% if sales_store %}
+                                    {% for pstore in product.productstore_set.all %}
+                                        {% if pstore.subsidiary_store.id == sales_store.id %}
+                                            <p class="text-center m-0  p-0" style="font-size: 0.6rem;text-transform: uppercase;">
+                                                Stock: {{ pstore.stock|floatformat:2 }}</p>
+                                        {% endif %}
+                                    {% empty %}
+                                        <p class="text-center text-danger m-0  p-0" style="font-size: 0.6rem;text-transform: uppercase;">
+                                            Stock: 0</p>
+                                    {% endfor %}
+                                {% else %}
+                                    <p class="text-center text-danger m-0  p-0" style="font-size: 0.6rem;text-transform: uppercase;">Stock:
+                                        0</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="card-footer text-muted text-center"
+                             style="background-color: #2f78b0;display: flex; align-items: center; justify-content: center;">
+                            <a class="btn btn-sm text-white font-weight-normal" id="btn-prices"
+                               pk="{{ product.id }}" data-toggle="modal" data-target=".modal-prices"
+                               style="background-color: #bf1e1e;">Ver precios <i
+                                    class="fas fa-tag fa-sm text-right"></i>
+                            </a>
+                        </div><!-- card-footer -->
+                    </div>
+                </div><!-- element-item -->
+
+            {% endfor %}
+        </div><!-- row -->
+    </div><!-- container -->
+</div>
+<style type="text/css">
+
+    a.dropdown-item.line-link {
+        font-size: 12px;
+        background-color: #f3f1f1;
+    }
+
+    a.dropdown-item.line-link:hover {
+        background-color: #cbcbcb;
+        cursor: pointer;
+        font-size: 12px;
+    }
+
+    #id-img {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    {#width: 70%;#}{#height: 70%;#} transform: scale(1.2);
+        -ms-transform: scale(1.2);
+    / / IE 9 -moz-transform: scale(1.2);
+    / / Firefox -webkit-transform: scale(1.2);
+    / / Safari and Chrome -o-transform: scale(1.2);
+    / / Opera -webkit-transition: all 500 ms ease-in-out;
+    / / IE 9 -moz-transition: all 500 ms ease-in-out;
+    / / Firefox -ms-transition: all 500 ms ease-in-out;
+    / / Safari and Chrome -o-transition: all 500 ms ease-in-out;
+    / / Opera
+    }
+
+    #id-container:hover #id-img {
+        opacity: 0.8;
+        transition: .9s ease;
+        transform: scale(1);
+        -ms-transform: scale(1);
+    / / IE 9 -moz-transform: scale(1);
+    / / Firefox -webkit-transform: scale(1);
+    / / Safari and Chrome -o-transform: scale(9);
+    / / Opera
+    }
+
+    #id-img:hover {
+        /* Start the shake animation and make the animation last for 0.5 seconds */
+        animation: shake 0.5s;
+
+        /* When the animation is finished, start again */
+        animation-iteration-count: infinite;
+    }
+
+    @keyframes shake {
+        0% {
+            transform: translate(1px, 1px) rotate(0deg);
+        }
+        10% {
+            transform: translate(-1px, -2px) rotate(-1deg);
+        }
+        20% {
+            transform: translate(-3px, 0px) rotate(1deg);
+        }
+        30% {
+            transform: translate(3px, 2px) rotate(0deg);
+        }
+        40% {
+            transform: translate(1px, -1px) rotate(1deg);
+        }
+        50% {
+            transform: translate(-1px, 2px) rotate(-1deg);
+        }
+        60% {
+            transform: translate(-3px, 1px) rotate(0deg);
+        }
+        70% {
+            transform: translate(3px, 1px) rotate(-1deg);
+        }
+        80% {
+            transform: translate(-1px, -1px) rotate(1deg);
+        }
+        90% {
+            transform: translate(1px, 2px) rotate(0deg);
+        }
+        100% {
+            transform: translate(1px, -2px) rotate(-1deg);
+        }
+    }
+</style>
+<script type="text/javascript">
+    {#posrenderizado#}
+    {#    {% if is_render %}#}
+    {#        $("#grid-products").mCustomScrollbar();#}
+    {#    {% endif %}#}
+</script>

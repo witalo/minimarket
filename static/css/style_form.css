@@ -1,0 +1,19 @@
+#id_photo {
+    /* display: none; */
+}
+
+.new_btn {
+    cursor: pointer;
+}
+
+#blah {
+    height: 150px;
+}
+
+.custom-file-label {
+    padding: 0.375rem 0.7rem;
+    color: #495057;
+    background-color: #dee2e6;
+    text-align: left;
+}
+

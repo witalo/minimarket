@@ -1,0 +1,127 @@
+<div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+        <div class="modal-header" style="background-color: rgba(7, 134, 193, 1); font-size: 12px;">
+            <h6 class="modal-title  text-warning">Apertura de Caja</h6>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <form id="id-form-casing" class="embed-responsive p-0" action="{% url 'accounting:opening_casing_a' %}" method="POST">
+            {% csrf_token %}
+
+            <div class="modal-body">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="row col-md-12">
+                            <div class="col-md-6 text-center align-self-center">
+                                <h6>Fecha de la apertura:</h6>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="date" class="form-control form-control-sm" id="id-date-aperture"
+                                       name="date-aperture"
+                                       value="{{ date_now }}" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row col-md-12 m-0 p-0">
+                            <div class="col-md-4 p-1">
+                                <label>Caja a aperturar</label>
+                                <select id="id-opening-cash" name="opening-cash"
+                                        class="form-control form-control-sm" required>
+                                    <option value="0">Seleccione</option>
+                                    {% for c in casing_set %}
+                                        <option value="{{ c.id }}">{{ c.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-4 p-1">
+                                <label>Monto apertura</label>
+                                <input type="text"
+                                       class="form-control form-control-sm text-right" name="amount-opening-cash"
+                                       id="id-amount-opening-cash"
+                                       placeholder="S/. 0.00" required>
+                            </div>
+                            <div class="col-md-4 p-1">
+                                <label>Moneda</label>
+                                <select id="id-coin-opening-cash" name="coin-opening-cash"
+                                        class="form-control form-control-sm" required>
+                                    {% for c in coin_set %}
+                                        <option value="{{ c.id }}">{{ c.name_coin }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <button id="btn-opening-casing" type="submit" class="btn btn-sm btn-warning col-md-12">
+                            <i class="fab fa-atlassian fa-1x"> </i> <b> Aperturar</b>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div class="modal-footer">
+            <button type="button" id="id-btn-opening-casing-closed" class="btn btn-sm btn-secondary" data-dismiss="modal">Cerrar</button>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $('#id-form-casing').submit(function (event) {
+        event.preventDefault();
+        if ($('#id-opening-cash').val() === '0') {
+            toastr.warning('Seleccione la caja que desea aperturar', 'Mensaje')
+            return false;
+        }
+        let data = new FormData($('#id-form-casing').get(0));
+        $.ajax({
+            url: $(this).attr('action'),
+            type: $(this).attr('method'),
+            data: data,
+            cache: false,
+            processData: false,
+            contentType: false,
+            headers: {"X-CSRFToken": '{{ csrf_token }}'},
+            success: function (response) {
+                if (response.success) {
+                    toastr.success(response.message, 'Mensaje');
+                    $('#id-btn-opening-casing-closed').trigger('click');
+                }
+            },
+            error: function (response) {
+                toastr.error('¡Problemas al aperturar la caja!', 'Mensaje');
+            }
+        });
+    });
+
+    $("#id-amount-opening-cash").keyup(function (e) {
+        let val = $(this).val();
+        if (isNaN(val)) {
+            $(this).val('');
+        }
+    });
+    $("#id-opening-cash").change(function () {
+        if ($("#id-opening-cash").val() != '0') {
+            $.ajax({
+                url: '/accounting/get_validate_aperture/',
+                async: true,
+                dataType: 'json',
+                type: 'GET',
+                data: {'pk_cash': $("#id-opening-cash").val()},
+                contentType: 'application/json;charset=UTF-8',
+                headers: {"X-CSRFToken": '{{ csrf_token }}'},
+                success: function (response, textStatus, xhr) {
+                    if (response.success == true) {
+                        let combo = document.getElementById("id-opening-cash");
+                        let selected = combo.options[combo.selectedIndex].text;
+                        toastr.info(selected, 'Caja')
+                    }
+                },
+                error: function (jqXhr, textStatus, xhr) {
+                    toastr.error(jqXhr.responseJSON.error, 'Mensaje');
+                    $("#id-opening-cash").val(0);
+                }
+            });
+        }
+    });
+</script>

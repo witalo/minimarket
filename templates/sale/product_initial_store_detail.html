@@ -1,0 +1,107 @@
+{% if product_store_set %}
+    <div class="justify-content-center table-responsive">
+        <table class="table table-responsive{-sm|-md|-lg|-xl} table-bordered"
+               style="width: 470px;">
+            <thead>
+            <tr class="text-center text-white m-0"
+                style="background-color: rgb(208,134,3); font-size: 11px; height: 7px;">
+                {#                <td class="text-center"#}
+                {#                    style="width: 3%;">N°#}
+                {#                </td>#}
+                <td class="text-center"
+                    style="width: 40%;">Almacen
+                </td>
+                <td class="text-center"
+                    style="width: 20%;">Cantidad
+                <td class="text-center"
+                    style="width: 25%;">Unidad
+                </td>
+                <td class="text-center"
+                    style="width: 15%;">Modificar
+                </td>
+            </tr>
+            </thead>
+            <tbody class="product_store_details">
+            {% for s in product_store_set %}
+                <tr pk="{{ s.id }}">
+                    {#                    <td class="align-middle text-center subsidiary-store"#}
+                    {#                        sb="{{ s.subsidiary_store.id }}">{{ s.subsidiary_store.id }}</td>#}
+                    <td class="align-middle text-center"><b>{{ s.subsidiary_store.name }}</b>
+                        <p class="text-danger" style="font-size: 10px;">
+                            ({{ s.subsidiary_store.get_category_display }})</p>
+                    </td>
+                    <td class="align-middle td-stock-product-store" pk="{{ s.id }}">
+                        <input class="form-control form-control-sm decimal"
+                               type="text" id="id-stock-product-store"
+                               value="{{ s.stock|floatformat:2 }}">
+                    </td>
+                    <td class="align-middle td-unit-product-store">
+                        <select id="id-unit-product-store" name="unit-product-store"
+                                class="form-control form-control-sm">
+                            <option selected value="0">Seleccione</option>
+                            {% for u in units %}
+                                <option {% if unit_min.id == u.id %}selected{% endif %}
+                                        value="{{ u.id }}">{{ u.description }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <td class="align-middle text-center">
+                        <button type="button" pk="{{ s.id }}" class="btn btn-success btn-sm  edit-product-store-row"><i
+                                class="fa fa-pencil-alt"></i></button>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <div class="col-md-12">
+        <span class="badge  badge-pill p-2 text-white"
+              style="font-size: 13px; background-color: rgb(217,116,49); width: 100%;">Lo sentimos, no hay stock en almacenes</span>
+    </div>
+
+{% endif %}
+<style>
+
+</style>
+<script type="text/javascript">
+    $('table tbody.product_store_details tr td.td-stock-product-store input#id-stock-product-store').each(function () {
+        let _str = $(this).val();
+        _str = _str.replace(',', '.');
+        $(this).val(_str);
+    });
+    $('.edit-product-store-row').on('click', function () {
+        let _product_store = $(this).attr('pk');
+        let _row = $(this).parent('td').parent('tr');
+        let _stock = _row.find('td.td-stock-product-store input#id-stock-product-store').val();
+        let _unit = _row.find('td.td-unit-product-store select#id-unit-product-store').val();
+        let _product = $('#id-product').val();
+        let _message = confirm("¿Esta seguro de actualizar el stock?");
+        if (_message) {
+            $.ajax({
+                url: '/sale/update_product_store_by_subsidiary_store/',
+                dataType: 'json',
+                type: 'GET',
+                data: {'pk': _product_store, 'stock': _stock, 'unit': _unit, 'product': _product},
+                success: function (response, textStatus, xhr) {
+                    if (xhr.status == 200) {
+                        if (response.success) {
+                            toastr.success(response['message'], 'Mensaje');
+                        }
+                    }
+                },
+                error: function (jqXhr, textStatus, xhr) {
+                    if (jqXhr.status == 500) {
+                        toastr.error(jqXhr.responseJSON.error, 'Mensaje');
+                    }
+                }
+            });
+        }
+    });
+
+    function TwoDecimal(n) {
+        let t = n.toString();
+        let regex = /(\d*.\d{0,2})/;
+        return t.match(regex)[0];
+    }
+</script>

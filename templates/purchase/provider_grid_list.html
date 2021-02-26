@@ -1,0 +1,64 @@
+{% if provider_set %}
+    <div class="card border-primary">
+        <div class="card-header" style="background-color: rgba(7, 134, 193,1);">
+            <h6 class="card-title text-center text-white mb-0">Lista de proveedores</h6>
+        </div>
+        <div class="card-body pb-1">
+            <div class="table-responsive small dataTables_wrapper">
+                <table id="table-provider-list"
+                       class="table  table-striped align-content-center table-bordered response"
+                       cellspacing="0" width="100%">
+                    <thead>
+                    <tr class="text-center  text-white" style="background-color: rgba(7, 134, 193,1); font-size: 11px;">
+                        <th class="th-sm">N°</th>
+                        <th class="th-sm">Documento</th>
+                        <th class="th-sm">Nombres-Apellidos/Razon Social</th>
+                        <th class="th-sm">Telefono</th>
+                        <th class="th-sm">Correo</th>
+                        <th class="th-sm">Direccion</th>
+                        <th class="th-sm">Acción</th>
+                    </tr>
+                    </thead>
+                    <tbody style="font-size: 11px;">
+                    {% for p in provider_set %}
+                        <tr class="text-center text-black">
+                            <td>{{ p.id }}</td>
+                            <td>{{ p.document }}</td>
+                            <td class="text-left">{{ p.full_names }}</td>
+                            <td>{% if p.telephone %}{{ p.telephone }}{% endif %}</td>
+                            <td class="text-left">{% if p.email %}{{ p.email }}{% endif %}</td>
+                            <td class="text-left">{% if p.address %}{{ p.address }}{% endif %}</td>
+                            <td class="p-1">
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-success  dropdown-toggle"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="font-size: 11px;">
+                                        Acción
+                                    </button>
+                                    <div class="dropdown-menu border-info font-italic">
+                                        <a class="dropdown-item btn-update-provider" style="cursor: pointer; font-size: 11px;"
+                                           pk="{{ p.id }}"><i
+                                                class="fas fa-edit pr-1"></i> Modificar datos </a>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                    <tfoot>
+                    <tr class="text-center text-white" style="background-color: rgba(7, 134, 193, 1);">
+                        <th class="th-sm">N°</th>
+                        <th class="th-sm">Documento</th>
+                        <th class="th-sm">Nombres-Apellidos/Razon Social</th>
+                        <th class="th-sm">Telefono</th>
+                        <th class="th-sm">Correo</th>
+                        <th class="th-sm">Direccion</th>
+                        <th class="th-sm">Acción</th>
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+{% else %}
+    <h6>No existen registros</h6>
+{% endif %}

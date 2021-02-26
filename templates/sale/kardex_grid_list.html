@@ -1,0 +1,104 @@
+{% if inventories %}
+
+    <table class="table table-responsive table-sm">
+        <thead>
+        <tr style="font-size: 12px;">
+            <th scope="col" style="text-transform: uppercase;" colspan="5" class="bg-primary text-center text-white h6">
+                Descripcion
+            </th>
+            <th scope="col" style="text-transform: uppercase;" colspan="3"
+                class="bg-secondary text-center text-white h6">Entradas
+            </th>
+            <th scope="col" style="text-transform: uppercase;" colspan="3" class="bg-success text-center text-white h6">
+                Salidas
+            </th>
+            <th scope="col" style="text-transform: uppercase;" colspan="3" class="bg-danger text-white text-center h6">
+                Saldo
+            </th>
+        </tr>
+        <tr style="background: #0688f8; font-size: 12px;" class="text-white font-weight-normal">
+            <th scope="col" style="text-transform: uppercase;" class="align-middle text-center small">Id</th>
+            <th scope="col" style="text-transform: uppercase;" class="align-middle text-center small">Fecha
+            </th>
+            <th scope="col" style="text-transform: uppercase;" class="align-middle text-center small">PS(#)
+            </th>
+            <th scope="col" style="text-transform: uppercase;" class="align-middle text-center small">Orden
+            </th>
+            <th scope="col" style="text-transform: uppercase;" class="align-middle text-center  small">Tipo
+                de operación
+            </th>
+
+            <th scope="col" style="text-transform: uppercase;" class="align-middle text-center small">
+                Cantidad
+            </th>
+            <th scope="col" style="text-transform: uppercase;" class="align-middle text-center small">Precio
+                unitario
+            </th>
+            <th scope="col" style="text-transform: uppercase;" class="align-middle text-center small">Precio
+                total
+            </th>
+
+            <th scope="col" style="text-transform: uppercase;" class="align-middle text-center small">
+                Cantidad
+            </th>
+            <th scope="col" style="text-transform: uppercase;" class="align-middle text-center  small">Precio
+                unitario
+            </th>
+            <th scope="col" style="text-transform: uppercase;" class="align-middle text-center small">Precio
+                total
+            </th>
+
+            <th scope="col" style="text-transform: uppercase;" class="align-middle text-center small">
+                Cantidad restante
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr class="detail">
+            {% for kardex in inventories %}
+                <tr class="detail" style="font-size: 12px;">
+                    <td class="align-middle text-primary font-weight-normal">{{ kardex.id }}</td>
+                    <td class="align-middle text-primary text-center font-weight-normal">{{ kardex.create_at|date:"d/m/y" }}</td>
+                    <td class="align-middle text-primary text-center">
+                        {{ kardex.product_store.id }}({{ kardex.order_detail.order.correlative_order|default:0 }})
+                    </td>
+                    <td class="align-middle text-primary text-left font-weight-normal">
+                        <span class="text-success">
+                        {% if kardex.order_detail.order.type == 'V' %}
+                            Venta
+                        {% elif kardex.order_detail.order.type == 'C' %}
+                            Compra
+                        {% elif kardex.order_detail.order.type == 'F' %}
+                            Fabricación
+                        {% else %}
+                            Inicio
+                        {% endif %}
+                        </span>
+                    </td>
+                    <td class="align-middle text-primary text-center font-weight-normal">{{ kardex.get_operation_display }}</td>
+                    <td class="align-middle text-secondary text-right">
+                        {% if kardex.operation == 'E' %}{{ kardex.quantity }}{% if product.id == 9 %}(
+                            {{ kardex.conversion_mml_g|floatformat:2 }}gl){% else %}{% endif %}{% else %}
+                            0{% endif %}</td>
+                    <td class="align-middle text-secondary text-right">
+                        {% if kardex.operation == 'E' %}{{ kardex.price_unit|floatformat:2 }}{% else %}0{% endif %}</td>
+                    <td class="align-middle text-secondary text-right">
+                        {% if kardex.operation == 'E' %}{{ kardex.price_total|floatformat:2 }}{% else %}
+                            0{% endif %}</td>
+                    <td class="align-middle text-success text-center">
+                        {% if kardex.operation == 'S' %}{{ kardex.quantity }}{% if product.id == 9 %}(
+                            {{ kardex.conversion_mml_g|floatformat:2 }}gl){% else %}{% endif %}{% else %}
+                            0{% endif %}</td>
+                    <td class="align-middle text-success text-right">
+                        {% if kardex.operation == 'S' %}{{ kardex.price_unit|floatformat:2 }}{% else %}0{% endif %}</td>
+                    <td class="align-middle text-success text-right">
+                        {% if kardex.operation == 'S' %}{{ kardex.price_total|floatformat:2 }}{% else %}
+                            0{% endif %}</td>
+                    <td class="align-middle text-danger text-right">
+                        {{ kardex.remaining_quantity }}{% if product.id == 9 %}
+                            {{ kardex.conversion_mml_g_remainig|floatformat:2 }}{% else %}{% endif %}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
