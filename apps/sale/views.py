@@ -257,28 +257,94 @@ def update_client(request):
 
 def get_product_view(request):
     if request.method == 'GET':
-        product_set = Product.objects.all()
         my_date = datetime.now()
-        date_now = my_date.strftime("%Y-%m")
-        product_dic = []
-        for p in Product.objects.filter(is_state=True).values('id',
-                                                              'names', 'code', 'photo',
-                                                              'stock_min', 'stock_max', ):
-            new_product = {
-                'id': p['id'],
-                'name': p['names'],
-                'code': p['code'],
-                'photo': p['photo'],
-                'path_cache': get_photo(p['photo']),
-                'stock_min': p['stock_min'],
-                'stock_max': p['stock_max'],
-            }
-            product_dic.append(new_product)
-
         return render(request, 'sale/product_list.html', {
-            'date_now': date_now,
-            'product_set': product_dic,
+            'names': Product.objects.filter(is_state=True).values('id', 'names')
         })
+
+
+def get_product_by_condition(request):
+    if request.method == 'GET':
+        value = request.GET.get('value', '')
+        criteria = request.GET.get('product', '')
+
+        t = loader.get_template('sale/product_grid_list.html')
+        c = ({
+            'products': get_product_list(product=criteria, pk=value),
+        })
+
+        return JsonResponse({
+            'message': 'Resultado',
+            'success': True,
+            'grid': t.render(c, request),
+        }, status=HTTPStatus.OK)
+
+    return JsonResponse({'message': 'Error de peticion.'}, status=HTTPStatus.BAD_REQUEST)
+
+
+def get_product_list(product=None, pk=None):
+    product_dict = []
+    product_set = None
+    if product == 'all':
+        product_set = Product.objects.filter(is_state=True)
+    elif product == 'name':
+        product_set = Product.objects.filter(is_state=True, id=int(pk))
+    product_set = product_set.values(
+        'id',
+        'names',
+        'code',
+        'stock_min',
+        'stock_max',
+        'product_category__name',
+        'photo',
+    )
+    for p in product_set:
+        product_store_set = ProductStore.objects.filter(product__id=p['id']).values(
+            'id',
+            'subsidiary_store__name',
+            'subsidiary_store__category',
+            'subsidiary_store__subsidiary__id',
+            'subsidiary_store__subsidiary__name',
+            'stock',
+        )
+
+        product_presenting_set = ProductPresenting.objects.filter(product__id=p['id']).values(
+            'id',
+            'unit__name',
+            'unit__description',
+            'price_sale',
+            'quantity_minimum',
+            'code',
+            'is_enabled',
+        )
+
+        product_item = {
+            'id': p['id'],
+            'names': p['names'],
+            'code': p['code'],
+            'stock_min': p['stock_min'],
+            'stock_max': p['stock_max'],
+            'category': p['product_category__name'],
+            'photo': p['photo'],
+            'product_store_set': product_store_set,
+            'product_presenting_set': product_presenting_set,
+            'product_store_count_set': len(product_store_set),
+            'product_presenting_count_set': len(product_presenting_set),
+        }
+
+        product_dict.append(product_item)
+    return product_dict
+
+
+def set_code_presenting(request):
+    if request.method == 'GET':
+        barcode = request.GET.get('barcode', '')
+        product_presenting_id = request.GET.get('product_detail', '')
+        product_presenting_obj = ProductPresenting.objects.get(id=int(product_presenting_id))
+        product_presenting_obj.code = barcode.strip()
+        product_presenting_obj.save()
+        return JsonResponse({'message': 'Codigo asignado correctamente'}, status=HTTPStatus.OK)
+    return JsonResponse({'message': 'Error de petición.'}, status=HTTPStatus.BAD_REQUEST)
 
 
 def get_product_form(request):

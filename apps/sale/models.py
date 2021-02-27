@@ -72,6 +72,7 @@ class ProductPresenting(models.Model):
     coin = models.ForeignKey('Coin', on_delete=models.CASCADE)
     price_sale = models.DecimalField('Precio de Venta', max_digits=30, decimal_places=4, default=0)
     quantity_minimum = models.DecimalField('Cantidad Minima', max_digits=30, decimal_places=4, default=0)
+    code = models.CharField('Codigo', max_length=100, null=True, blank=True)
     is_enabled = models.BooleanField('Habilitado', default=True)
 
     def __str__(self):

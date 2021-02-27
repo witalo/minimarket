@@ -4,13 +4,13 @@
     Orden | Compras
 {% endblock title %}
 {% block body %}
-    <div class="container h-100 w-100 p-0">
+    <div class="container h-100 w-100 p-0 roboto-medium">
         <div class="row justify-content-center h-100 w-100 m-0 p-0">
             <div class="col-md-8 align-self-center p-0">
                 <div class="card shadow h-100">
                     <div class="card-header d-flex flex-row align-items-center justify-content-between p-2 bt-2 pb-2"
                          style="background: #048ed9;">
-                        <h6 class="m-0 font-weight-bold text-gray-200 pb-2 pt-1"><i
+                        <h6 class="m-0  text-gray-200 pb-2 pt-1"><i
                                 class="fas fa-cart-plus fa-x text-gray-200"></i>
                             Orden de compra</h6>
                         <div class="dropdown no-arrow">
@@ -404,11 +404,21 @@
                 }
             });
         };
-        {#$('.combo').select2({#}
-        {#    theme: 'classic',#}
-        {#placeholder: "Seleccione",#}
-        {#allowClear: true#}
-        {# });#}
+        $('.combo').select2({
+            {#theme: 'bootstrap4',#}
+            {#theme: 'classic',#}
+            {#language: "es",#}
+            placeholder: "Seleccione",
+            allowClear: true,
+            language: {
+                noResults: function () {
+                    return "No resultados";
+                },
+                searching: function () {
+                    return "Buscando..";
+                }
+             }
+        });
         $('#id_document_provider').change(function () {
             let _pk = $(this).val();
             if (_pk != '0') {

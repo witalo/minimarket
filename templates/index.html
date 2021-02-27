@@ -32,15 +32,16 @@
     <!--estilos formulario-->
     <link rel="stylesheet" href="{% static 'css/style_form.css' %}">
     <!--estilos scrollbar-->
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <!-- jQuery Custom Content Scroller V3.1.5 -->
     <link rel="stylesheet" href="{% static 'css/jquery.mCustomScrollbar.css' %}">
     {#    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.min.css">#}
     <link rel="stylesheet" href="{% static 'css/fixe.header_data_tables.min.css' %}">
 </head>
 
-<body id="page-top">
+<body id="page-top"  class="roboto-medium">
 <!-- Page Wrapper -->
-<div id="wrapper">
+<div id="wrapper"  class="roboto-medium">
 
     <!-- Sidebar -->
     <ul class="navbar-nav sidebar sidebar-dark accordion toggled" id="accordionSidebar"
@@ -83,9 +84,11 @@
             <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
                     <h5 class="collapse-header">Entradas - Salidas</h5>
-                    <a class="collapse-item" href="{% url 'sale:order_sales' %}"><i class="fas fa-cart-plus fa-x text-gray-300"></i> Ventas</a>
-                    <a class="collapse-item" href="{% url 'purchase:order_purchase' %}"><i class="fas fa-cart-plus fa-x text-gray-300"></i> Compras</a>
-{#                    <a class="collapse-item" href="{% url 'sale:get_client_list' %}"><i class="fas fa-cart-plus fa-x text-gray-300"></i> Clientes</a>#}
+                    <a class="collapse-item" href="{% url 'sale:order_sales' %}"><i
+                            class="fas fa-cart-plus fa-x text-gray-300"></i> Ventas</a>
+                    <a class="collapse-item" href="{% url 'purchase:order_purchase' %}"><i
+                            class="fas fa-cart-plus fa-x text-gray-300"></i> Compras</a>
+                    {#                    <a class="collapse-item" href="{% url 'sale:get_client_list' %}"><i class="fas fa-cart-plus fa-x text-gray-300"></i> Clientes</a>#}
                 </div>
             </div>
         </li>
@@ -103,7 +106,7 @@
                     <a class="collapse-item" href="{% url 'hrm:employee_list' %}">Trabajadores</a>
                     <a class="collapse-item" href="{% url 'purchase:provider_list' %}">Proveedores</a>
                     <a class="collapse-item" href="{% url 'sale:client_list' %}">Clientes</a>
-{#                    <a class="collapse-item" href="utilities-other.html">Other</a>#}
+                    {#                    <a class="collapse-item" href="utilities-other.html">Other</a>#}
                 </div>
             </div>
         </li>
@@ -127,12 +130,12 @@
                 <div class="bg-white py-2 collapse-inner rounded">
                     <h6 class="collapse-header">Almacen</h6>
                     <a class="collapse-item" href="{% url 'sale:product_list' %}">Productos</a>
-{#                    <a class="collapse-item" href="register.html">Kardex</a>#}
-{#                    <a class="collapse-item" href="forgot-password.html">Reportes</a>#}
-{#                    <div class="collapse-divider"></div>#}
-{#                    <h6 class="collapse-header">Otros registros</h6>#}
-{#                    <a class="collapse-item" href="404.html">Reporte</a>#}
-{#                    <a class="collapse-item" href="blank.html">Cotizaciones</a>#}
+                    {#                    <a class="collapse-item" href="register.html">Kardex</a>#}
+                    {#                    <a class="collapse-item" href="forgot-password.html">Reportes</a>#}
+                    {#                    <div class="collapse-divider"></div>#}
+                    {#                    <h6 class="collapse-header">Otros registros</h6>#}
+                    {#                    <a class="collapse-item" href="404.html">Reporte</a>#}
+                    {#                    <a class="collapse-item" href="blank.html">Cotizaciones</a>#}
                 </div>
             </div>
         </li>
@@ -174,7 +177,7 @@
                     <i class="fa fa-bars"></i>
                 </button>
                 <!-- Topbar Search -->
-                <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+                <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-0 my-2 my-md-0 mw-100 navbar-search">
                     <div class="input-group">
                         <input type="text" class="form-control bg-light border-1 small" placeholder="Buscar..."
                                aria-label="Search" aria-describedby="basic-addon2">
@@ -344,9 +347,8 @@
                     <li class="nav-item dropdown no-arrow">
                         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <div class="card-header rounded m-0 p-1"
-                                 style="background-color: rgb(3,133,219)!important;">
-{#                                <span class="mr-1 d-none d-lg-inline text-white  small"> {{ user.worker_set.last.employee.full_name }} </span>#}
+                            <div class="card-header rounded m-0 p-1 bg-gradient-light">
+                                {#                                <span class="mr-1 d-none d-lg-inline text-white  small"> {{ user.worker_set.last.employee.full_name }} </span>#}
                                 {#                                <span class="mr-2 d-none d-lg-inline text-gray-600 small"> {{ user.worker_set.last.employee.full_name }} </span>#}
 
                                 <img class="img-profile rounded-circle"
@@ -382,7 +384,7 @@
             </nav>
             <!-- End of Topbar -->
             <!-- Begin Page Content -->
-            <div class="container-fluid" style="overflow-y: scroll; height: 85%; width: auto;">
+            <div class="container-fluid" style="overflow-y: scroll; height: 65%; width: auto;">
 
                 <!-- Page Heading -->
                 <!--
@@ -547,10 +549,10 @@
                                         <span class="mr-2">
                                           <i class="fas fa-circle text-primary"></i> Direct
                                         </span>
-                                                            <span class="mr-2">
+                                        <span class="mr-2">
                                           <i class="fas fa-circle text-success"></i> Social
                                         </span>
-                                                            <span class="mr-2">
+                                        <span class="mr-2">
                                           <i class="fas fa-circle text-info"></i> Referral
                                         </span>
                                     </div>
@@ -730,7 +732,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header" style="background-color: rgba(53,140,181,0.9)!important;">
-                <h6 class="modal-title text-white" id="exampleModalLabel">Salir del sistema</h6>
+                <label class="modal-title text-white" id="exampleModalLabel">Cerrar sistema</label>
                 <!-- <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                      <span aria-hidden="true">×</span>
                  </button>-->
@@ -739,8 +741,8 @@
                 sistema.
             </div>
             <div class="modal-footer">
-                <button class="btn btn-secondary small" type="button" data-dismiss="modal">cancelar</button>
-                <a class="btn btn-primary" href="{% url 'logout' %}">cerrar sesión</a>
+                <button class="btn btn-sm btn-secondary small" type="button" data-dismiss="modal">cancelar</button>
+                <a class="btn btn-sm btn-primary" href="{% url 'logout' %}">cerrar sesión</a>
             </div>
         </div>
     </div>

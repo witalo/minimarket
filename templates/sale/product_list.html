@@ -5,26 +5,44 @@
 {% endblock title %}
 
 {% block body %}
-    <div class="card shadow h-100">
+    <div class="card shadow h-100 montserrat">
         <div class="card-header d-flex flex-row align-items-center justify-content-between p-0 pt-2 pb-2"
              style="background: #027fde;">
             <div class="row col-md-12 m-0 p-0">
-                <div class="col-md-2">
+                <div class="col-md-2 pt-1">
                     <button type="button" class="button text-white" onclick="showModalView('product_form')"><i
                             class="fas fa-database"></i> <span>  Nuevo producto </span></button>
                 </div>
-                <div class="col-md-7 text-center">
-                    <label class="text-white text-center">Lista de productos</label>
+                <div class="col-md-2 pt-1">
+                    <button type="button" id="custom-select-all-products" class="button text-white"><i
+                            class="fas fa-box"></i> <span>  Ver todos</span></button>
                 </div>
-                <div class="col-md-3 align-self-center">
-                    <input type="text" class="form-control form-control-sm quicksearch" placeholder="Buscar"
-                           style="width: 100%;">
+                <div class="col-md-3 pt-1">
+                    <select class="custom-select form-control form-control-sm mr-sm-2 combo"
+                            id="custom-select-product-by-name">
+                        <option value="" selected disabled>Seleccione...</option>
+                        {% for n in names %}
+                            <option value="{{ n.id }}">{{ n.names }}</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-5">
                 </div>
             </div>
         </div>
         <div class="card body p-0 border-0">
-            <div id="product-grid-list" class="rounded-bottom">
-                {% include "sale/product_grid_list.html" %}
+            <div id="product-grid-list" class="montserrat">
+                {#                {% include "sale/product_grid_list.html" %}#}
+            </div>
+            <div class="text-center align-self-center" style="
+                display: none;
+                position: absolute;
+                top: 0px;
+                left: 0px;
+                background: #e9ecef;
+                opacity: 0.5;
+                width: 100%;
+                height: 46em;
+                padding-top: 21em;" id="id-loading">
             </div>
         </div>
     </div>
@@ -39,11 +57,11 @@
     <style>
         .button {
             border-radius: 6px;
-            background-color: #f3bf03;
+            background-color: #b72435;
             border: none;
             text-align: center;
             font-size: 14px;
-            padding: 5px;
+            padding: 6px;
             width: 100%;
             transition: all 0.5s;
             cursor: pointer;
@@ -79,6 +97,22 @@
 
 {% block extrajs %}
     <script type="text/javascript">
+        $('.combo').select2({
+            theme: 'bootstrap4',
+            {#theme: 'classic',#}
+            {#language: "es",#}
+            placeholder: "Seleccione",
+            allowClear: true,
+            language: {
+                noResults: function () {
+                    return "No resultados";
+                },
+                searching: function () {
+                    return "Buscando..";
+                }
+            }
+        });
+
         function showModalView(route) {
             $.ajax({
                 url: '/sale/' + route + '/',
@@ -95,43 +129,6 @@
             });
 
         };
-        /*complementos*/
-        //$("#grid-products").mCustomScrollbar();
-        /******* ISOTOPE *******/
-            // quick search regex
-        let qsRegex;
-
-        // init Isotope
-        let $grid = $('.grid').isotope({
-            itemSelector: '.element-item',
-            layoutMode: 'fitRows',
-            filter: function () {
-                return qsRegex ? $(this).text().match(qsRegex) : true;
-            }
-        });
-
-        // use value of search field to filter
-        let $quicksearch = $('.quicksearch').keyup(debounce(function () {
-            qsRegex = new RegExp($quicksearch.val(), 'gi');
-            $grid.isotope();
-        }, 200));
-
-        // debounce so filtering doesn't happen every millisecond
-        function debounce(fn, threshold) {
-            let timeout;
-            threshold = threshold || 100;
-            return function debounced() {
-                clearTimeout(timeout);
-                let args = arguments;
-                let _this = this;
-
-                function delayed() {
-                    fn.apply(_this, args);
-                }
-
-                timeout = setTimeout(delayed, threshold);
-            };
-        }
 
         $(document).on('click', '.btn-update-product', function () {
             let id_ = $(this).attr('pk');
@@ -210,5 +207,110 @@
                 }
             });
         });
+        // Set option selected product
+        $('#custom-select-product-by-name').change(function () {
+            let selected = $('#custom-select-product-by-name').val();
+            getProducts("name", selected);
+        });
+        $('#custom-select-all-products').click(function () {
+            getProducts("all", '');
+        });
+
+        function getProducts($product, $value) {
+            $('#product-grid-list').empty();
+            $('#id-loading').html(loader).show();
+            $.ajax({
+                    url: '/sale/get_product_by_condition/',
+                    async: true,
+                    dataType: 'json',
+                    type: 'GET',
+                    data: {
+                        'value': $value,
+                        'product': $product
+                    },
+                    contentType: 'application/json;charset=UTF-8',
+                    headers: {"X-CSRFToken": '{{ csrf_token }}'},
+                    success: function (response, textStatus, xhr) {
+                        if (xhr.status === 200) {
+                            toastr.success(response.message, 'Mensaje');
+                            $('#product-grid-list').html(response.grid);
+                        }
+                    },
+                    error: function (jqXhr, textStatus, xhr) {
+                        if (jqXhr.status === 500) {
+                            toastr.error(jqXhr.responseJSON.error, '¡Error de consulta!');
+                        } else {
+                            if (textStatus === 'timeout') {
+                                toastr.error('Tiempo excedido', '¡Error de consulta!');
+                            } else {
+                                console.log(" STATUS: " + xhr + " " + textStatus);
+                            }
+                        }
+                    }
+
+                }
+            );
+            $('#id-loading').hide();
+        }
+
+        $(document).on('keypress', '.barcode', function (e) {
+
+            if (e.keyCode === 13) {
+
+                e.preventDefault()
+                let _input = $(this);
+                $(this).trigger("enterKey");
+
+                let _barcode = $(this).val();
+                let _id = $(this).attr('product-detail');
+
+                if (_barcode.length === 0) {
+                    toastr.warning('Ingrese el numero de caracteres necesarios', 'Codigo');
+                    return false;
+                }
+                $.ajax({
+                    url: '/sale/set_code_presenting/',
+                    async: true,
+                    dataType: 'json',
+                    type: 'GET',
+                    data: {
+                        'barcode': _barcode,
+                        'product_detail': _id
+                    },
+                    contentType: 'application/json;charset=UTF-8',
+                    headers: {"X-CSRFToken": '{{ csrf_token }}'},
+                    success: function (response, textStatus, xhr) {
+                        if (xhr.status === 200) {
+                            toastr.success(response.message, 'Mensaje');
+                            _input.parent('td').parent('tr').find('td.code_text span').text(_barcode);
+                        }
+                    },
+                    error: function (jqXhr, textStatus, xhr) {
+                        if (jqXhr.status === 500) {
+                            toastr.error(jqXhr.responseJSON.error, 'Mensaje');
+                        } else {
+                            if (textStatus === 'timeout') {
+                                toastr.error('Tiempo excedido', 'Mensaje');
+                            } else {
+                                console.log(" STATUS: " + xhr + " " + textStatus);
+                            }
+                        }
+                    }
+                });
+                return false;
+            }
+        });
+        loader = '<div class="container">' +
+            '<div class="row">' +
+            '<div class="col-md-12">' +
+            '<div class="loader">' +
+            '<p><strong>Cargando productos...</strong></p>' +
+            '<div class="loader-inner"></div>' +
+            '<div class="loader-inner"></div>' +
+            '<div class="loader-inner"></div>' +
+            '</div>' +
+            '</div>' +
+            '</div>' +
+            '</div>';
     </script>
 {% endblock extrajs %}

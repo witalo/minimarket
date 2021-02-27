@@ -1,17 +1,17 @@
 {% if employee_set %}
     <div class="card border-primary">
         <div class="card-header" style="background-color: rgba(7, 134, 193, 1.0);">
-            <h6 class="card-title text-center text-white mb-0" style="font-size: 12px;">Lista de trabajadores de la
+            <h6 class="card-title text-center text-white mb-0" style="font-size: 15px;">Lista de trabajadores de la
                 empresa</h6>
         </div>
         <div class="card-body pb-1">
             <div class="table-responsive small dataTables_wrapper">
                 <table id="table-employee-list"
-                       class="table  table-striped align-content-center table-bordered response"
+                       class="table   align-content-center table-bordered response"
                        cellspacing="0" width="100%" style="border-collapse:collapse;">
                     <thead>
-                    <tr class="text-center  text-white  GridviewScrollHeader"
-                        style="background-color: rgba(7, 134, 193, 1.0); font-size: 11px;">
+                    <tr class="text-center  text-white"
+                        style="background-color: rgba(7, 134, 193, 1.0);" style="font-size: 14px;">
                         <th class="th-sm">N°</th>
                         <th class="th-sm">Información</th>
                         <th class="th-sm">Fecha nacimiento</th>
@@ -23,9 +23,9 @@
                         <th class="th-sm">Acción</th>
                     </tr>
                     </thead>
-                    <tbody style="font-size: 11px;">
+                    <tbody style="font-size: 12px;">
                     {% for e in employee_set %}
-                        <tr class="text-center text-black GridviewScrollItem">
+                        <tr class="text-center">
                             <td class="align-middle"><strong>{{ e.id }}</strong></td>
                             <td>
                                 <address class="text-left">

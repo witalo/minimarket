@@ -6,19 +6,19 @@
 
 {% block body %}
 
-    <div class="card-header p-1 m-0 small">
+    <div class="card-header p-1 m-0 small roboto-medium">
         <button type="button" onclick="showModalView('get_employee_form')"
                 class="btn btn-outline-success" style="font-size: 12px;"><i class="fas fa-database"></i> Nuevo empleado
         </button>
     </div>
-    <div class="container-fluid p-0 pb-4">
+    <div class="container-fluid montserrat p-0 pb-4 roboto-medium">
         <div id="employee-grid-list" class="small">{% include "hrm/employee_grid_list.html" %}</div>
     </div>
     <!-- Content -->
-    <div class="container-fluid">
+    <div class="container-fluid roboto-medium">
         <div class="table-responsive bg-info" id="table-fuel_list"></div>
     </div>
-    <div class="modal fade" id="modal-employee-form" tabindex="-1" role="dialog" aria-labelledby="ModalHelpTitle"
+    <div class="modal fade roboto-medium" id="modal-employee-form" tabindex="-1" role="dialog" aria-labelledby="ModalHelpTitle"
          aria-hidden="true"></div>
 
 {% endblock body %}

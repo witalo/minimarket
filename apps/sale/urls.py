@@ -12,6 +12,7 @@ urlpatterns = [
     path('get_client_update_form/', login_required(get_client_update_form), name='get_client_update_form'),
     # Product
     path('product_list/', login_required(get_product_view), name='product_list'),
+    path('get_product_by_condition/', login_required(get_product_by_condition), name='get_product_by_condition'),
     path('product_form/', login_required(get_product_form), name='product_product'),
     path('save_product/', login_required(save_product), name='save_product'),
     path('update_product/', login_required(update_product), name='update_product'),
@@ -19,6 +20,7 @@ urlpatterns = [
     # Product presenting
     path('product_presenting_operation/', login_required(product_presenting_operation), name='product_presenting_operation'),
     path('update_product_presenting/', login_required(update_product_presenting), name='update_product_presenting'),
+    path('set_code_presenting/', login_required(set_code_presenting), name='set_code_presenting'),
     path('get_product_presenting/', login_required(get_product_presenting), name='get_product_presenting'),
     path('status_product_presenting/', login_required(status_product_presenting), name='status_product_presenting'),
     path('delete_product_presenting/', login_required(delete_product_presenting), name='delete_product_presenting'),
