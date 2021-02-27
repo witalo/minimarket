@@ -24,7 +24,8 @@
                                 caja</a>
                             <a class="dropdown-item" href="#" onclick="Closing_Casing('C')">Cierre de caja</a>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="#" onclick="Register_Client('get_client_form')">Registrar cliente</a>
+                            <a class="dropdown-item" href="#" onclick="Register_Client('get_client_form')">Registrar
+                                cliente</a>
                         </div>
                     </div>
                 </div>
@@ -50,14 +51,14 @@
                                 Lista - Productos</h6>
                         </div>
                         <div class="col-md-8 p-0 m-0 align-self-center">
-                            <input type="text" class="form-control form-control-sm quicksearch" placeholder="Buscar"
+                            <input type="text" class="form-control form-control-sm quicksearch" placeholder="Buscar" id="id_barcode"
                                    style="width: 100%; border: 0px;">
                         </div>
                     </div>
                 </div>
                 <div class="card-body p-0">
                     <div id="order-sale-product-grid-list" class="rounded-bottom" style="height: 465px;">
-                        {% include "sale/order_sale_products_grid_list.html" %}
+                        {% include "sale/order_sale_products_grid_list.html" with product_dic=product_set %}
                     </div>
                 </div>
             </div>
@@ -216,9 +217,11 @@
                 clearTimeout(timeout);
                 let args = arguments;
                 let _this = this;
+
                 function delayed() {
                     fn.apply(_this, args);
                 }
+
                 timeout = setTimeout(delayed, threshold);
             };
         };
@@ -240,6 +243,7 @@
                 }
             });
         };
+
         function Closing_Casing($a) {
             $('#id-modal-casing').empty();
             $.ajax({
@@ -257,9 +261,10 @@
                 }
             });
         };
+
         function Register_Client(route) {
             $('#id-modal-client').empty();
-              $.ajax({
+            $.ajax({
                 url: '/sale/' + route + '/',
                 dataType: 'json',
                 type: 'GET',
@@ -524,12 +529,23 @@
             }
         };
         {#eliminar un detalle segun id producto#}
+
         function deleteItem($product, $unit) {
+            let quantity_delete = 0
+            let quantity_min = 0
+            let rows = $('#order-sale-detail').find("tr[product=" + $product + "][pu=" + $unit + "]")
+            quantity_delete = parseFloat(rows.find('td.item-quantity').text());
+            quantity_min = parseFloat(rows.find('td.item-unit').attr('unit_min'));
             $('#order-sale-detail').find("tr[product=" + $product + "][pu=" + $unit + "]").remove();
             calculateTotal();
             counterStrike();
-        };
+            let _div_product = $('div.card-product[product-id=' + $product + ']');
+            let stock_last = parseFloat(_div_product.find('div.item-body div.stock_product input.product-stock').val());
+            _div_product.find('div.item-body div.stock_product input.product-stock').val(stock_last + quantity_delete * quantity_min)
+        }
+
         {#reasigna numero de fila a los detalles#}
+
         function counterStrike() {
             let index = 1;
             $('#order-sale-detail tr').each(function () {
@@ -542,6 +558,7 @@
             location.reload();
         });
         {#crear orden de venta#}
+
         function create_voucher($value) {
             if ($('#id-type-payment').val() === 'E') {
                 if ($('#id-cash').val() === '0') {
@@ -676,5 +693,66 @@
                 }
             });
         };
+        //*** Enter ***//
+        $(document).on('keypress', '.quicksearch', function (e) {
+            if (e.keyCode === 13) {
+                let _barcode = $('#id_barcode').val()
+                let _quantity_search = $('#id_quantity_search').val()
+                if (_quantity_search > 0) {
+                    let _div_barcode = $('div.apd div[code=' + _barcode + ']');
+                    let _div_apd = _div_barcode.text().trim();
+                    let _price_sale = _div_barcode.parents('div.apd').find('div.price-sale').text().trim();
+                    let _quantity_minimum = _div_barcode.parents('div.apd').find('div.quantity-minimum').text().trim();
+
+                    let _product_id = _div_barcode.parents('div.card-product').attr('product-id');
+                    let _product_name = _div_barcode.parents('div.card-product').attr('product-name');
+                    let _product_store_id = _div_barcode.parents('div.card-product').attr('product-store-id');
+                    let _product_store_stock = _div_barcode.parents('div.card-product').find('input.product-stock').val();
+
+                    let _unit_id = _div_barcode.parents('div.apd').attr('unit-id');
+                    let _unit_name = _div_barcode.parents('div.apd').attr('unit-name');
+                    let val_ = false
+                    let new_quantity = parseFloat(_quantity_search)
+                    let _total = parseFloat(_price_sale) * parseFloat(new_quantity);
+                    if ($("#id-table-detail-order tr[product=" + _product_id + "][pu=" + _unit_id + "]").length) {
+                        let row = $("#id-table-detail-order tr[product=" + _product_id + "][pu=" + _unit_id + "]")
+                        if ((_product_store_stock - _quantity_search * _quantity_minimum) >= 0) {
+                            new_quantity = parseFloat(row.find('td.item-quantity').text()) + new_quantity;
+                            row.find('td.item-quantity').text(new_quantity.toFixed(2));
+                            _total = parseFloat(_price_sale) * parseFloat(new_quantity);
+                            row.find('td.item-total').text(_total.toFixed(2));
+                            _div_barcode.parents('div.card-product').find('input.product-stock').val(_product_store_stock - _quantity_search * _quantity_minimum);
+                            calculateTotal();
+                            val_ = true
+                        } else {
+                            toastr.warning('Cantidad insuficiente en stock', 'Mensaje');
+                        }
+                    }
+                    if (val_ == false) {
+                        if ((_product_store_stock - _quantity_search * _quantity_minimum) >= 0) {
+                            _div_barcode.parents('div.card-product').find('input.product-stock').val(_product_store_stock - _quantity_search * _quantity_minimum);
+                            $('#sales-details').append(
+                                '<tr product="' + _product_id + '" store_p="' + _product_store_id + '" pu="' + _unit_id + '" class="text-uppercase small text-center">' +
+                                '<td class="align-middle">' + '</td>' +
+                                '<td class="align-middle">' + _product_name + '</td>' +
+                                '<td class="align-middle item-quantity">' + parseFloat(new_quantity.toFixed(2)) + '</td>' +
+                                '<td class="align-middle item-unit" pu="' + _unit_id + '" unit_min="' + _quantity_minimum + '">' + _unit_name + ' (' + _quantity_minimum + ')' + '</td>' +
+                                '<td class="align-middle item-price">' + _price_sale + '</td>' +
+                                '<td class="align-middle item-total">' + _total.toFixed(2) + '</td>' +
+                                '<td>' + '<button type="button" onclick="deleteItem(' + _product_id + ',' + _unit_id + ')" class="btn btn-danger btn-sm">' +
+                                '<i class="fa fa-trash"></i></button>' + '</td>' +
+                                '</tr>'
+                            );
+                            calculateTotal();
+                            counterStrike();
+
+                        } else {
+                            toastr.warning('Cantidad insuficiente en stock', 'Mensaje');
+                        }
+                    }
+                }
+            }
+        });
+
     </script>
 {% endblock extrajs %}

@@ -34,8 +34,8 @@ class Product(models.Model):
     id = models.AutoField(primary_key=True)
     code = models.CharField('Codigo', max_length=50, null=True, blank=True)
     names = models.CharField('Nombre', max_length=100, unique=True)
-    stock_min = models.DecimalField('Stock Minimo', max_digits=30, decimal_places=4, default=0)
-    stock_max = models.DecimalField('Stock Maximo', max_digits=30, decimal_places=4, default=0)
+    stock_min = models.DecimalField('Stock Minimo', max_digits=30, decimal_places=2, default=0)
+    stock_max = models.DecimalField('Stock Maximo', max_digits=30, decimal_places=2, default=0)
     product_category = models.ForeignKey('ProductCategory', on_delete=models.CASCADE)
     type = models.CharField('Tipo', max_length=1, choices=TYPE_CHOICES, default='1')
     photo = models.ImageField(upload_to='product/',
@@ -70,8 +70,8 @@ class ProductPresenting(models.Model):
     product = models.ForeignKey('Product', on_delete=models.CASCADE)
     unit = models.ForeignKey('Unit', on_delete=models.CASCADE)
     coin = models.ForeignKey('Coin', on_delete=models.CASCADE)
-    price_sale = models.DecimalField('Precio de Venta', max_digits=30, decimal_places=4, default=0)
-    quantity_minimum = models.DecimalField('Cantidad Minima', max_digits=30, decimal_places=4, default=0)
+    price_sale = models.DecimalField('Precio de Venta', max_digits=30, decimal_places=2, default=0)
+    quantity_minimum = models.DecimalField('Cantidad Minima', max_digits=30, decimal_places=2, default=0)
     code = models.CharField('Codigo', max_length=100, null=True, blank=True)
     is_enabled = models.BooleanField('Habilitado', default=True)
 

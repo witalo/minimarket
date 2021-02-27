@@ -828,13 +828,13 @@ def get_order_sales(request):
         subsidiary_obj = get_subsidiary_by_user(user_obj)
         sales_store = SubsidiaryStore.objects.filter(
             subsidiary=subsidiary_obj, category='3').first()
-        product_set = Product.objects.filter(is_state=True, productstore__subsidiary_store=sales_store)
+        # product_set = Product.objects.filter(is_state=True, productstore__subsidiary_store=sales_store)
         casing_set = Casing.objects.filter(user=user_obj, is_enabled=True, subsidiary=subsidiary_obj).values('id',
                                                                                                              'name')
         coin_set = Coin.objects.all().order_by('id')
         return render(request, 'sale/order_sales.html', {
             'date_now': date_now,
-            'product_set': product_set,
+            'product_set': get_products_for_sales(subsidiary_store_obj=sales_store),
             'subsidiary_obj': subsidiary_obj,
             'sales_store': sales_store,
             'type_document': Client._meta.get_field('type_document').choices,
@@ -843,6 +843,57 @@ def get_order_sales(request):
             'coin_set': coin_set,
             'bank_set': Payments._meta.get_field('type_bank').choices,
         })
+
+
+def get_products_for_sales(subsidiary_store_obj=None):
+    product_dic = []
+    product_set = Product.objects.filter(
+        is_state=True,
+        productstore__subsidiary_store=subsidiary_store_obj
+    ).values(
+        'id',
+        'names', 'code', 'photo',
+        'stock_min', 'stock_max',
+        'productstore__id',
+        'productstore__stock',
+
+    ).order_by('names')
+
+    for p in product_set:
+        '''product_store_set = ProductStore.objects.filter(product__id=p['id'], subsidiary_store=subsidiary_store_obj).values(
+            'id',
+            'subsidiary_store__name',
+            'subsidiary_store__category',
+            'subsidiary_store__subsidiary__id',
+            'subsidiary_store__subsidiary__name',
+            'stock',
+        )'''
+
+        product_presenting_set = ProductPresenting.objects.filter(product__id=p['id']).values(
+            'id',
+            'unit_id',
+            'unit__name',
+            'unit__description',
+            'price_sale',
+            'quantity_minimum',
+            'code',
+            'is_enabled',
+        )
+
+        new_product = {
+            'id': p['id'],
+            'names': p['names'],
+            'code': p['code'],
+            'photo': p['photo'],
+            'path_cache': get_photo(p['photo']),
+            'stock_min': p['stock_min'],
+            'stock_max': p['stock_max'],
+            'product_store_id': p['productstore__id'],
+            'stock': round(p['productstore__stock'], 2),
+            'product_presenting_set': product_presenting_set,
+        }
+        product_dic.append(new_product)
+    return product_dic
 
 
 def get_client_by_document(request):

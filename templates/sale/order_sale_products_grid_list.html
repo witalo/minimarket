@@ -5,33 +5,63 @@
             {% for product in product_set %}
 
                 <div class="col-sm-4 p-1 m-0 element-item" data-category="{{ product.names }}">
-                    <div class="card w-100"
-                         style="background-color: #ffffff; border: 2px solid #2f78b0; height: 250px;">
-                        <div class="card-body p-0" id="id-container">
+                    <div class="card w-100 card-product"
+                         product-name="{{ product.names }}"
+                         product-store-id="{{ product.product_store_id }}"
+                         product-id="{{ product.id }}"
+                         style="background-color: #ffffff; border: 2px solid #2f78b0; height: 320px;">
+                        {#                        style="background-color: #ffffff; border: 2px solid #2f78b0; height: 250px;"#}
+                        <div class="card-body p-0 item-body" id="id-container">
                             <div class="col-md-12 text-center p-0 m-0 pt-4"
                                  style="display: flex; align-items: center; justify-content: center;">
-                                <img src="{{ product.photo_thumbnail.url }}"
+                                <img src="{{ product.path_cache }}"
                                      class="img-thumbnail mx-auto d-block border-0"
                                      alt="{{ product.photo }}" id="id-img">
                             </div>
                             <div class="col-md-12 text-center mt-2 mb-0 p-0">
                                 <p class="text-center m-0  p-0 font-weight-bold"
-                                   style="font-size: 0.7rem;text-transform: uppercase;">
+                                   style="text-transform: uppercase;">
                                     {{ product.names }}</p>
-                                {% if sales_store %}
-                                    {% for pstore in product.productstore_set.all %}
-                                        {% if pstore.subsidiary_store.id == sales_store.id %}
-                                            <p class="text-center m-0  p-0" style="font-size: 0.6rem;text-transform: uppercase;">
-                                                Stock: {{ pstore.stock|floatformat:2 }}</p>
-                                        {% endif %}
-                                    {% empty %}
-                                        <p class="text-center text-danger m-0  p-0" style="font-size: 0.6rem;text-transform: uppercase;">
-                                            Stock: 0</p>
-                                    {% endfor %}
-                                {% else %}
-                                    <p class="text-center text-danger m-0  p-0" style="font-size: 0.6rem;text-transform: uppercase;">Stock:
-                                        0</p>
-                                {% endif %}
+                                <div class="form-group row m-0 p-0">
+                                    <label class="col-sm-4 py-0 m-0 text-left">STOCK:</label>
+                                    <div class="col-sm-8 p-0 stock_product">
+                                        <input type="text"
+                                               class="form-control form-control-sm border-0 p-0 h-100 product-stock text-right"
+                                               style="color: #032b4e; font-size: 14px;"
+                                               value="{{ product.stock|safe }}"
+                                               readonly="">
+                                    </div>
+                                </div>
+                                {% for product_presenting in product.product_presenting_set %}
+                                    <div class="apd m-0 p-0"
+                                         unit-id="{{ product_presenting.unit_id|safe }}"
+                                         unit-name="{{ product_presenting.unit__name|safe }}"
+                                         product-detail-id="{{ product_presenting.id|safe }}">
+                                        <div class="form-group row m-0">
+                                            <label class="col-sm-4 py-0 m-0 text-left">P.U:</label>
+                                            <div class="col-sm-8 small price-sale p-0 pr-3 text-right">
+                                                {{ product_presenting.price_sale|safe }}
+                                            </div>
+                                            {#                                            <div class="col-sm-5 small description">#}
+                                            {#                                                [{{ product_presenting.unit__name }}]#}
+                                            {#                                            </div>#}
+                                        </div>
+                                        <div class="form-group row m-0">
+                                            <label class="col-sm-4 py-0 m-0 text-left">C.M:</label>
+                                            <div class="col-sm-8 p-0 small quantity-minimum pr-3 text-right">
+                                                {{ product_presenting.quantity_minimum|safe }}
+                                            </div>
+                                        </div>
+                                        <div class="form-group row m-0">
+                                            <label class="col-sm-4 py-0 m-0 text-left">C.B:</label>
+                                            <div class="col-sm-8 p-0 small text-right pr-3"
+                                                 code="{{ product_presenting.code|default_if_none:"-" }}">
+                                                {{ product_presenting.code|default_if_none:"-" }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+
                             </div>
                         </div>
                         <div class="card-footer text-muted text-center"
@@ -44,7 +74,6 @@
                         </div><!-- card-footer -->
                     </div>
                 </div><!-- element-item -->
-
             {% endfor %}
         </div><!-- row -->
     </div><!-- container -->
