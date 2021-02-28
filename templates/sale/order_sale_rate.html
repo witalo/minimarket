@@ -1,4 +1,4 @@
-<div class="card-group p-0">
+<div class="card-group p-0 montserrat">
     <div class="col-md-12 mt-3 mb-3">
         <div class="card">
             <div class="card-body text-center font-weight-bold">
@@ -15,7 +15,7 @@
         <div class="card  mt-1">
             <div class="card-body p-2 m-0 text-center">
                 <input type="text" class="form-control form-control-sm text-center font-weight-bolder"
-                       value="stock almacen {{ product_store.subsidiary_store.name }} : {{ product_store.stock|floatformat:2 }}"
+                       value="{{ product_store.stock|safe }}"
                        id="id-stock-product"
                        readonly="true">
                 <input type="hidden" class="form-control form-control-sm"

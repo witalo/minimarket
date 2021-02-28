@@ -4,7 +4,7 @@
     Orden | Compras
 {% endblock title %}
 {% block body %}
-    <div class="container h-100 w-100 p-0 roboto-medium">
+    <div class="container h-100 w-100 p-0 roboto-medium  py-5">
         <div class="row justify-content-center h-100 w-100 m-0 p-0">
             <div class="col-md-8 align-self-center p-0">
                 <div class="card shadow h-100">
@@ -29,12 +29,12 @@
                             </div>
                         </div>
                     </div>
-                    <div class="card-body p-0">
+                    <div class="card-body">
                         <div class="col-md-12 p-1 pb-0">
                             {% include "purchase/order_purchase_header.html" %}
                         </div>
                         <div class="dropdown-divider m-1"></div>
-                        <div class="col-md-12 p-2">
+                        <div class="col-md-12 p-2  table-responsive">
                             {% include "purchase/order_purchase_detail.html" %}
                         </div>
                     </div>

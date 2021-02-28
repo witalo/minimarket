@@ -4,7 +4,7 @@
     Orden | Ventas
 {% endblock title %}
 {% block body %}
-    <div class="row">
+    <div class="row montserrat">
         <div class="col-md-6 pl-1 pr-1">
             <div class="card shadow h-100">
                 <div class="card-header d-flex flex-row align-items-center justify-content-between"
@@ -58,7 +58,7 @@
                     </div>
                 </div>
                 <div class="card-body p-0">
-                    <div id="order-sale-product-grid-list" class="rounded-bottom" style="height: 465px;">
+                    <div id="order-sale-product-grid-list" class="rounded-bottom" style="height: 375px;">
                         {% include "sale/order_sale_products_grid_list.html" with product_dic=product_set %}
                     </div>
                 </div>
@@ -191,7 +191,7 @@
 {% block extrajs %}
     <script type="text/javascript">
         $('#sum-total').val('0.00')
-        $('.quicksearch').focus();
+        $('#id_barcode').focus();
         /******* ISOTOPE *******/
             {#quick search regex#}
         let qsRegex;
@@ -371,19 +371,21 @@
                 $('#id-cash').trigger('change');
                 $('#id-amount-deposit').val('0.00');
                 $('#id-code-operation').val('');
+                $('#id-coin').val(1);
             } else if (_val === 'D') {
                 $('.mod-deposit').css('display', '');
                 $('.mod-cash').css('display', 'none');
                 $('.mod-credit').css('display', 'none');
                 $('#id-deposit').trigger('change');
                 $('#id-amount-cash').val('0.00');
-                $('#id-coin').val(2);
+                $('#id-coin').val(1);
             } else if (_val === 'C') {
                 $('.mod-credit').css('display', '');
                 $('.mod-cash').css('display', 'none');
                 $('.mod-deposit').css('display', 'none');
                 $('#id-amount-cash').val('0.00');
                 $('#id-amount-deposit').val('0.00');
+                $('#id-coin').val(1);
             } else if (_val === 'Q') {
                 $('.mod-credit').css('display', 'none');
                 $('.mod-cash').css('display', 'none');
@@ -466,26 +468,38 @@
             let _product = $('#id-product-rates').val();
             $('table tbody#product-rates tr').each(function () {
                 let _input_quantity = parseFloat($(this).find("td.item-quantity input.quantity").val());
-                let _input_price = $(this).find("td.item-price input.price").val();
+                let _input_price = parseFloat($(this).find("td.item-price input.price").val());
                 if ((_input_quantity !== '' && _input_price !== '') && (_input_quantity > 0 && _input_price > 0)) {
                     let _unit = $(this).attr('unit_id');
                     let _stock = parseFloat($('#id-stock-product').val());
                     _sum_product_rate_quantity = _sum_product_rate_quantity + _input_quantity;
                     if (_input_quantity > _stock || _sum_product_rate_quantity > _stock ||
                         (_sum_detail_quantity > 0 && _sum_detail_quantity + _sum_product_rate_quantity > _stock)) {
-                        toastr.warning('Stock Insuficiente', 'Mensaje');
+                        toastr.warning('Stock insuficiente', 'Mensaje');
                         $('.modal-prices').modal('hide');
                         return false;
                     }
                     if ($("#order-sale-detail tr[product=" + _product + "][pu=" + _unit + "]").length) {
-                        let $msg = 'El producto con este tipo de unidad ya se encuentra en el registro.';
-                        $('#id-detail-prices').html($msg);
-                        $('.modal-prices').modal('hide');
-                        toastr.warning($msg, 'Mensaje');
+                        let rows = $('#order-sale-detail').find("tr[product=" + _product + "][pu=" + _unit + "]")
+                        let quantity_item = parseFloat(rows.find('td.item-quantity').text());
+                        let quantity_min_item = parseFloat(rows.find('td.item-unit').attr('unit_min'));
+                        let item_div_product = $('div.card-product[product-id=' + _product + ']');
+                        let item_stock_last = parseFloat(item_div_product.find('div.item-body div.stock_product input.product-stock').val());
+
+                        if ((item_stock_last - (_input_quantity) * quantity_min_item) >= 0) {
+                            rows.find('td.item-quantity').text((_input_quantity + quantity_item).toFixed(2));
+                            rows.find('td.item-price').text((_input_price).toFixed(2));
+                            rows.find('td.item-total').text(((_input_quantity + quantity_item) * _input_price).toFixed(2));
+                            item_div_product.find('div.item-body div.stock_product input.product-stock').val((item_stock_last - _input_quantity * quantity_min_item).toFixed(2));
+                            calculateTotal();
+                            $('.modal-prices').modal('hide');
+                        } else {
+                            toastr.warning('Stock insuficiente carajo', 'Mensaje');
+                        }
                         return false;
                     }
-                    AddDetail($(this));
                 }
+                AddDetail($(this));
             });
             $('.modal-prices').modal('hide');
         });
@@ -500,11 +514,12 @@
             let _unit = $tr.attr('unit_name');
             let _quantity_minimum = $tr.attr('unit_min');
             let _product_store = $('#id-product-store').val();
+
             $('#order-sale-detail').append(
                 '<tr product="' + _product_id + '" product_store_pk="' + _product_store + '" pu="' + _unit_id + '" class="text-uppercase small text-center">' +
                 '<td class="align-middle">' + '</td>' +
                 '<td class="align-middle text-left">' + _product_name + '</td>' +
-                '<td class="align-middle item-quantity">' + _quantity + '</td>' +
+                '<td class="align-middle item-quantity">' + _quantity.toFixed(2) + '</td>' +
                 '<td class="align-middle item-unit" pu="' + _unit_id + '" unit_min="' + _quantity_minimum + '">' + _unit + '</td>' +
                 '<td class="align-middle text-right item-price">' + _price.toFixed(2) + '</td>' +
                 '<td class="align-middle text-right item-total">' + _total.toFixed(2) + '</td>' +
@@ -514,6 +529,9 @@
             );
             calculateTotal();
             counterStrike();
+            let _div_p = $('div.card-product[product-id=' + _product_id + ']');
+            let stock_last = parseFloat(_div_p.find('div.item-body div.stock_product input.product-stock').val());
+            _div_p.find('div.item-body div.stock_product input.product-stock').val((stock_last - _quantity * _quantity_minimum).toFixed(2))
         };
         {#sumar total de los detalles#}
 
@@ -543,7 +561,7 @@
             counterStrike();
             let _div_product = $('div.card-product[product-id=' + $product + ']');
             let stock_last = parseFloat(_div_product.find('div.item-body div.stock_product input.product-stock').val());
-            _div_product.find('div.item-body div.stock_product input.product-stock').val(stock_last + quantity_delete * quantity_min)
+            _div_product.find('div.item-body div.stock_product input.product-stock').val((stock_last + quantity_delete * quantity_min).toFixed(2))
         }
 
         {#reasigna numero de fila a los detalles#}
@@ -724,8 +742,9 @@
                         val_ = true
                         if ((_product_store_stock - _quantity_search * _quantity_minimum) >= 0) {
                             new_quantity = parseFloat(row.find('td.item-quantity').text()) + new_quantity;
+                            let item_price = parseFloat(row.find('td.item-price').text());
                             row.find('td.item-quantity').text((new_quantity).toFixed(2));
-                            _total = parseFloat(_price_sale) * parseFloat(new_quantity);
+                            _total = parseFloat(item_price) * parseFloat(new_quantity);
                             row.find('td.item-total').text(_total.toFixed(2));
                             _div_barcode.parents('div.card-product').find('input.product-stock').val((_product_store_stock - _quantity_search * _quantity_minimum).toFixed(2));
                             calculateTotal();
@@ -740,13 +759,13 @@
                             $('#order-sale-detail').append(
                                 '<tr product="' + _product_id + '" store_p="' + _product_store_id + '" pu="' + _unit_id + '" class="text-uppercase small text-center">' +
                                 '<td class="align-middle">' + '</td>' +
-                                '<td class="align-middle">' + _product_name + '</td>' +
+                                '<td class="align-middle text-left">' + _product_name + '</td>' +
                                 '<td class="align-middle item-quantity">' + parseFloat(new_quantity).toFixed(2) + '</td>' +
                                 '<td class="align-middle item-unit" pu="' + _unit_id + '" unit_min="' + _quantity_minimum + '">' + _unit_name + '</td>' +
-                                '<td class="align-middle item-price">' + (parseFloat(_price_sale)).toFixed(2) + '</td>' +
-                                '<td class="align-middle item-total">' + _total.toFixed(2) + '</td>' +
+                                '<td class="align-middle text-right item-price">' + (parseFloat(_price_sale)).toFixed(2) + '</td>' +
+                                '<td class="align-middle text-right item-total">' + _total.toFixed(2) + '</td>' +
                                 '<td>' + '<button type="button" onclick="deleteItem(' + _product_id + ',' + _unit_id + ')" class="btn btn-danger btn-sm">' +
-                                '<i class="fa fa-trash"></i></button>' + '</td>' +
+                                '<i class="fas fa-trash-alt"></i></button>' + '</td>' +
                                 '</tr>'
                             );
                             calculateTotal();

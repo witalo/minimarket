@@ -1,7 +1,7 @@
-<div class="modal-dialog modal-dialog-centered" role="document">
+<div class="modal-dialog modal-dialog-centered  montserrat" role="document">
     <div class="modal-content">
         <div class="modal-header" style="background-color: rgba(7, 134, 193, 1); font-size: 12px;">
-            <h5 class="modal-title  text-white" style="font-size: 12px;">Formulario de registro</h5>
+            <h5 class="modal-title  text-white" style="font-size: 15px;">Formulario de registro</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
@@ -12,7 +12,7 @@
             <div class="modal-body  m-1 p-0">
                 <div class="card border-success">
                     <div class="card-header" style="background-color: rgba(55, 194, 11,0.7);">
-                        <h6 class="card-title text-center text-white mb-0" style="font-size: 12px;">Registre datos del cliente</h6>
+                        <h6 class="card-title text-center text-white mb-0" style="font-size: 15px;">Registre datos del cliente</h6>
                     </div>
                     <div class="card-body table-responsive m-0 p-1">
                         <table class="table table-sm " style="width: 100%;">
@@ -47,13 +47,13 @@
                                 <td class="align-middle">Telefono</td>
                                 <td>
                                     <input type="text"
-                                           class="form-control form-control-sm text-uppercase" name="telephone" id="id_telephone"
-                                           placeholder="Telefono" style="font-size: 12px;">
+                                           class="form-control form-control-sm" name="telephone" id="id_telephone"
+                                           placeholder="" style="font-size: 12px;">
                                 </td>
                                 <td colspan="4" class="align-middle">
                                     <input type="text"
-                                           class="form-control form-control-sm text-uppercase" name="email" id="id_email"
-                                           placeholder="correocliente@email.com" style="font-size: 12px;">
+                                           class="form-control form-control-sm" name="email" id="id_email"
+                                           placeholder="correo@email.com" style="font-size: 12px;">
                                 </td>
                             </tr>
                             <tr>
@@ -61,7 +61,7 @@
                                 <td colspan="3">
                                     <input type="text"
                                            class="form-control form-control-sm text-uppercase" name="address" id="id_address"
-                                           placeholder="Direccion de domicilio" style="font-size: 12px;">
+                                           placeholder="Direccion cliente" style="font-size: 12px;">
                                 </td>
                             </tr>
                            </tbody>
@@ -88,6 +88,7 @@
             } else if (_val === '06') {
                 $("#id_document").attr('maxlength', 11);
                 sessionStorage.setItem('document', '06')
+                {#$('#id_address').add('required');#}
             } else if (_val === '04' || _val === '07') {
                 $("#id_document").attr('maxlength', 15);
                 sessionStorage.setItem('document', '')
