@@ -1,4 +1,4 @@
-<div class="card-body rounded p-1"
+<div class="card-body rounded p-1 montserrat"
      style="background-color: rgb(255,255,255)!important; overflow-y: scroll; height:100%; width: 100%;">
     <div class="container" id="grid-products">
         <div class="row grid">
@@ -9,7 +9,7 @@
                          product-name="{{ product.names }}"
                          product-store-id="{{ product.product_store_id }}"
                          product-id="{{ product.id }}"
-                         style="background-color: #ffffff; border: 2px solid #2f78b0; height: 320px;">
+                         style="background-color: #ffffff; border: 2px solid #2f78b0; height: 360px;">
                         {#                        style="background-color: #ffffff; border: 2px solid #2f78b0; height: 250px;"#}
                         <div class="card-body p-0 item-body" id="id-container">
                             <div class="col-md-12 text-center p-0 m-0 pt-4"
@@ -19,27 +19,27 @@
                                      alt="{{ product.photo }}" id="id-img">
                             </div>
                             <div class="col-md-12 text-center mt-2 mb-0 p-0">
-                                <p class="text-center m-0  p-0 font-weight-bold"
+                                <p class="text-center m-0  p-0 font-weight-bold text-danger"
                                    style="text-transform: uppercase;">
                                     {{ product.names }}</p>
-                                <div class="form-group row m-0 p-0">
-                                    <label class="col-sm-4 py-0 m-0 text-left">STOCK:</label>
-                                    <div class="col-sm-8 p-0 stock_product">
+                                <div class="form-group row m-0 p-0 pr-2">
+                                    <label class="col-sm-6 py-0 m-0 text-left" style="font-size: 12px;">Stock</label>
+                                    <div class="col-sm-6  stock_product p-0">
                                         <input type="text"
-                                               class="form-control form-control-sm border-0 p-0 h-100 product-stock text-right"
-                                               style="color: #032b4e; font-size: 14px;"
+                                               class="form-control form-control-sm border-0 m-0 p-1  h-100 product-stock text-right"
+                                               style="color: #032b4e; font-size: 13px;"
                                                value="{{ product.stock|safe }}"
                                                readonly="">
                                     </div>
                                 </div>
                                 {% for product_presenting in product.product_presenting_set %}
-                                    <div class="apd m-0 p-0"
+                                    <div class="apd pr-2"
                                          unit-id="{{ product_presenting.unit_id|safe }}"
                                          unit-name="{{ product_presenting.unit__name|safe }}"
                                          product-detail-id="{{ product_presenting.id|safe }}">
                                         <div class="form-group row m-0">
-                                            <label class="col-sm-4 py-0 m-0 text-left">P.U:</label>
-                                            <div class="col-sm-8 small price-sale p-0 pr-3 text-right">
+                                            <label class="col-sm-6 py-0 m-0 text-left" style="font-size: 12px;">P.U.</label>
+                                            <div class="col-sm-6 small price-sale p-0  text-right">
                                                 {{ product_presenting.price_sale|safe }}
                                             </div>
                                             {#                                            <div class="col-sm-5 small description">#}
@@ -47,14 +47,14 @@
                                             {#                                            </div>#}
                                         </div>
                                         <div class="form-group row m-0">
-                                            <label class="col-sm-4 py-0 m-0 text-left">C.M:</label>
-                                            <div class="col-sm-8 p-0 small quantity-minimum pr-3 text-right">
+                                            <label class="col-sm-6 py-0 m-0 text-left" style="font-size: 12px;">C.M.</label>
+                                            <div class="col-sm-6 p-0 small quantity-minimum  text-right">
                                                 {{ product_presenting.quantity_minimum|safe }}
                                             </div>
                                         </div>
                                         <div class="form-group row m-0">
-                                            <label class="col-sm-4 py-0 m-0 text-left">C.B:</label>
-                                            <div class="col-sm-8 p-0 small text-right pr-3"
+                                            <label class="col-sm-6 py-0 m-0 text-left" style="font-size: 12px;">C.B.</label>
+                                            <div class="col-sm-6 p-0 small text-right"
                                                  code="{{ product_presenting.code|default_if_none:"-" }}">
                                                 {{ product_presenting.code|default_if_none:"-" }}
                                             </div>

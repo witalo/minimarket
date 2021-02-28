@@ -15,7 +15,8 @@
         <div class="card  mt-1">
             <div class="card-body p-2 m-0 text-center">
                 <input type="text" class="form-control form-control-sm text-center font-weight-bolder"
-                       value="stock almacen {{ product_store.subsidiary_store.name }} : {{ product_store.stock|floatformat:2 }}" id="id-stock-product"
+                       value="stock almacen {{ product_store.subsidiary_store.name }} : {{ product_store.stock|floatformat:2 }}"
+                       id="id-stock-product"
                        readonly="true">
                 <input type="hidden" class="form-control form-control-sm"
                        value="{{ product_store.id }}" id="id-product-store"
@@ -37,7 +38,10 @@
                     <tbody id="product-rates">
                     {% for item in product_presenting_set %}
                         <tr product_presenting_id="{{ item.id }}"
-                            unit_id="{{ item.unit.id }}" unit_name="{{ item.unit.name }}" product_id="{{ item.product.id }}">
+                            unit_id="{{ item.unit.id }}"
+                            unit_name="{{ item.unit.name }}"
+                            product_id="{{ item.product.id }}"
+                            unit_min="{{ item.get_quantity_minimum_with_dot }}">
                             <td class="text-center align-middle item-unit p-1">{{ item.unit.description }}
                                 ({{ item.get_quantity_minimum_with_dot|floatformat:2 }})
                             </td>

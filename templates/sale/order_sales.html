@@ -51,7 +51,8 @@
                                 Lista - Productos</h6>
                         </div>
                         <div class="col-md-8 p-0 m-0 align-self-center">
-                            <input type="text" class="form-control form-control-sm quicksearch" placeholder="Buscar" id="id_barcode"
+                            <input type="text" class="form-control form-control-sm quicksearch" placeholder="Buscar"
+                                   id="id_barcode"
                                    style="width: 100%; border: 0px;">
                         </div>
                     </div>
@@ -497,13 +498,14 @@
             let _price = parseFloat($tr.find("td input.price").val());
             let _total = _quantity * _price;
             let _unit = $tr.attr('unit_name');
+            let _quantity_minimum = $tr.attr('unit_min');
             let _product_store = $('#id-product-store').val();
             $('#order-sale-detail').append(
                 '<tr product="' + _product_id + '" product_store_pk="' + _product_store + '" pu="' + _unit_id + '" class="text-uppercase small text-center">' +
                 '<td class="align-middle">' + '</td>' +
                 '<td class="align-middle text-left">' + _product_name + '</td>' +
                 '<td class="align-middle item-quantity">' + _quantity + '</td>' +
-                '<td class="align-middle item-unit" pu="' + _unit_id + '">' + _unit + '</td>' +
+                '<td class="align-middle item-unit" pu="' + _unit_id + '" unit_min="' + _quantity_minimum + '">' + _unit + '</td>' +
                 '<td class="align-middle text-right item-price">' + _price.toFixed(2) + '</td>' +
                 '<td class="align-middle text-right item-total">' + _total.toFixed(2) + '</td>' +
                 '<td class="align-middle">' + '<button type="button" onclick="deleteItem(' + _product_id + ',' + _unit_id + ')" class="btn btn-danger btn-sm">' +
@@ -697,7 +699,10 @@
         $(document).on('keypress', '.quicksearch', function (e) {
             if (e.keyCode === 13) {
                 let _barcode = $('#id_barcode').val()
-                let _quantity_search = $('#id_quantity_search').val()
+                if (_barcode === '') {
+                    return false;
+                }
+                let _quantity_search = parseFloat(GetQuantity()).toFixed(2);
                 if (_quantity_search > 0) {
                     let _div_barcode = $('div.apd div[code=' + _barcode + ']');
                     let _div_apd = _div_barcode.text().trim();
@@ -714,30 +719,31 @@
                     let val_ = false
                     let new_quantity = parseFloat(_quantity_search)
                     let _total = parseFloat(_price_sale) * parseFloat(new_quantity);
-                    if ($("#id-table-detail-order tr[product=" + _product_id + "][pu=" + _unit_id + "]").length) {
-                        let row = $("#id-table-detail-order tr[product=" + _product_id + "][pu=" + _unit_id + "]")
+                    if ($("#id-table-order-sale-detail tr[product=" + _product_id + "][pu=" + _unit_id + "]").length) {
+                        let row = $("#id-table-order-sale-detail tr[product=" + _product_id + "][pu=" + _unit_id + "]")
+                        val_ = true
                         if ((_product_store_stock - _quantity_search * _quantity_minimum) >= 0) {
                             new_quantity = parseFloat(row.find('td.item-quantity').text()) + new_quantity;
-                            row.find('td.item-quantity').text(new_quantity.toFixed(2));
+                            row.find('td.item-quantity').text((new_quantity).toFixed(2));
                             _total = parseFloat(_price_sale) * parseFloat(new_quantity);
                             row.find('td.item-total').text(_total.toFixed(2));
-                            _div_barcode.parents('div.card-product').find('input.product-stock').val(_product_store_stock - _quantity_search * _quantity_minimum);
+                            _div_barcode.parents('div.card-product').find('input.product-stock').val((_product_store_stock - _quantity_search * _quantity_minimum).toFixed(2));
                             calculateTotal();
-                            val_ = true
+                            {#val_ = true#}
                         } else {
                             toastr.warning('Cantidad insuficiente en stock', 'Mensaje');
                         }
                     }
                     if (val_ == false) {
                         if ((_product_store_stock - _quantity_search * _quantity_minimum) >= 0) {
-                            _div_barcode.parents('div.card-product').find('input.product-stock').val(_product_store_stock - _quantity_search * _quantity_minimum);
-                            $('#sales-details').append(
+                            _div_barcode.parents('div.card-product').find('input.product-stock').val((_product_store_stock - _quantity_search * _quantity_minimum).toFixed(2));
+                            $('#order-sale-detail').append(
                                 '<tr product="' + _product_id + '" store_p="' + _product_store_id + '" pu="' + _unit_id + '" class="text-uppercase small text-center">' +
                                 '<td class="align-middle">' + '</td>' +
                                 '<td class="align-middle">' + _product_name + '</td>' +
-                                '<td class="align-middle item-quantity">' + parseFloat(new_quantity.toFixed(2)) + '</td>' +
-                                '<td class="align-middle item-unit" pu="' + _unit_id + '" unit_min="' + _quantity_minimum + '">' + _unit_name + ' (' + _quantity_minimum + ')' + '</td>' +
-                                '<td class="align-middle item-price">' + _price_sale + '</td>' +
+                                '<td class="align-middle item-quantity">' + parseFloat(new_quantity).toFixed(2) + '</td>' +
+                                '<td class="align-middle item-unit" pu="' + _unit_id + '" unit_min="' + _quantity_minimum + '">' + _unit_name + '</td>' +
+                                '<td class="align-middle item-price">' + (parseFloat(_price_sale)).toFixed(2) + '</td>' +
                                 '<td class="align-middle item-total">' + _total.toFixed(2) + '</td>' +
                                 '<td>' + '<button type="button" onclick="deleteItem(' + _product_id + ',' + _unit_id + ')" class="btn btn-danger btn-sm">' +
                                 '<i class="fa fa-trash"></i></button>' + '</td>' +
@@ -751,8 +757,20 @@
                         }
                     }
                 }
+                $('#id_barcode').val('')
             }
         });
 
+        function GetQuantity() {
+            scrollTo(200, 100)
+            let quantity_value = prompt("Ingrese la cantidad : ", '1.00');
+            if (jQuery.isNumeric(quantity_value)) {
+                return parseFloat(quantity_value).toFixed(2);
+            } else {
+                toastr.warning('Ingrese un numero por favor', 'Mensaje')
+                return 0;
+            }
+
+        }
     </script>
 {% endblock extrajs %}
