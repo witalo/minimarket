@@ -829,8 +829,8 @@ def get_order_sales(request):
         sales_store = SubsidiaryStore.objects.filter(
             subsidiary=subsidiary_obj, category='3').first()
         # product_set = Product.objects.filter(is_state=True, productstore__subsidiary_store=sales_store)
-        casing_set = Casing.objects.filter(user=user_obj, is_enabled=True, subsidiary=subsidiary_obj).values('id',
-                                                                                                             'name')
+        casing_set = Casing.objects.filter(is_enabled=True, subsidiary=subsidiary_obj).values('id',
+                                                                                              'name')
         coin_set = Coin.objects.all().order_by('id')
         return render(request, 'sale/order_sales.html', {
             'date_now': date_now,
@@ -1141,3 +1141,30 @@ def create_order_sales(request):
                 'message': 'Venta registrada correctamente.',
                 '_pk': order_sale_obj.id,
             }, status=HTTPStatus.OK)
+
+
+def get_order_sales_list(request):
+    if request.method == 'GET':
+        start_date = request.GET.get('_init', '')
+        end_date = request.GET.get('_end', '')
+        if start_date != '' and end_date != '':
+            user_id = request.user.id
+            user_obj = User.objects.get(id=int(user_id))
+            subsidiary_obj = get_subsidiary_by_user(user_obj)
+            orders_set = Order.objects.filter(create_at__range=(start_date, end_date), type='V', status='C',
+                                               subsidiary=subsidiary_obj)
+            tpl_list = loader.get_template('sale/sales_grid_list.html')
+            context = ({'orders_set': orders_set, })
+
+            return JsonResponse({
+                'message': 'Ventas realizadas',
+                'grid': tpl_list.render(context),
+            }, status=HTTPStatus.OK)
+        else:
+            my_date = datetime.now()
+            date_now = my_date.strftime("%Y-%m-%d")
+            client_set = Client.objects.all().values('id', 'full_names')
+            return render(request, 'sale/sales_list.html', {
+                'date_now': date_now,
+                'client_set': client_set,
+            })

@@ -36,7 +36,7 @@ def get_order_purchase(request):
         subsidiary_obj = get_subsidiary_by_user(user_obj)
         # sales_store = SubsidiaryStore.objects.filter(
         #     subsidiary=subsidiary_obj, category='3').first()
-        casing_set = Casing.objects.filter(user=user_obj, is_enabled=True, subsidiary=subsidiary_obj).values('id',
+        casing_set = Casing.objects.filter(is_enabled=True, subsidiary=subsidiary_obj).values('id',
                                                                                                              'name')
         provider_set = Provider.objects.all()
         # product_dic = []

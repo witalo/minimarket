@@ -12,7 +12,6 @@ class Casing(models.Model):
     description = models.CharField('Descripción', max_length=100, null=True, blank=True)
     type = models.CharField('Tipo caja', max_length=1, choices=TYPE_CHOICES)
     is_enabled = models.BooleanField(default=True)
-    user = models.ForeignKey(User, verbose_name='Usuario', on_delete=models.CASCADE, null=True, blank=True)
     subsidiary = models.ForeignKey(Subsidiary, on_delete=models.SET_NULL, null=True, blank=True)
     create_at = models.DateTimeField(auto_now=True)
 

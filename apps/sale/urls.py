@@ -39,5 +39,7 @@ urlpatterns = [
     path('create_order_sales/', login_required(create_order_sales), name='create_order_sales'),
     # generate PDF
     path('print_ticket_order_sales/<int:pk>/', login_required(print_ticket_order_sales), name='print_ticket_order_sales'),
+    # reports
+    path('order_sales_list/', login_required(get_order_sales_list), name='order_sales_list'),
 
 ]
