@@ -300,15 +300,23 @@
             if (_val === '01') {
                 $("#id-nro-document-sender").attr('maxlength', 8);
                 sessionStorage.setItem('document', '01')
+                $('#id-address-section').css('display', 'none');
+                $('#id-client-address').val('');
             } else if (_val === '06') {
                 $("#id-nro-document-sender").attr('maxlength', 11);
-                sessionStorage.setItem('document', '06')
+                sessionStorage.setItem('document', '06');
+                $('#id-address-section').css('display', '');
+                $('#id-client-address').val('');
             } else if (_val === '04' || _val === '07') {
                 $("#id-nro-document-sender").attr('maxlength', 15);
                 sessionStorage.setItem('document', '')
+                $('#id-address-section').css('display', 'none');
+                $('#id-client-address').val('');
             }
             $('#id-names-sender').val('');
             $('#id-nro-document-sender').val('');
+            $('#id-client-address').val('');
+            $('#id-client-sender').val('');
         });
         {#presionar tecla enter en el documento del cliente#}
         $('#id-nro-document-sender').keypress(function (e) {

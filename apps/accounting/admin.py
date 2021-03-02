@@ -5,7 +5,7 @@ from apps.accounting.models import Casing
 
 
 class CasingAdmin(admin.ModelAdmin):
-    fields = ['name', 'description', 'type', 'is_enabled', 'user', 'subsidiary']
+    fields = ['name', 'description', 'type', 'is_enabled', 'subsidiary']
     ordering = ('id',)
 
 

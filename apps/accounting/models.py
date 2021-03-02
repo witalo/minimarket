@@ -24,10 +24,10 @@ class Casing(models.Model):
 
 
 class Payments(models.Model):
-    TYPE_CHOICES = (('I', 'INGRESO'), ('E', 'EGRESO'), ('A', 'APERTURA'), ('C', 'CIERRE'))
-    TYPE_PAYMENT = (('E', 'EFECTIVO'), ('D', 'DEPOSITO'), ('C', 'CREDITO'))
-    TYPE_BANK = (('1', 'BANCO DE CREDITO DEL PERU'), ('2', 'BANCO DE LA NACIÓN DEL PERU'), ('3', 'INTERBANK'),
-                 ('4', 'BBVA CONTINENTAL'))
+    TYPE_CHOICES = (('I', 'Ingreso'), ('E', 'Egreso'), ('A', 'Apertura'), ('C', 'Cierre'))
+    TYPE_PAYMENT = (('E', 'Efectivo'), ('D', 'Deposito'), ('C', 'Credito'))
+    TYPE_BANK = (('1', 'Banco de Credito del Peru'), ('2', 'Banco de la Nación del Peru'), ('3', 'Interbank'),
+                 ('4', 'BBVA Continental'))
     id = models.AutoField(primary_key=True)
     order = models.ForeignKey(Order, on_delete=models.CASCADE, null=True, blank=True)
     type = models.CharField('Tipo proceso', max_length=1, choices=TYPE_CHOICES)

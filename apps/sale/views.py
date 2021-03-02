@@ -937,7 +937,7 @@ def get_client_by_document(request):
                             return response
                 else:
                     data = {
-                        'error': 'No se encontro el dni en la reniec, Registre manualmentE'}
+                        'error': 'No se encontro el dni en la reniec, Registre manualmente'}
                     response = JsonResponse(data)
                     response.status_code = HTTPStatus.INTERNAL_SERVER_ERROR
                     return response

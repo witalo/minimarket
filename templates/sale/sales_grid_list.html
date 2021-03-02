@@ -1,7 +1,7 @@
 {% if orders_set %}
-    <div class="card border-info m-0">
-        <div class="card-header bg-info">
-            <h4 class="card-title text-center text-white">ORDENES DE VENTA</h4>
+    <div class="card m-0">
+        <div class="card-header">
+            <h4 class="card-title text-center">ORDENES DE VENTA</h4>
         </div>
         <div class="card-body">
             <div class="table-responsive dataTables_wrapper">
@@ -9,44 +9,48 @@
                        class="table table-primary table-striped align-content-center table-bordered"
                        cellspacing="0" width="100%">
                     <thead>
-                    <tr class="text-center bg-info text-white" style="height: 20px">
+                    <tr class="text-center" style="height: 20px">
                         <th>#</th>
+                        <th class="th-sm">N°</th>
                         <th class="th-sm">Tipo</th>
                         <th class="th-sm">Estado</th>
-                        <th class="th-sm">Fecha compra</th>
+                        <th class="th-sm">Fecha venta</th>
+                        <th class="th-sm">Cliente</th>
                         <th class="th-sm">Empleado</th>
-                        <th class="th-sm">Estado</th>
-                        <th class="th-sm">Detalle</th>
+                        <th class="th-sm">Total</th>
+                        <th class="th-sm">Descuento</th>
                     </tr>
                     </thead>
                     <tbody>
+                    {% for o in orders_set %}
+                        <tr class="text-center">
+                            <td>{{ o.id }}</td>
+                            <td>{{ o.correlative_order }}</td>
+                            <td>{{ o.get_type_display }}</td>
+                            <td>{{ o.get_status_display }}</td>
+                            <td>{{ o.create_at }}</td>
+                            <td>{{ o.client.full_names }}</td>
+                            <td>{{ o.user.employee_set.last.names }}</td>
+                            <td class="text-right">{{ o.total }}</td>
+                            <td class="text-right">{{ o.discount }}</td>
 
-                    {% for p in purchases_store %}
-                        <tr class="text-center ">
-                            <td>{{ p.id }}</td>
-                            <td>{{ p.supplier.name }}</td>
-                            <td>{{ p.bill_number }}</td>
-                            <td>{{ p.purchase_date }}</td>
-                            <td>{{ p.user.worker_set.last.employee.names }}</td>
-                            <td class=" text-success bg-white">{{ p.get_status_display }}</td>
-                            <td class="p-1">
-                                <button type="button"  class="btn btn-success btn-show-detail" pk="{{ p.id }}"><i class="fa fa-bars"></i></button>
-                            </td>
                         </tr>
-                         <tr style="display: none">
-                            <td colspan="7" class="table-details-purchase bg-white"></td>
-                         </tr>
+{#                         <tr style="display: none">#}
+{#                            <td colspan="7" class="table-details-purchase bg-white"></td>#}
+{#                         </tr>#}
                     {% endfor %}
                     </tbody>
                     <tfoot>
-                    <tr class="text-center bg-info text-white" style="height: 20px">
+                    <tr class="text-center" style="height: 20px">
                         <th>#</th>
-                        <th class="th-sm">Proveedor</th>
-                        <th class="th-sm">Numero comprobante</th>
-                        <th class="th-sm">Fecha compra</th>
-                        <th class="th-sm">Empleado</th>
+                        <th class="th-sm">N°</th>
+                        <th class="th-sm">Tipo</th>
                         <th class="th-sm">Estado</th>
-                        <th class="th-sm">Detalle</th>
+                        <th class="th-sm">Fecha venta</th>
+                        <th class="th-sm">Cliente</th>
+                        <th class="th-sm">Empleado</th>
+                        <th class="th-sm">Total</th>
+                        <th class="th-sm">Descuento</th>
                     </tr>
                     </tfoot>
                 </table>

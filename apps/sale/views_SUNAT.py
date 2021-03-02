@@ -71,12 +71,18 @@ def query_api_free_ruc(nro_ruc, type_document):
 
         if r.status_code == 200:
             result = r.json()
-
-            context = {
-                'ruc': result.get('ruc'),
-                'razonSocial': html.unescape(result.get('razonSocial')),
-                'direccion': html.unescape(result.get('direccion')),
-            }
+            if result['success'] == False:
+                context = {
+                    'ruc': '',
+                    'razonSocial': '',
+                    'direccion': '',
+                }
+            else:
+                context = {
+                    'ruc': result.get('ruc'),
+                    'razonSocial': html.unescape(result.get('razonSocial')),
+                    'direccion': html.unescape(result.get('direccion')),
+                }
 
         elif r.status_code == 400:
             context = {
@@ -98,14 +104,22 @@ def query_api_free_dni(nro_dni, type_document):
 
         if r.status_code == 200:
             result = r.json()
-
-            context = {
-                'status': True,
-                'DNI': result.get('dni'),
-                'Nombre': html.unescape(result.get('name')),
-                'Paterno': html.unescape(result.get('first_name')),
-                'Materno': html.unescape(result.get('last_name')),
-            }
+            if result == {}:
+                context = {
+                    'status': False,
+                    'DNI': '',
+                    'Nombre': '',
+                    'Paterno': '',
+                    'Materno': '',
+                }
+            else:
+                context = {
+                    'status': True,
+                    'DNI': result.get('dni'),
+                    'Nombre': html.unescape(result.get('name')),
+                    'Paterno': html.unescape(result.get('first_name')),
+                    'Materno': html.unescape(result.get('last_name')),
+                }
 
         else:
             result = r.json()
