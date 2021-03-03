@@ -35,6 +35,7 @@ urlpatterns = [
     # orders sales
     path('order_sales/', login_required(get_order_sales), name='order_sales'),
     path('get_client_by_document/', login_required(get_client_by_document), name='get_client_by_document'),
+    path('save_client_order/', login_required(save_client_order), name='save_client_order'),
     path('get_prices_by_product/', login_required(get_prices_by_product), name='get_prices_by_product'),
     path('create_order_sales/', login_required(create_order_sales), name='create_order_sales'),
     # generate PDF

@@ -927,6 +927,7 @@ def get_client_by_document(request):
                                 type_document=type_document,
                                 document=number_document,
                                 full_names=result,
+                                # address=address_business,
                             )
                             client_obj.save()
 
@@ -947,7 +948,7 @@ def get_client_by_document(request):
                 r = query_api_free_ruc(number_document, type_name)
                 if r.get('ruc') == number_document:
                     name_business = r.get('razonSocial')
-                    address_business = r.get('direccion')
+                    address_business = (r.get('direccion')).strip()
 
                     client_obj = Client(
                         type_document=type_document,
@@ -1143,6 +1144,41 @@ def create_order_sales(request):
             }, status=HTTPStatus.OK)
 
 
+def save_client_order(request):
+    data = {}
+    if request.method == 'GET':
+        _type_document = request.GET.get('type_document', '')
+        _document = request.GET.get('document', '').strip()
+        _names = request.GET.get('names', '')
+        _address = request.GET.get('address', '')
+        if _type_document == '06' and _address == '':
+            data = {'error': 'Ingrese una direccion valida'}
+            response = JsonResponse(data)
+            response.status_code = HTTPStatus.INTERNAL_SERVER_ERROR
+            return response
+        if Client.objects.filter(document=_document).exists():
+            client_update = Client.objects.get(document=_document)
+            client_update.full_names = _names
+            client_update.address = _address.strip()
+            client_update.save()
+            return JsonResponse({
+                'message': 'Cliente actualizado',
+                'pk': client_update.id,
+            }, status=HTTPStatus.OK)
+        else:
+            client_obj = Client(
+                type_document=_type_document,
+                document=_document,
+                full_names=_names,
+                address=_address
+            )
+            client_obj.save()
+            return JsonResponse({
+                'message': 'Cliente registrado',
+                'pk': client_obj.id,
+            }, status=HTTPStatus.OK)
+
+
 def get_order_sales_list(request):
     if request.method == 'GET':
         start_date = request.GET.get('_init', '')
@@ -1152,7 +1188,7 @@ def get_order_sales_list(request):
             user_obj = User.objects.get(id=int(user_id))
             subsidiary_obj = get_subsidiary_by_user(user_obj)
             orders_set = Order.objects.filter(create_at__range=(start_date, end_date), type='V', status='C',
-                                               subsidiary=subsidiary_obj)
+                                              subsidiary=subsidiary_obj)
             tpl_list = loader.get_template('sale/sales_grid_list.html')
             context = ({'orders_set': orders_set, })
 

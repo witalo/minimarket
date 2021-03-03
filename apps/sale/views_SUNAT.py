@@ -71,7 +71,7 @@ def query_api_free_ruc(nro_ruc, type_document):
 
         if r.status_code == 200:
             result = r.json()
-            if result['success'] == False:
+            if len(result) < 5:
                 context = {
                     'ruc': '',
                     'razonSocial': '',

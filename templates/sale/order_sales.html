@@ -350,12 +350,17 @@
                             toastr.success(response.message, '¡Bien hecho!');
                             $("#id-names-sender").val(response.names);
                             $("#id-client-sender").val(response.pk);
+                            $("#id-client-address").val(response.address);
                             $('#id-loading').hide();
                         }
                     },
                     error: function (jqXhr, textStatus, xhr) {
                         if (jqXhr.status === 500) {
                             toastr.error(jqXhr.responseJSON.error, 'Mensaje');
+                            $("#id-names-sender").val('');
+                            $("#id-client-sender").val('');
+                            $("#id-client-address").val('');
+                            $("#id-names-sender").attr('readonly', false);
                         } else {
                             if (textStatus === 'timeout') {
                                 toastr.error('Fallo al consultar', 'Mensaje');
@@ -363,6 +368,7 @@
                                 toastr.error(" STATUS: " + xhr + " " + textStatus);
                             }
                         }
+
                         $('#id-loading').hide();
                     }
                 });
@@ -799,5 +805,69 @@
             }
 
         }
+
+        $('#id-names-sender').keypress(function (e) {
+            if (e.keyCode === 13) {
+                e.preventDefault()
+                $(this).trigger("enterKey");
+                if ($('#id-nro-document-sender').val() === '') {
+                    toastr.warning('Ingrese el numero de documento correctamente', 'Mensaje');
+                    return false;
+                }
+                if ($('#id-names-sender').val() === '') {
+                    toastr.warning('Ingrese el nombre correctamente', 'Mensaje');
+                    return false;
+                }
+                if ($('#document_type_sender').val() === '06' && $("#id-client-address").val() === '') {
+                    toastr.warning('Ingrese la direccion correctamente', 'Mensaje');
+                    return false;
+                }
+
+                $.ajax({
+                    url: '/sale/save_client_order/',
+                    async: true,
+                    dataType: 'json',
+                    type: 'GET',
+                    data: {
+                        'type_document': $('#document_type_sender').val(),
+                        'document': $('#id-nro-document-sender').val(),
+                        'names': $("#id-names-sender").val(),
+                        'address': $("#id-client-address").val(),
+                    },
+                    contentType: 'application/json;charset=UTF-8',
+                    headers: {"X-CSRFToken": '{{ csrf_token }}'},
+                    success: function (response, textStatus, xhr) {
+                        if (xhr.status === 200) {
+                            toastr.success(response.message, 'Mensaje');
+                            $("#id-client-sender").val(response.pk);
+                        }
+                    },
+                    error: function (jqXhr, textStatus, xhr) {
+                        if (jqXhr.status === 500) {
+                            toastr.error(jqXhr.responseJSON.error, 'Mensaje');
+                            $("#id-client-sender").val('');
+                            $("#id-names-sender").attr('readonly', false);
+                        } else {
+                            if (textStatus === 'timeout') {
+                                toastr.error('Problemas al registrar', 'Mensaje');
+                            } else {
+                                toastr.error(" STATUS: " + xhr + " " + textStatus);
+                            }
+                        }
+
+                        $('#id-loading').hide();
+                    }
+                });
+                return false;
+            }
+        });
+        $('#id-client-address').keypress(function (e) {
+            if (e.keyCode === 13) {
+                e.preventDefault()
+                $(this).trigger("enterKey");
+                alert('mi alerta')
+                $('#id-names-sender').trigger('keypress')
+            }
+        });
     </script>
 {% endblock extrajs %}
