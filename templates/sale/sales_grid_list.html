@@ -1,24 +1,24 @@
 {% if orders_set %}
     <div class="card m-0">
-        <div class="card-header">
-            <h4 class="card-title text-center">ORDENES DE VENTA</h4>
+        <div class="card-header m-0 p-0  align-self">
+            <h6 class="card-title text-center m-1">ORDENES DE VENTA</h6>
         </div>
-        <div class="card-body">
+        <div class="card-body m-0 p-2">
             <div class="table-responsive dataTables_wrapper">
                 <table id="id-table-orders-sale"
-                       class="table table-primary table-striped align-content-center table-bordered"
+                       class="table table-sm table-striped align-content-center table-bordered m-0"
                        cellspacing="0" width="100%">
                     <thead>
                     <tr class="text-center" style="height: 20px">
-                        <th>#</th>
-                        <th class="th-sm">N°</th>
-                        <th class="th-sm">Tipo</th>
-                        <th class="th-sm">Estado</th>
-                        <th class="th-sm">Fecha venta</th>
-                        <th class="th-sm">Cliente</th>
-                        <th class="th-sm">Empleado</th>
-                        <th class="th-sm">Total</th>
-                        <th class="th-sm">Descuento</th>
+                        <th class="th-sm font-weight-normal">#</th>
+                        <th class="th-sm font-weight-normal">N°</th>
+                        <th class="th-sm font-weight-normal">Tipo</th>
+                        <th class="th-sm font-weight-normal">Estado</th>
+                        <th class="th-sm font-weight-normal">Fecha venta</th>
+                        <th class="th-sm font-weight-normal">Cliente</th>
+                        <th class="th-sm font-weight-normal">Empleado</th>
+                        <th class="th-sm font-weight-normal">Total</th>
+                        <th class="th-sm font-weight-normal">Descuento</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -35,22 +35,22 @@
                             <td class="text-right">{{ o.discount }}</td>
 
                         </tr>
-{#                         <tr style="display: none">#}
-{#                            <td colspan="7" class="table-details-purchase bg-white"></td>#}
-{#                         </tr>#}
+                        {#                         <tr style="display: none">#}
+                        {#                            <td colspan="7" class="table-details-purchase bg-white"></td>#}
+                        {#                         </tr>#}
                     {% endfor %}
                     </tbody>
                     <tfoot>
                     <tr class="text-center" style="height: 20px">
-                        <th>#</th>
-                        <th class="th-sm">N°</th>
-                        <th class="th-sm">Tipo</th>
-                        <th class="th-sm">Estado</th>
-                        <th class="th-sm">Fecha venta</th>
-                        <th class="th-sm">Cliente</th>
-                        <th class="th-sm">Empleado</th>
-                        <th class="th-sm">Total</th>
-                        <th class="th-sm">Descuento</th>
+                        <th class="th-sm font-weight-normal">#</th>
+                        <th class="th-sm font-weight-normal">N°</th>
+                        <th class="th-sm font-weight-normal">Tipo</th>
+                        <th class="th-sm font-weight-normal">Estado</th>
+                        <th class="th-sm font-weight-normal">Fecha venta</th>
+                        <th class="th-sm font-weight-normal">Cliente</th>
+                        <th class="th-sm font-weight-normal">Empleado</th>
+                        <th class="th-sm font-weight-normal">Total</th>
+                        <th class="th-sm font-weight-normal">Descuento</th>
                     </tr>
                     </tfoot>
                 </table>
