@@ -1076,6 +1076,21 @@ def create_order_sales(request):
             }
             new_payment_e_obj = Payments.objects.create(**new_payment_e)
             new_payment_e_obj.save()
+
+            if amount_cash < total_order:
+                total_credit = total_order - amount_cash
+                new_payment_ec = {
+                    'order': order_sale_obj,
+                    'type': 'I',
+                    'type_payment': 'C',
+                    'amount': total_credit,
+                    'coin': coin_obj,
+                    'date_payment': date_order,
+                    'user': user_obj,
+                    'subsidiary': subsidiary_obj,
+                }
+                new_payment_ec_obj = Payments.objects.create(**new_payment_ec)
+                new_payment_ec_obj.save()
         elif type_payment == 'D':
             deposit = str(data_order["deposit"])
             code_operation = str(data_order["code_operation"])
@@ -1087,12 +1102,41 @@ def create_order_sales(request):
                 'type_bank': deposit,
                 'code_operation': code_operation,
                 'amount': amount_deposit,
+                'coin': 1,
                 'date_payment': date_order,
                 'user': user_obj,
                 'subsidiary': subsidiary_obj,
             }
             new_payment_d_obj = Payments.objects.create(**new_payment_d)
             new_payment_d_obj.save()
+
+            if amount_deposit < total_order:
+                total_credit = total_order - amount_deposit
+                new_payment_dc = {
+                    'order': order_sale_obj,
+                    'type': 'I',
+                    'type_payment': 'C',
+                    'amount': total_credit,
+                    'coin': 1,
+                    'date_payment': date_order,
+                    'user': user_obj,
+                    'subsidiary': subsidiary_obj,
+                }
+                new_payment_dc_obj = Payments.objects.create(**new_payment_dc)
+                new_payment_dc_obj.save()
+        elif type_payment == 'C':
+            new_payment_c = {
+                'order': order_sale_obj,
+                'type': 'I',
+                'type_payment': type_payment,
+                'amount': total_order,
+                'coin': 1,
+                'date_payment': date_order,
+                'user': user_obj,
+                'subsidiary': subsidiary_obj,
+            }
+            new_payment_c_obj = Payments.objects.create(**new_payment_c)
+            new_payment_c_obj.save()
 
         if voucher_order != 'I':
             r = ''
