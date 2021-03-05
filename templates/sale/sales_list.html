@@ -20,7 +20,7 @@
                             class="fa fa-shopping-cart"></i> <span>  Mostrar ventas</span></button>
                 </div>
                 <div class="col-md-4">
-                    <select id="id_client" name="name_client"
+                    <select id="id-client" name="name-client"
                             class="form-control form-control-sm combo">
                         <option selected value="0">Seleccione</option>
                         {% for c in client_set %}
@@ -35,26 +35,26 @@
         <div class="card-body" style="overflow-y: scroll; height: 500px; width: auto;">
             <div id="id-orders-sales-grid-list" class="col-md-12 m-0 p-0"></div>
             <div class="container text-center pt-5" id="loading" style="display: none">
-            <div class="row m-5">
-                <div class="col-md-12 m-5">
-                    <div class="loader">
-                        <div class="loader-inner">
-                            <div class="loading one"></div>
-                        </div>
-                        <div class="loader-inner">
-                            <div class="loading two"></div>
-                        </div>
-                        <div class="loader-inner">
-                            <div class="loading three"></div>
-                        </div>
-                        <div class="loader-inner">
-                            <div class="loading four"></div>
+                <div class="row m-5">
+                    <div class="col-md-12 m-5">
+                        <div class="loader">
+                            <div class="loader-inner">
+                                <div class="loading one"></div>
+                            </div>
+                            <div class="loader-inner">
+                                <div class="loading two"></div>
+                            </div>
+                            <div class="loader-inner">
+                                <div class="loading three"></div>
+                            </div>
+                            <div class="loader-inner">
+                                <div class="loading four"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-        </div>
+            </div>
         </div>
     </div>
 
@@ -100,7 +100,7 @@
 {% endblock body %}
 {% block extrajs %}
     <script type="text/javascript">
-        $('#id_client').select2({
+        $('#id-client').select2({
             theme: 'bootstrap4',
             {#theme: 'classic',#}
             {#language: "es",#}
@@ -135,6 +135,28 @@
                     $('#id-orders-sales-grid-list').html(response['grid']);
                 },
             });
+            $('#loading').hide();
         });
+        $('#id-client').change(function () {
+            $('#id-orders-sales-grid-list').empty();
+            if ($('#id-client').val() === 0 || $('#id-client').val() === '') {
+                return false;
+            }
+            $('#loading').show();
+            $.ajax({
+                url: '/sale/get_order_sales_by_client/',
+                async: true,
+                dataType: 'json',
+                type: 'GET',
+                data: {
+                    'client_pk': $('#id-client').val(),
+                },
+                success: function (response) {
+                    $('#id-orders-sales-grid-list').html(response['grid']);
+                },
+            });
+            $('#loading').hide();
+        });
+
     </script>
 {% endblock extrajs %}

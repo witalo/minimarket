@@ -1248,3 +1248,35 @@ def get_order_sales_list(request):
                 'date_now': date_now,
                 'client_set': client_set,
             })
+
+
+def get_order_sales_by_client(request):
+    if request.method == 'GET':
+        pk = request.GET.get('client_pk', '')
+        if pk != '':
+            client_obj = Client.objects.get(id=int(pk))
+            user_id = request.user.id
+            user_obj = User.objects.get(id=int(user_id))
+            subsidiary_obj = get_subsidiary_by_user(user_obj)
+            orders_set = Order.objects.filter(type='V', status='C',
+                                              subsidiary=subsidiary_obj, client=client_obj)
+            tpl_list = loader.get_template('sale/sales_grid_list.html')
+            context = ({'orders_set': orders_set, })
+            return JsonResponse({
+                'message': 'Ventas realizadas',
+                'grid': tpl_list.render(context),
+            }, status=HTTPStatus.OK)
+
+
+def get_sales_detail(request):
+    if request.method == 'GET':
+        pk = request.GET.get('pk', '')
+        order_obj = Order.objects.get(pk=int(pk))
+        order_detail_set = OrderDetail.objects.filter(order=order_obj)
+        t = loader.get_template('sale/sales_detail_grid.html')
+        c = ({
+            'order_detail_set': order_detail_set,
+        })
+        return JsonResponse({
+            'grid': t.render(c, request),
+        }, status=HTTPStatus.OK)

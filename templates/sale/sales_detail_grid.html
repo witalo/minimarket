@@ -1,0 +1,49 @@
+<table class="table table-sm align-content-center table-bordered  table-sales-detail m-0"
+       style="width: 100%;">
+    <thead>
+    <tr class="text-center m-0 p-0" style="font-size: 12px;">
+        <td class="text-center">Producto</td>
+        <td class="text-center">Cantidad</td>
+        <td class="text-center">Unidad</td>
+        <td class="text-center">Precio</td>
+        <td class="text-center">Importe</td>
+    </tr>
+    </thead>
+    <tbody>
+    {% for dt in order_detail_set %}
+        <tr class="text-center" id="{{ dt.id }}" style="font-size: 12px;">
+            <td class="text-left">{{ dt.product.names }}</td>
+            <td class="text-right item-quantity decimal"> {{ dt.quantity|floatformat:2 }}</td>
+            <td>{{ dt.unit.description }}</td>
+            <td class="text-right item-price decimal"> {{ dt.price_unit|floatformat:2 }}</td>
+            <td class="text-right item-total decimal"> {{ dt.price_unit|floatformat:2 }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<script>
+    $('table.table-sales-detail tbody tr').each(function () {
+        let _quantity = parseFloat($(this).find('td.item-quantity').text());
+        let _price = parseFloat($(this).find('td.item-price').text());
+        let _total = (_quantity*_price).toFixed(2);
+        $(this).find('td.item-total').text(_total);
+    });
+    $('table.table-sales-detail tbody tr td.decimal').each(function () {
+        let _str = $(this).text();
+        _str = _str.replace(',', '.');
+        $(this).text(_str);
+    });
+    /*
+    let _total=0
+    $('.table-details tbody tr td.item-quantity').each(function () {
+        let iterator = parseFloat($(this).text());
+        _total = _total + iterator;
+        if ()
+        {
+
+        }
+    });
+
+ */
+
+</script>

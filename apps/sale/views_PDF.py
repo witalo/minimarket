@@ -208,6 +208,7 @@ def print_ticket_order_sales(request, pk=None):  # Boleto de viaje boleta / fact
     ana_total.setStyle(TableStyle(my_style_total))
 
     footer = 'SON: ' + numero_a_moneda(order_obj.total)
+    counter = order_obj.orderdetail_set.count()
     my_style_table6 = [
         # ('GRID', (0, 0), (-1, -1), 0.5, colors.blue),   # all columns
         ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),  # all columns
@@ -215,7 +216,7 @@ def print_ticket_order_sales(request, pk=None):  # Boleto de viaje boleta / fact
         ('SPAN', (0, 0), (1, 0)),  # first row
     ]
 
-    datatable = 'Visitanos en https://www.venturaflores.com'
+    datatable = 'https://www.italoventuraflores.com'
     ana_c9 = Table([(qr_code(datatable), '')], colWidths=[_wt * 99 / 100, _wt * 1 / 100])
     ana_c9.setStyle(TableStyle(my_style_table6))
 
@@ -262,7 +263,7 @@ def print_ticket_order_sales(request, pk=None):  # Boleto de viaje boleta / fact
     mi = 0.039 * inch
 
     doc = SimpleDocTemplate(buff,
-                            pagesize=(3.14961 * inch, 11.6 * inch),
+                            pagesize=(3.14961 * inch, 6.2 * inch + (inch * 0.13 * counter)),
                             rightMargin=mr,
                             leftMargin=ml,
                             topMargin=ms,

@@ -42,5 +42,7 @@ urlpatterns = [
     path('print_ticket_order_sales/<int:pk>/', login_required(print_ticket_order_sales), name='print_ticket_order_sales'),
     # reports
     path('order_sales_list/', login_required(get_order_sales_list), name='order_sales_list'),
+    path('get_sales_detail/', login_required(get_sales_detail), name='get_sales_detail'),
+    path('get_order_sales_by_client/', login_required(get_order_sales_by_client), name='get_order_sales_by_client'),
 
 ]
