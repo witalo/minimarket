@@ -17,9 +17,10 @@ from django.core import serializers
 from datetime import date
 
 from apps.accounting.models import Casing, Payments
+from apps.hrm.models import Employee
 from apps.hrm.views import get_subsidiary_by_user
 from apps.sale.models import Client, Product, ProductCategory, Unit, Coin, ProductPresenting, Kardex, ProductStore, \
-    SubsidiaryStore
+    SubsidiaryStore, Order
 
 
 def get_valid_opening_cash(request):
@@ -73,8 +74,8 @@ def get_opening_casing(request):
         user_id = request.user.id
         user_obj = User.objects.get(id=int(user_id))
         subsidiary_obj = get_subsidiary_by_user(user_obj)
-        casing_set = Casing.objects.filter(user=user_obj, is_enabled=True, subsidiary=subsidiary_obj).values('id',
-                                                                                                             'name')
+        casing_set = Casing.objects.filter(is_enabled=True, subsidiary=subsidiary_obj).values('id',
+                                                                                              'name')
         coin_set = Coin.objects.filter(is_enabled=True).values('id', 'name_coin')
         tpl = loader.get_template('accounting/opening_casing.html')
         context = ({
@@ -163,8 +164,8 @@ def get_closing_casing(request):
         user_id = request.user.id
         user_obj = User.objects.get(id=int(user_id))
         subsidiary_obj = get_subsidiary_by_user(user_obj)
-        casing_set = Casing.objects.filter(user=user_obj, is_enabled=True, subsidiary=subsidiary_obj).values('id',
-                                                                                                             'name')
+        casing_set = Casing.objects.filter(is_enabled=True, subsidiary=subsidiary_obj).values('id',
+                                                                                              'name')
         tpl = loader.get_template('accounting/closing_casing.html')
         context = ({
             'date_now': date_now,
@@ -276,4 +277,123 @@ def get_total_casing(request):
             'total_cash': total_cash,
             'total_deposit': total_deposit,
             'total_credit': total_credit,
+        }, status=HTTPStatus.OK)
+
+
+def get_sales_credit_list(request):
+    if request.method == 'GET':
+        start_date = request.GET.get('_init', '')
+        end_date = request.GET.get('_end', '')
+        if start_date != '' and end_date != '':
+            user_id = request.user.id
+            user_obj = User.objects.get(id=int(user_id))
+            subsidiary_obj = get_subsidiary_by_user(user_obj)
+            orders_set = Order.objects.filter(create_at__range=(start_date, end_date), type='V', status='C',
+                                              subsidiary=subsidiary_obj, payments__type_payment='C')
+            tpl_list = loader.get_template('accounting/sales_credit_grid_list.html')
+            context = ({'orders_set': orders_set, })
+
+            return JsonResponse({
+                'message': 'Creditos disponibles',
+                'grid': tpl_list.render(context),
+            }, status=HTTPStatus.OK)
+        else:
+            my_date = datetime.now()
+            date_now = my_date.strftime("%Y-%m-%d")
+            client_set = Client.objects.filter(order__payments__type_payment='C').values('id', 'full_names')
+            return render(request, 'accounting/sales_credit_list.html', {
+                'date_now': date_now,
+                'client_set': client_set,
+            })
+
+
+def get_sales_credit_by_client(request):
+    if request.method == 'GET':
+        pk = request.GET.get('client_pk', '')
+        if pk != '':
+            client_obj = Client.objects.get(id=int(pk))
+            user_id = request.user.id
+            user_obj = User.objects.get(id=int(user_id))
+            subsidiary_obj = get_subsidiary_by_user(user_obj)
+            orders_set = Order.objects.filter(type='V', status='C',
+                                              subsidiary=subsidiary_obj, client=client_obj, payments__type_payment='C')
+            tpl_list = loader.get_template('accounting/sales_credit_grid_list.html')
+            context = ({'orders_set': orders_set, })
+            return JsonResponse({
+                'message': 'Deuda de ventas',
+                'grid': tpl_list.render(context),
+            }, status=HTTPStatus.OK)
+
+
+def get_sales_credit_detail(request):
+    if request.method == 'GET':
+        id_order = request.GET.get('pk', '')
+        order_obj = Order.objects.get(pk=int(id_order))
+        payment_set = Payments.objects.filter(order=order_obj, type='I', type_payment='C')
+        t = loader.get_template('accounting/sales_payment_grid.html')
+        c = ({
+            'payment_set': payment_set,
+        })
+        return JsonResponse({
+            'grid': t.render(c, request),
+        }, status=HTTPStatus.OK)
+
+
+def get_modal_payment_credit(request):
+    if request.method == 'GET':
+        payment_pk = request.GET.get('pk', '')
+        payment_obj = Payments.objects.get(id=int(payment_pk))
+        date_ = datetime.now()
+        date_now = date_.strftime("%Y-%m-%d")
+        user_id = request.user.id
+        user_obj = User.objects.get(id=int(user_id))
+        subsidiary_obj = get_subsidiary_by_user(user_obj)
+        casing_set = Casing.objects.filter(is_enabled=True, subsidiary=subsidiary_obj).values('id',
+                                                                                              'name')
+        coin_set = Coin.objects.all().order_by('id')
+        t = loader.get_template('accounting/modal_payment_credit.html')
+        c = ({
+            'payment_obj': payment_obj,
+            'date_now': date_now,
+            'type_payment': Payments._meta.get_field('type_payment').choices,
+            'casing_set': casing_set,
+            'coin_set': coin_set,
+            'bank_set': Payments._meta.get_field('type_bank').choices,
+        })
+        return JsonResponse({
+            'form': t.render(c, request),
+        })
+
+
+@csrf_exempt
+def payment_credit(request):
+    if request.method == 'POST':
+        _document = request.POST.get('document', '')
+        _birth_date = request.POST.get('birth_date', '')
+        _paternal_last_name = request.POST.get('paternal', '')
+        _maternal_last_name = request.POST.get('maternal', '')
+        _names = request.POST.get('names', '')
+        _gender_id = request.POST.get('gender', '')
+        _occupation_id = request.POST.get('occupation', '')
+        _telephone_number = request.POST.get('telephone', '')
+        _email = request.POST.get('email', '')
+        _address = request.POST.get('address', '')
+        _state = bool(request.POST.get('checkbox', ''))
+
+        employee_obj = Employee(
+            document_number=_document,
+            birth_date=_birth_date,
+            paternal_last_name=_paternal_last_name,
+            maternal_last_name=_maternal_last_name,
+            names=_names,
+            gender=_gender_id,
+            telephone_number=_telephone_number,
+            email=_email,
+            address=_address,
+            occupation=_occupation_id,
+            is_state=_state,
+        )
+        employee_obj.save()
+        return JsonResponse({
+            'success': True,
         }, status=HTTPStatus.OK)

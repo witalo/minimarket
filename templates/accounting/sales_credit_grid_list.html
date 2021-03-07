@@ -1,0 +1,95 @@
+{% if orders_set %}
+    <div class="card m-0">
+        <div class="card-header m-0 p-0  align-self">
+            <h6 class="card-title text-center m-1">CREDITOS DE VENTAS</h6>
+        </div>
+        <div class="card-body m-0 p-2">
+            <div class="table-responsive dataTables_wrapper">
+                <table id="id-table-sale-credit"
+                       class="table table-sm align-content-center table-bordered m-0"
+                       cellspacing="0" width="100%">
+                    <thead>
+                    <tr class="text-center" style="height: 20px">
+                        <th class="th-sm font-weight-normal">N°</th>
+                        <th class="th-sm font-weight-normal">Tipo</th>
+                        <th class="th-sm font-weight-normal">Estado</th>
+                        <th class="th-sm font-weight-normal">Fecha venta</th>
+                        <th class="th-sm font-weight-normal">Cliente</th>
+                        <th class="th-sm font-weight-normal">Empleado</th>
+                        <th class="th-sm font-weight-normal">Total</th>
+                        <th class="th-sm font-weight-normal">Descuento</th>
+                        <th class="th-sm font-weight-normal">Acción</th>
+                    </tr>
+                    </thead>
+                    <tbody class="table-details-credit">
+                    {% for o in orders_set %}
+                        <tr class="text-center align-middle" pk="{{ o.id }}">
+                            <td class="align-middle">{{ o.correlative_order }}</td>
+                            <td class="align-middle">{{ o.get_type_display }}</td>
+                            <td class="align-middle">{{ o.get_status_display }}</td>
+                            <td class="align-middle">{{ o.create_at }}</td>
+                            <td class="text-left align-middle" style="font-size: 13px;">{{ o.client.full_names }}</td>
+                            <td class="text-left align-middle"
+                                style="font-size: 13px;">{{ o.user.employee_set.last.names }}</td>
+                            <td class="text-right align-middle">{{ o.total }}</td>
+                            <td class="text-right align-middle">{{ o.discount }}</td>
+                            <td class="align-middle">
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-success  dropdown-toggle"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                            style="font-size: 13px;">
+                                        Acción
+                                    </button>
+                                    <div class="dropdown-menu border-info font-italic">
+                                        <a class="dropdown-item btn-sales-payment"
+                                           style="cursor: pointer; font-size: 12px;" pk="{{ o.id }}"><i
+                                                class="fas fa-shopping-basket fa-2x pr-1"></i> Ver pagos </a>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr style="display: none">
+                            <td colspan="4" class="p-0"></td>
+                            <td colspan="5" class="table-row-details-credit bg-white p-0"></td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                    <tfoot>
+                    <tr class="text-center" style="height: 20px">
+                        <th class="th-sm font-weight-normal">N°</th>
+                        <th class="th-sm font-weight-normal">Tipo</th>
+                        <th class="th-sm font-weight-normal">Estado</th>
+                        <th class="th-sm font-weight-normal">Fecha venta</th>
+                        <th class="th-sm font-weight-normal">Cliente</th>
+                        <th class="th-sm font-weight-normal">Empleado</th>
+                        <th class="th-sm font-weight-normal">Total</th>
+                        <th class="th-sm font-weight-normal">Descuento</th>
+                        <th class="th-sm font-weight-normal">Acción</th>
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+{% else %}
+    <h5>No existen ventas realizadas</h5>
+{% endif %}
+<script type="text/javascript">
+    $(document).on('click', '.btn-sales-payment', function () {
+        let _pk = $(this).attr('pk');
+        let _table = $(this).parent('div').parent('div').parent('td').parent('tr').next('tr').children('td.table-row-details-credit');
+        $('#id-table-sale-credit tbody.table-details-credit tr td.table-row-details-credit').parent('tr').slideUp(1000);
+        $('#id-table-sale-credit tbody.table-details-credit tr td.table-row-details-credit').empty();
+        $.ajax({
+            url: '/accounting/sales_credit_detail/',
+            async: true,
+            dataType: 'json',
+            type: 'GET',
+            data: {'pk': _pk},
+            success: function (response) {
+                _table.html(response.grid);
+                _table.parent('tr').slideDown(1000);
+            },
+        });
+    });
+</script>

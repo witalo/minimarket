@@ -263,7 +263,7 @@ def print_ticket_order_sales(request, pk=None):  # Boleto de viaje boleta / fact
     mi = 0.039 * inch
 
     doc = SimpleDocTemplate(buff,
-                            pagesize=(3.14961 * inch, 6.2 * inch + (inch * 0.13 * counter)),
+                            pagesize=(3.14961 * inch, 7.0 * inch + (inch * 0.13 * counter)),
                             rightMargin=mr,
                             leftMargin=ml,
                             topMargin=ms,

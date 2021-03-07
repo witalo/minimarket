@@ -682,7 +682,7 @@
                 "type_payment": $('#id-type-payment').val(),
                 "cash": $('#id-cash').val(),
                 "amount_cash": $('#id-amount-cash').val(),
-                "amount_coin": $('#id-coin').val(),
+                "coin": $('#id-coin').val(),
                 "deposit": $('#id-deposit').val(),
                 "amount_deposit": $('#id-amount-deposit').val(),
                 "code_operation": $('#id-code-operation').val(),
@@ -771,7 +771,7 @@
                         if ((_product_store_stock - _quantity_search * _quantity_minimum) >= 0) {
                             _div_barcode.parents('div.card-product').find('input.product-stock').val((_product_store_stock - _quantity_search * _quantity_minimum).toFixed(2));
                             $('#order-sale-detail').append(
-                                '<tr product="' + _product_id + '" store_p="' + _product_store_id + '" pu="' + _unit_id + '" class="text-uppercase small text-center">' +
+                                '<tr product="' + _product_id + '" product_store_pk="' + _product_store_id + '" pu="' + _unit_id + '" class="text-uppercase small text-center">' +
                                 '<td class="align-middle">' + '</td>' +
                                 '<td class="align-middle text-left">' + _product_name + '</td>' +
                                 '<td class="align-middle item-quantity">' + parseFloat(new_quantity).toFixed(2) + '</td>' +

@@ -1,0 +1,33 @@
+<table class="table table-sm align-content-center table-bordered  table-credit-detail m-0"
+       style="width: 100%;">
+    <thead>
+    <tr class="text-center m-0 p-0" style="font-size: 12px;">
+        <td class="text-center">Empleado</td>
+        <td class="text-center">Tipo pago</td>
+        <td class="text-center">Fecha</td>
+        <td class="text-center">Deuda</td>
+        <td class="text-center">Moneda</td>
+        <td class="text-center">Acciòn</td>
+    </tr>
+    </thead>
+    <tbody>
+    {% for p in payment_set %}
+        <tr class="text-center" id="{{ p.id }}" style="font-size: 12px;">
+            <td class="align-middle">{{ p.user.employee_set.last.names }}</td>
+            <td class="align-middle">{{ p.get_type_payment_display }}</td>
+            <td class="align-middle">{{ p.date_payment }}</td>
+            <td class="text-right align-middle item-total decimal"> {{ p.amount|safe }}</td>
+            <td class="align-middle">{{ p.coin.name_coin }}</td>
+            <td class="align-middle">
+                <button type="button" class="btn btn-outline-warning btn-payment-credit" pk="{{ p.id }}">
+                    <i class="fas fa-dollar-sign"></i>
+                    Pagar
+                </button>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<script>
+
+</script>

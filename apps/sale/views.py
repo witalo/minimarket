@@ -1018,6 +1018,8 @@ def create_order_sales(request):
         user_id = request.user.id
         user_obj = User.objects.get(id=user_id)
         subsidiary_obj = get_subsidiary_by_user(user_obj)
+        coin_pk = int(data_order["coin"])
+        coin_obj = Coin.objects.get(id=coin_pk)
         new_order_sale = {
             'type': 'V',
             'correlative_order': get_order_correlative(subsidiary_obj.id, 'V'),
@@ -1061,8 +1063,6 @@ def create_order_sales(request):
             amount_cash = decimal.Decimal(data_order["amount_cash"])
             cash_pk = int(data_order["cash"])
             cash_obj = Casing.objects.get(id=cash_pk)
-            coin_pk = int(data_order["amount_coin"])
-            coin_obj = Coin.objects.get(id=coin_pk)
             new_payment_e = {
                 'order': order_sale_obj,
                 'type': 'I',
@@ -1102,7 +1102,7 @@ def create_order_sales(request):
                 'type_bank': deposit,
                 'code_operation': code_operation,
                 'amount': amount_deposit,
-                'coin': 1,
+                'coin': coin_obj,
                 'date_payment': date_order,
                 'user': user_obj,
                 'subsidiary': subsidiary_obj,
@@ -1117,7 +1117,7 @@ def create_order_sales(request):
                     'type': 'I',
                     'type_payment': 'C',
                     'amount': total_credit,
-                    'coin': 1,
+                    'coin': coin_obj,
                     'date_payment': date_order,
                     'user': user_obj,
                     'subsidiary': subsidiary_obj,
@@ -1130,7 +1130,7 @@ def create_order_sales(request):
                 'type': 'I',
                 'type_payment': type_payment,
                 'amount': total_order,
-                'coin': 1,
+                'coin': coin_obj,
                 'date_payment': date_order,
                 'user': user_obj,
                 'subsidiary': subsidiary_obj,

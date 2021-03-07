@@ -1,0 +1,179 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block title %}
+    Creditos
+{% endblock title %}
+{% block body %}
+    <div class="card montserrat">
+        <div class="card-header pt-1 pb-1">
+            <div class="row col-md-12">
+                <div class="col-md-2 pt-1">
+                    <input type="date" class="form-control form-control-sm" id="id-date-init"
+                           value="{{ date_now }}">
+                </div>
+                <div class="col-md-2 pt-1">
+                    <input type="date" class="form-control form-control-sm" id="id-date-end"
+                           value="{{ date_now }}">
+                </div>
+                <div class="col-md-2 p-0">
+                    <button type="button" id="id-btn-sales_credit" class="button text-white"><i
+                            class="fas fa-dollar-sign"></i> <span>  Mostrar creditos</span></button>
+                </div>
+                <div class="col-md-4">
+                    <select id="id-client" name="name-client"
+                            class="form-control form-control-sm combo">
+                        <option selected value="0">Seleccione</option>
+                        {% for c in client_set %}
+                            <option value="{{ c.id }}">{{ c.full_names }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                </div>
+            </div>
+        </div>
+        <div class="card-body" style="overflow-y: scroll; height: 500px; width: auto;">
+            <div id="id-sales-credit-grid-list" class="col-md-12 m-0 p-0"></div>
+            <div class="container text-center pt-5" id="loading" style="display: none">
+                <div class="row m-5">
+                    <div class="col-md-12 m-5">
+                        <div class="loader">
+                            <div class="loader-inner">
+                                <div class="loading one"></div>
+                            </div>
+                            <div class="loader-inner">
+                                <div class="loading two"></div>
+                            </div>
+                            <div class="loader-inner">
+                                <div class="loading three"></div>
+                            </div>
+                            <div class="loader-inner">
+                                <div class="loading four"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="modal fade roboto-medium" id="modal-payment-credit" tabindex="-1" role="dialog" aria-labelledby="ModalHelpTitle"
+         aria-hidden="true"></div>
+    <style>
+        .button {
+            border-radius: 6px;
+            background-color: #0b6aa7;
+            border: none;
+            text-align: center;
+            font-size: 14px;
+            padding: 6px;
+            width: 100%;
+            transition: all 0.5s;
+            cursor: pointer;
+            margin: 0px;
+        }
+
+        .button span {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            transition: 0.5s;
+        }
+
+        .button span:after {
+            content: '\00bb';
+            position: absolute;
+            opacity: 0;
+            top: 0;
+            right: -30px;
+            transition: 0.5s;
+        }
+
+        .button:hover span {
+            padding-right: 20px;
+        }
+
+        .button:hover span:after {
+            opacity: 1;
+            right: 0;
+        }
+    </style>
+{% endblock body %}
+{% block extrajs %}
+    <script type="text/javascript">
+        $('#id-client').select2({
+            theme: 'bootstrap4',
+            {#theme: 'classic',#}
+            {#language: "es",#}
+            placeholder: "Seleccione",
+            allowClear: true,
+            language: {
+                noResults: function () {
+                    return "No resultados";
+                },
+                searching: function () {
+                    return "Buscando..";
+                }
+            }
+        });
+        $('#id-btn-sales_credit').click(function () {
+            $('#id-sales-credit-grid-list').empty();
+            if ($('#id-date-init').val() == '' || $('#id-date-end').val() == '') {
+                toastr.warning("Seleccione correctamente las fechas", '¡Mensaje!');
+                return false;
+            }
+            $('#loading').show();
+            $.ajax({
+                url: '/accounting/sales_credit_list/',
+                async: true,
+                dataType: 'json',
+                type: 'GET',
+                data: {
+                    '_init': $('#id-date-init').val(),
+                    '_end': $('#id-date-end').val()
+                },
+                success: function (response) {
+                    $('#id-sales-credit-grid-list').html(response['grid']);
+                },
+            });
+            $('#loading').hide();
+        });
+        $('#id-client').change(function () {
+            $('#id-sales-credit-grid-list').empty();
+            if ($('#id-client').val() === 0 || $('#id-client').val() === '') {
+                return false;
+            }
+            $('#loading').show();
+            $.ajax({
+                url: '/accounting/sales_credit_by_client/',
+                async: true,
+                dataType: 'json',
+                type: 'GET',
+                data: {
+                    'client_pk': $('#id-client').val(),
+                },
+                success: function (response) {
+                    $('#id-sales-credit-grid-list').html(response['grid']);
+                },
+            });
+            $('#loading').hide();
+        });
+        $(document).on('click', '.btn-payment-credit', function () {
+            let pk = $(this).attr('pk');
+            $.ajax({
+                url: '/accounting/modal_payment_credit/',
+                async: true,
+                dataType: 'json',
+                type: 'GET',
+                data: {'pk': pk},
+                success: function (response) {
+                    $('#modal-payment-credit').html(response.form);
+                    $('#modal-payment-credit').modal('show');
+                },
+                fail: function (response) {
+                    toastr.error('Problemas al mostrar el formulario', '¡Mensaje!');
+                }
+            });
+        });
+    </script>
+{% endblock extrajs %}
