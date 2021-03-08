@@ -658,13 +658,11 @@
                 toastr.warning('Seleccione la modalidad de pago', 'Mensaje');
                 return false;
             }
-            ;
             {#Comprobar si selecciono serie#}
             if ($('#id_serial').val() === '') {
                 toastr.warning('Necesita registrar un numero de serie', 'Mensaje');
                 return false;
             }
-            ;
             {#Comprobar si hay filas en el detalle de la venta#}
             if (hasRowDetails() == false) {
                 toastr.warning('Necesita registrar un producto almenos', 'Mensaje');

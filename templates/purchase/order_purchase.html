@@ -408,16 +408,6 @@
             {#theme: 'bootstrap4',#}
             {#theme: 'classic',#}
             {#language: "es",#}
-            placeholder: "Seleccione",
-            allowClear: true,
-            language: {
-                noResults: function () {
-                    return "No resultados";
-                },
-                searching: function () {
-                    return "Buscando..";
-                }
-             }
         });
         $('#id_document_provider').change(function () {
             let _pk = $(this).val();

@@ -289,7 +289,8 @@ def get_sales_credit_list(request):
             user_obj = User.objects.get(id=int(user_id))
             subsidiary_obj = get_subsidiary_by_user(user_obj)
             orders_set = Order.objects.filter(create_at__range=(start_date, end_date), type='V', status='C',
-                                              subsidiary=subsidiary_obj, payments__type_payment='C')
+                                              subsidiary=subsidiary_obj, payments__type_payment='C',
+                                              payments__amount__gt=0)
             tpl_list = loader.get_template('accounting/sales_credit_grid_list.html')
             context = ({'orders_set': orders_set, })
 
@@ -300,7 +301,8 @@ def get_sales_credit_list(request):
         else:
             my_date = datetime.now()
             date_now = my_date.strftime("%Y-%m-%d")
-            client_set = Client.objects.filter(order__payments__type_payment='C').values('id', 'full_names')
+            client_set = Client.objects.filter(order__payments__type_payment='C', order__payments__amount__gt=0).values(
+                'id', 'full_names')
             return render(request, 'accounting/sales_credit_list.html', {
                 'date_now': date_now,
                 'client_set': client_set,
@@ -316,7 +318,8 @@ def get_sales_credit_by_client(request):
             user_obj = User.objects.get(id=int(user_id))
             subsidiary_obj = get_subsidiary_by_user(user_obj)
             orders_set = Order.objects.filter(type='V', status='C',
-                                              subsidiary=subsidiary_obj, client=client_obj, payments__type_payment='C')
+                                              subsidiary=subsidiary_obj, client=client_obj, payments__type_payment='C',
+                                              payments__amount__gt=0)
             tpl_list = loader.get_template('accounting/sales_credit_grid_list.html')
             context = ({'orders_set': orders_set, })
             return JsonResponse({
@@ -329,7 +332,7 @@ def get_sales_credit_detail(request):
     if request.method == 'GET':
         id_order = request.GET.get('pk', '')
         order_obj = Order.objects.get(pk=int(id_order))
-        payment_set = Payments.objects.filter(order=order_obj, type='I', type_payment='C')
+        payment_set = Payments.objects.filter(order=order_obj, type='I', type_payment='C', amount__gt=0)
         t = loader.get_template('accounting/sales_payment_grid.html')
         c = ({
             'payment_set': payment_set,
@@ -368,32 +371,55 @@ def get_modal_payment_credit(request):
 @csrf_exempt
 def payment_credit(request):
     if request.method == 'POST':
-        _document = request.POST.get('document', '')
-        _birth_date = request.POST.get('birth_date', '')
-        _paternal_last_name = request.POST.get('paternal', '')
-        _maternal_last_name = request.POST.get('maternal', '')
-        _names = request.POST.get('names', '')
-        _gender_id = request.POST.get('gender', '')
-        _occupation_id = request.POST.get('occupation', '')
-        _telephone_number = request.POST.get('telephone', '')
-        _email = request.POST.get('email', '')
-        _address = request.POST.get('address', '')
-        _state = bool(request.POST.get('checkbox', ''))
+        payment_pk = request.POST.get('id-payment', '')
+        payment_obj = Payments.objects.get(id=int(payment_pk))
+        coin_pk = request.POST.get('id-coin', '')
+        coin_obj = Coin.objects.get(id=int(coin_pk))
+        type_payment = request.POST.get('id-type-payment', '')
+        date_payment = request.POST.get('id-date-payment', '')
+        user_id = request.user.id
+        user_obj = User.objects.get(id=int(user_id))
+        subsidiary_obj = get_subsidiary_by_user(user_obj)
+        if type_payment == 'E':
+            cash_pk = request.POST.get('id-cash', '')
+            cash_obj = Casing.objects.get(id=int(cash_pk))
+            amount_cash = decimal.Decimal(request.POST.get('id-amount-cash', ''))
+            new_payment_e = {
+                'order': payment_obj.order,
+                'type': 'I',
+                'type_payment': type_payment,
+                'amount': amount_cash,
+                'coin': coin_obj,
+                'date_payment': date_payment,
+                'user': user_obj,
+                'subsidiary': subsidiary_obj,
+                'casing': cash_obj,
+            }
+            new_payment_e_obj = Payments.objects.create(**new_payment_e)
+            new_payment_e_obj.save()
+            payment_obj.amount = payment_obj.amount - amount_cash
+            payment_obj.save()
+        elif type_payment == 'D':
+            bank_pk = request.POST.get('id-deposit', '')
+            amount_deposit = decimal.Decimal(request.POST.get('id-amount-deposit', ''))
+            code_operation = str(request.POST.get('id-code-operation', ''))
+            new_payment_d = {
+                'order': payment_obj.order,
+                'type': 'I',
+                'type_payment': type_payment,
+                'type_bank': bank_pk,
+                'code_operation': code_operation,
+                'amount': amount_deposit,
+                'coin': coin_obj,
+                'date_payment': date_payment,
+                'user': user_obj,
+                'subsidiary': subsidiary_obj,
+            }
+            new_payment_d_obj = Payments.objects.create(**new_payment_d)
+            new_payment_d_obj.save()
+            payment_obj.amount = payment_obj.amount - amount_deposit
+            payment_obj.save()
 
-        employee_obj = Employee(
-            document_number=_document,
-            birth_date=_birth_date,
-            paternal_last_name=_paternal_last_name,
-            maternal_last_name=_maternal_last_name,
-            names=_names,
-            gender=_gender_id,
-            telephone_number=_telephone_number,
-            email=_email,
-            address=_address,
-            occupation=_occupation_id,
-            is_state=_state,
-        )
-        employee_obj.save()
         return JsonResponse({
             'success': True,
         }, status=HTTPStatus.OK)

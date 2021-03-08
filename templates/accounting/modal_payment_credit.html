@@ -17,26 +17,43 @@
                 <div class="card border-warning">
                     <div class="card-header bg-warning">
                         <div class="row m-0 p-0 col-sm-12 col-md-12  col-lg-12 montserrat">
-                            <div class="col-sm-1 col-md-1  col-lg-1"><label
-                                    class="m-0 p-0 align-middle font-weight-bold mt-1">Cliente</label></div>
+                            <div class="col-sm-1 col-md-1  col-lg-1 align-self-center"><label
+                                    class="m-0 p-0 align-middle font-weight-bold">Cliente</label></div>
                             <div class="col-sm-7 col-md-7  col-lg-7">
-                                <input id="id-client-payment" class="form-control form-control-sm text-center" readonly
+                                <input id="id-client-payment" type="text"
+                                       class="form-control form-control-sm font-weight-bold text-center" readonly
                                        value="{{ payment_obj.order.client.full_names }}">
                             </div>
-                            <div class="col-sm-1 col-md-1  col-lg-1"><label
-                                    class="m-0 p-0 align-middle font-weight-bold mt-1">Monto</label></div>
+                            <div class="col-sm-1 col-md-1  col-lg-1 align-self-center"><label
+                                    class="m-0 p-0 align-middle font-weight-bold">Monto</label></div>
                             <div class="col-sm-3 col-md-3  col-lg-3">
-                                <input id="id-amount-payment" class="form-control form-control-sm text-right" readonly
-                                       value="{{ payment_obj.amount|safe }}">
+                                <input id="id-amount-payment" name="id-amount-payment" type="text"
+                                       class="form-control form-control-sm font-weight-bold text-right" readonly
+                                       value="{{ payment_obj.amount|safe }}" required>
                             </div>
                         </div>
                     </div>
                     <div class="card-body">
+                        <div class="row col-sm-12 col-md-12  col-lg-12 montserrat">
+                            <div class="col-sm-1 col-md-1  col-lg-1"></div>
+                            <div class="col-sm-2 col-md-2  col-lg-2 p-0 text-center align-self-center">Numero</div>
+                            <div class="col-sm-3 col-md-3  col-lg-3 p-0 text-center">
+                                <input id="id-payment" name="id-payment" type="text"
+                                       class="form-control form-control-sm text-center" readonly
+                                       value="{{ payment_obj.id }}" required>
+                            </div>
+                             <div class="col-sm-2 col-md-2  col-lg-2 p-0 text-center align-self-center">Fecha Pago</div>
+                            <div class="col-sm-3 col-md-3  col-lg-3 p-0 text-center">
+                                <input type="date" class="form-control form-control-sm" id="id-date-payment" name="id-date-payment"
+                                   value="{{ date_now }}">
+                            </div>
+                             <div class="col-sm-1 col-md-1  col-lg-1"></div>
+                        </div>
                         <div class="row pl-3 pr-3 montserrat font-weight-bold text-center">
                             <div class="col-sm-3 col-md-3  col-lg-3 p-1">
                                 <label class="text-danger">Modalidad pago</label>
-                                <select id="id-type-payment" name="type-payment"
-                                        class="form-control form-control-sm">
+                                <select id="id-type-payment" name="id-type-payment"
+                                        class="form-control form-control-sm" required>
                                     <option selected value="0">Seleccione</option>
                                     {% for py in type_payment %}
                                         <option value="{{ py.0 }}">{{ py.1 }}</option>
@@ -45,7 +62,7 @@
                             </div>
                             <div class="col-sm-3 col-md-3  col-lg-3 p-1 text-center">
                                 <label class="mod-cash text-danger" style="display: none">Caja ingreso</label>
-                                <select id="id-cash" name="cash"
+                                <select id="id-cash" name="id-cash"
                                         class="form-control form-control-sm  mod-cash entry-payment"
                                         style="display: none">
                                     <option value="0">Seleccione</option>
@@ -54,7 +71,7 @@
                                     {% endfor %}
                                 </select>
                                 <label class="mod-deposit text-danger" style="display: none">Banco de ingreso</label>
-                                <select id="id-deposit" name="deposit"
+                                <select id="id-deposit" name="id-deposit"
                                         class="form-control form-control-sm  mod-deposit entry-payment"
                                         style="display: none">
                                     {% for b in bank_set %}
@@ -66,19 +83,19 @@
                                 <label class="mod-cash text-danger" style="display: none">Monto efectivo</label>
                                 <input type="text"
                                        id="id-amount-cash"
-                                       name="amount-cash" value="0.00"
+                                       name="id-amount-cash" value="0.00"
                                        class="form-control form-control-sm font-weight-bold text-right mod-cash amount-decimal"
                                        style="display: none">
                                 <label class="mod-deposit text-danger" style="display: none">Monto deposito</label>
                                 <input type="text"
                                        id="id-amount-deposit"
-                                       name="amount-deposit" value="0.00"
+                                       name="id-amount-deposit" value="0.00"
                                        class="form-control form-control-sm font-weight-bold text-right mod-deposit amount-decimal"
                                        style="display: none">
                             </div>
                             <div class="col-sm-3 col-md-3  col-lg-3 p-1">
                                 <label class="mod-cash text-danger" style="display: none">Tipo moneda</label>
-                                <select id="id-coin" name="coin"
+                                <select id="id-coin" name="id-coin"
                                         class="form-control form-control-sm  mod-cash" style="display: none">
                                     {% for o in coin_set %}
                                         <option value="{{ o.id }}">{{ o.name_coin }}</option>
@@ -86,7 +103,7 @@
                                 </select>
                                 <label class="mod-deposit text-danger" style="display: none">Codigo operacion</label>
                                 <input type="text" class="form-control form-control-sm mod-deposit"
-                                       id="id-code-operation" name="code-operation"
+                                       id="id-code-operation" name="id-code-operation"
                                        placeholder="" style="display: none">
                             </div>
                         </div>
@@ -97,7 +114,8 @@
             <div class="modal-footer p-1">
                 <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Cerrar</button> &nbsp;
                 <button id="btn-payment" type="submit" class="btn btn-sm text-white"
-                        style="background-color: rgba(7, 134, 193, 1.0);">Pagar
+                        style="background-color: rgba(7, 134, 193, 1.0);"><i class="fas fa-dollar-sign"></i> Registrar
+                    Pago
                 </button>
             </div>
         </form>
@@ -136,39 +154,82 @@
         }
     });
     $("#id-cash").change(function () {
-            if ($("#id-cash").val() != '0') {
-                $.ajax({
-                    url: '/accounting/get_valid_opening_cash/',
-                    async: true,
-                    dataType: 'json',
-                    type: 'GET',
-                    data: {'cash-id': $("#id-cash").val(), 'date-now': $("#id-date").val()},
-                    contentType: 'application/json;charset=UTF-8',
-                    headers: {"X-CSRFToken": '{{ csrf_token }}'},
-                    success: function (response) {
-                        if (response.success) {
-                            if (response.pk === 1) {
-                                toastr.info('La caja esta disponible', 'Caja');
-                            } else {
-                                if (response.pk === 0) {
-                                    toastr.error('Aperture la caja antes de hacer el pago', 'Caja');
-                                    $('#id-cash').val(0);
-                                    $('#id-cash').trigger('change');
-                                }
+        if ($("#id-cash").val() != '0') {
+            $.ajax({
+                url: '/accounting/get_valid_opening_cash/',
+                async: true,
+                dataType: 'json',
+                type: 'GET',
+                data: {'cash-id': $("#id-cash").val(), 'date-now': $("#id-date").val()},
+                contentType: 'application/json;charset=UTF-8',
+                headers: {"X-CSRFToken": '{{ csrf_token }}'},
+                success: function (response) {
+                    if (response.success) {
+                        if (response.pk === 1) {
+                            toastr.info('La caja esta disponible', 'Caja');
+                        } else {
+                            if (response.pk === 0) {
+                                toastr.error('Aperture la caja antes de hacer el pago', 'Caja');
+                                $('#id-cash').val(0);
+                                $('#id-cash').trigger('change');
                             }
                         }
-                    },
-                    error: function (response) {
-                        toastr.error('Problemas al verificar la caja', 'Caja');
-                        $('#id-cash').val(0);
-                        $('#id-cash').trigger('change');
                     }
-                });
-            }
-        });
+                },
+                error: function (response) {
+                    toastr.error('Problemas al verificar la caja', 'Caja');
+                    $('#id-cash').val(0);
+                    $('#id-cash').trigger('change');
+                }
+            });
+        }
+    });
     $('#form-payment-credit').submit(function (event) {
         event.preventDefault();
         let data = new FormData($('#form-payment-credit').get(0));
+        if ($('#id-type-payment').val() === '0' || $('#id-type-payment').val() === '' || $('#id-type-payment').val() === 0) {
+            toastr.warning('Seleccione la modalidad de pago', 'Mensaje');
+            return false;
+        }
+        if ($('#id-type-payment').val() === 'E') {
+            if ($('#id-cash').val() === '0' || $('#id-cash').val() === '' || $('#id-cash').val() === 0) {
+                toastr.warning('Seleccione una caja porfavor', 'Mensaje');
+                return false;
+            } else {
+                if ($('#id-amount-cash').val() === '' || $('#id-amount-cash').val() <= 0) {
+                    toastr.warning('Ingrese el monto del pago', 'Mensaje');
+                    return false;
+                }
+            }
+        } else {
+            if ($('#id-type-payment').val() === 'D') {
+                if ($('#id-deposit').val() === '0' || $('#id-deposit').val() === '' || $('#id-deposit').val() === 0) {
+                    toastr.warning('Seleccione una entidad financiera', 'Mensaje');
+                    return false;
+                } else {
+                    if ($('#id-amount-deposit').val() === '' || $('#id-amount-deposit').val() <= 0) {
+                        toastr.warning('Ingrese el monto del deposito', 'Mensaje');
+                        return false;
+                    }
+                }
+            } else {
+                toastr.warning('Seleccione una modalidad de pago valida', 'Mensaje');
+                return false;
+            }
+        }
+        if ($('#id-coin').val() === '' || $('#id-coin').val() === '0' || $('#id-coin').val() === 0) {
+            toastr.warning('Seleccione el tipo de moneda porfavor', 'Mensaje');
+            return false;
+        }
+        if ($('#id-payment').val() === '') {
+            toastr.error('Problemas en la identificacion del pago', 'Mensaje');
+            return false;
+        }
+        if($('#id-date-payment').val() === ''){
+            toastr.warning('Seleccione la fecha del pago', 'Mensaje');
+            return false;
+        }
+
         $.ajax({
             url: $(this).attr('action'),
             type: $(this).attr('method'),
@@ -179,7 +240,7 @@
             headers: {"X-CSRFToken": '{{ csrf_token }}'},
             success: function (response) {
                 if (response.success) {
-                    toastr.success(response.success, '¡Trabajador registrado con exito!!');
+                    toastr.success('Pago registrado correctamente', 'Caja');
                     setTimeout(() => {
                         location.reload();
                     }, 500);

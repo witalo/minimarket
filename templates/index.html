@@ -89,7 +89,7 @@
                     <a class="collapse-item" href="{% url 'purchase:order_purchase' %}"><i
                             class="fas fa-cart-plus fa-x text-gray-300"></i> Compras</a>
                     <a class="collapse-item" href="{% url 'sale:order_sales_list' %}"><i
-                            class="fas fa-cart-plus fa-x text-gray-300"></i> Ventas realizadas</a>
+                            class="fas fa-cart-plus fa-x text-gray-300"></i> Ordenes de venta</a>
                     {#                    <a class="collapse-item" href="{% url 'sale:get_client_list' %}"><i class="fas fa-cart-plus fa-x text-gray-300"></i> Clientes</a>#}
                 </div>
             </div>
@@ -160,7 +160,7 @@
                     <h6 class="collapse-header">Finanza</h6>
                     <!--<a class="collapse-item" href="{% url 'sale:product_list' %}">Aperturar caja</a>
                     <a class="collapse-item" href="{% url 'sale:product_list' %}">Cerrar caja</a>-->
-                    <a class="collapse-item" href="{% url 'accounting:sales_credit_list' %}">Ventas de creditos</a>
+                    <a class="collapse-item" href="{% url 'accounting:sales_credit_list' %}">Creditos cliente</a>
                 </div>
             </div>
         </li>
@@ -408,12 +408,13 @@
                                             <div class="col mr-2">
                                                 <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                                     Ventas
-                                                    (Mensual)
+                                                    ({{ date_ }})
                                                 </div>
-                                                <div class="h5 mb-0 font-weight-bold text-gray-800">$40,000</div>
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                    S/. {{ total_sales|safe }}</div>
                                             </div>
                                             <div class="col-auto">
-                                                <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                                                <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
                                             </div>
                                         </div>
                                     </div>
@@ -428,9 +429,10 @@
                                             <div class="col mr-2">
                                                 <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
                                                     Compras
-                                                    (Mensual)
+                                                    ({{ date_ }})
                                                 </div>
-                                                <div class="h5 mb-0 font-weight-bold text-gray-800">$215,000</div>
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                    S/. {{ total_purchase|safe }}</div>
                                             </div>
                                             <div class="col-auto">
                                                 <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
@@ -478,13 +480,12 @@
                                         <div class="row no-gutters align-items-center">
                                             <div class="col mr-2">
                                                 <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                                    Productos
-                                                    Cantidad
+                                                    Total Productos
                                                 </div>
-                                                <div class="h5 mb-0 font-weight-bold text-gray-800">1800</div>
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ quantity_product }}</div>
                                             </div>
                                             <div class="col-auto">
-                                                <i class="fas fa-comments fa-2x text-gray-300"></i>
+                                                <i class="fas fa-calendar fa-2x text-gray-300"></i>
                                             </div>
                                         </div>
                                     </div>

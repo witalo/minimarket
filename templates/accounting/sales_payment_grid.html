@@ -15,7 +15,7 @@
         <tr class="text-center" id="{{ p.id }}" style="font-size: 12px;">
             <td class="align-middle">{{ p.user.employee_set.last.names }}</td>
             <td class="align-middle">{{ p.get_type_payment_display }}</td>
-            <td class="align-middle">{{ p.date_payment }}</td>
+            <td class="align-middle">{{ p.date_payment|date:'d-M-Y' }}</td>
             <td class="text-right align-middle item-total decimal"> {{ p.amount|safe }}</td>
             <td class="align-middle">{{ p.coin.name_coin }}</td>
             <td class="align-middle">
