@@ -81,7 +81,7 @@ WSGI_APPLICATION = 'ventura.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'system',
+        'NAME': 'ventura',
         'USER': 'postgres',
         'PASSWORD': 'postgres',
         'HOST': '127.0.0.1',
