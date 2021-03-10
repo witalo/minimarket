@@ -320,8 +320,11 @@ def graphic_sales_purchase_view(request):
     if request.method == 'GET':
         _week = request.GET.get('week', '')
         if _week != '':
+            user_id = request.user.id
+            user_obj = User.objects.get(id=user_id)
+            subsidiary_obj = get_subsidiary_by_user(user_obj)
             tpl_list = loader.get_template('graphic/graphic_sales_purchase_grid.html')
-            context = ({'orders_set': _week, })
+            context = ({'subsidiary_obj': subsidiary_obj, })
 
             return JsonResponse({
                 'message': 'Grafica Lista',
