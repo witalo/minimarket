@@ -1,0 +1,51 @@
+{% extends 'index.html' %}
+
+{% block title %}
+    System | Grafico
+{% endblock title %}
+
+{% block body %}
+    <div class="card-header p-0 m-0 pb-1 small border-bottom-primary">
+        <div class="row col-sm-12 col-md-12 col-lg-12">
+            <div class="col-sm-2 col-md-2 col-lg-2 align-self-center text-center p-0">
+                <input type="week" id="id-week" class="form-control form-control-sm" value="">
+            </div>
+            <div class="col-sm-2 col-md-2 col-lg-2 align-self-center text-center p-0">
+                <button type="button" onclick="ShowGraphic('graphic_sales_purchase_view')"
+                        class="btn btn-sm btn-outline-success" style="font-size: 14px;"><i class="fas fa-chart-bar"></i>
+                    Mostrar grafica
+                </button>
+            </div>
+            <div class="col-sm-3 col-md-3 col-lg-3"></div>
+            <div class="col-sm-5 col-md-5 col-lg-5"></div>
+        </div>
+    </div>
+    <!-- Content -->
+    <div class="container-fluid p-2">
+        <div class="col-sm-12 col-md-12 col-lg-12" id="id-table-graphic" style="height: 470px; overflow-y: scroll;"></div>
+    </div>
+{% endblock body %}
+
+{% block extrajs %}
+    <script type="text/javascript">
+        function ShowGraphic(route) {
+            if ($('#id-week').val() === '') {
+                toastr.warning('Seleccione una semana', 'Grafica');
+                return false;
+            }
+            $('#id-table-graphic').empty();
+            $.ajax({
+                url: '/purchase/' + route + '/',
+                dataType: 'json',
+                type: 'GET',
+                data: {'week': $('#id-week').val()},
+                success: function (response) {
+                   $('#id-table-graphic').html(response['grid']);
+                },
+                fail: function (response) {
+                    toastr.error('Problemas al mostrar la grafica', '¡Mensaje!');
+                }
+            });
+        };
+    </script>
+{% endblock extrajs %}

@@ -37,7 +37,7 @@ def get_order_purchase(request):
         # sales_store = SubsidiaryStore.objects.filter(
         #     subsidiary=subsidiary_obj, category='3').first()
         casing_set = Casing.objects.filter(is_enabled=True, subsidiary=subsidiary_obj).values('id',
-                                                                                                             'name')
+                                                                                              'name')
         provider_set = Provider.objects.all()
         # product_dic = []
         # if sales_store is None:
@@ -306,3 +306,24 @@ def update_provider(request):
             'success': True,
         }, status=HTTPStatus.OK)
 
+
+def graphic_sales_purchase(request):
+    if request.method == 'GET':
+        my_date = datetime.now()
+        date_now = my_date.strftime("%Y-%m")
+        return render(request, 'graphic/graphic_sales_purchase.html', {
+            'date_now': date_now,
+        })
+
+
+def graphic_sales_purchase_view(request):
+    if request.method == 'GET':
+        _week = request.GET.get('week', '')
+        if _week != '':
+            tpl_list = loader.get_template('graphic/graphic_sales_purchase_grid.html')
+            context = ({'orders_set': _week, })
+
+            return JsonResponse({
+                'message': 'Grafica Lista',
+                'grid': tpl_list.render(context),
+            }, status=HTTPStatus.OK)

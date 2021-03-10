@@ -33,6 +33,7 @@
     <link rel="stylesheet" href="{% static 'css/jquery.mCustomScrollbar.css' %}">
     {#    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.min.css">#}
     <link rel="stylesheet" href="{% static 'css/fixe.header_data_tables.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/switch.css' %}">
 </head>
 
 <body id="page-top" class="roboto-medium">
@@ -137,13 +138,6 @@
                 </div>
             </div>
         </li>
-
-        <!-- Nav Item - Charts -->
-        <li class="nav-item">
-            <a class="nav-link" href="{% url 'hrm:report' %}">
-                <i class="fas fa-fw fa-chart-area"></i>
-                <span>Charts</span></a>
-        </li>
         <!-- Nav Item - Tables -->
         <li class="nav-item">
             <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseCash"
@@ -157,6 +151,21 @@
                     <!--<a class="collapse-item" href="{% url 'sale:product_list' %}">Aperturar caja</a>
                     <a class="collapse-item" href="{% url 'sale:product_list' %}">Cerrar caja</a>-->
                     <a class="collapse-item" href="{% url 'accounting:sales_credit_list' %}">Creditos cliente</a>
+                </div>
+            </div>
+        </li>
+        <!-- Nav Item - Charts -->
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseGraphic"
+               aria-expanded="true" aria-controls="collapseGraphic">
+                <i class="fas fa-fw fa-chart-area"></i>
+                <span>Graficos</span></a>
+            <div id="collapseGraphic" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
+                <div class="bg-white py-2 collapse-inner rounded">
+                    <h6 class="collapse-header">Grafica</h6>
+                    <a class="collapse-item" href="{% url 'hrm:report' %}">Reporte</a>
+                    <a class="collapse-item" href="{% url 'purchase:graphic_sales_purchase' %}">Ventas - Compras</a>
+                    <a class="collapse-item" href="{% url 'purchase:graphic_sales_purchase' %}">Pagos</a>
                 </div>
             </div>
         </li>
@@ -189,20 +198,18 @@
 
                 <!-- Topbar Navbar -->
                 <ul class="navbar-nav ml-auto">
-
+                    <div class="topbar-divider d-none d-sm-block"></div>
                     <!-- Nav Item - Search Dropdown (Visible Only XS) -->
-                    <!--
-                    <li class="nav-item dropdown no-arrow d-sm-none">
+                    <li class="nav-item dropdown no-arrow mx-1">
                         <a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button"
                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="fas fa-search fa-fw"></i>
                         </a>
-                        #Dropdown - Messages
                         <div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in"
                              aria-labelledby="searchDropdown">
                             <form class="form-inline mr-auto w-100 navbar-search">
                                 <div class="input-group">
-                                    <input type="text" class="form-control bg-light border-0 small"
+                                    <input type="text" class="form-control bg-light border-1 small"
                                            placeholder="Buscar..." aria-label="Search"
                                            aria-describedby="basic-addon2">
                                     <div class="input-group-append">
@@ -214,7 +221,7 @@
                             </form>
                         </div>
                     </li>
-                    -->
+                    <div class="topbar-divider d-none d-sm-block"></div>
                     <!-- Nav Item - Alerts -->
                     <li class="nav-item dropdown no-arrow mx-1">
                         <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button"
@@ -339,6 +346,16 @@
                         </div>
                     </li>
 
+                    <div class="topbar-divider d-none d-sm-block"></div>
+                    <li class="nav-item dropdown no-arrow align-self-center">
+                        <div class="switch-button">
+                            <!-- Checkbox -->
+                            <input type="checkbox" name="switch-button" id="switch-label"
+                                   class="switch-button__checkbox">
+                            <!-- Botón -->
+                            <label for="switch-label" class="switch-button__label m-0 p-0"></label>
+                        </div>
+                    </li>
                     <div class="topbar-divider d-none d-sm-block"></div>
 
                     <!-- Nav Item - User Information -->
@@ -786,6 +803,13 @@
 <script src="{% static 'js/search-isotope/isotope.search.js' %}"></script>
 {#<script src="https://code.jquery.com/jquery-3.5.1.js"></script>#}
 <script src="{% static 'js/datatables.fixed.header.min.js' %}"></script>
+<script src="{% static 'js/invert_color.js' %}"></script>
+
+{#script para graphic#}
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
 <script type="text/javascript">
 
 </script>
