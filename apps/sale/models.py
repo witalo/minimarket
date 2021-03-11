@@ -184,7 +184,7 @@ class Order(models.Model):
     invoice = models.CharField('Comprobante', max_length=100, null=True, blank=True)
     correlative_order = models.IntegerField('Correlativo de la orden', default=0)
     status = models.CharField('Estado', max_length=1, choices=STATUS_CHOICES, default='P', )
-    create_at = models.DateTimeField(null=True, blank=True)
+    create_at = models.DateField(null=True, blank=True)
     update_at = models.DateTimeField(auto_now=True)
     client = models.ForeignKey('Client', verbose_name='Cliente',
                                on_delete=models.SET_NULL, null=True, blank=True)

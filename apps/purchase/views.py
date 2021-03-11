@@ -323,6 +323,11 @@ def graphic_sales_purchase_view(request):
             user_id = request.user.id
             user_obj = User.objects.get(id=user_id)
             subsidiary_obj = get_subsidiary_by_user(user_obj)
+            week_obj = datetime.strptime(_week + '-1', "%Y-W%W-%V")
+            new_year = week_obj.year
+            new_week = week_obj.weekday()
+            order_set = Order.objects.filter(type='V', subsidiary=subsidiary_obj, status='C', create_at__week=new_week,
+                                             create_at__year=new_year)
             tpl_list = loader.get_template('graphic/graphic_sales_purchase_grid.html')
             context = ({'subsidiary_obj': subsidiary_obj, })
 
