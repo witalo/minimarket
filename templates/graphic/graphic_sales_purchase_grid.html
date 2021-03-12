@@ -15,7 +15,7 @@
             zoomType: 'xy',
         },
         title: {
-            text: 'VENTAS - COMPRAS'
+            text: 'COMPRAS - VENTAS'
         },
         subtitle: {
             text: 'SEDE: {{ subsidiary_obj.name }}'
@@ -71,7 +71,7 @@
             name: 'Ventas',
             type: 'column',
             yAxis: 1,
-            data: [49.9, 71.5, 106.4, 138.2, 184.0, 124.0, 80.6],
+            data: {{ sales|safe }},
             tooltip: {
                 valueSuffix: ' Soles'
             }
@@ -79,7 +79,7 @@
         }, {
             name: 'Compras',
             type: 'spline',
-            data: [7.0, 6.9, 8.5, 12.5, 16.2, 12.5, 9.2],
+            data: {{ purchase|safe }},
             tooltip: {
                 valueSuffix: ' Soles'
             }

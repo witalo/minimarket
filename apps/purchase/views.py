@@ -1,3 +1,4 @@
+from django.db.models.functions import Coalesce
 from django.shortcuts import render
 from datetime import datetime
 from http import HTTPStatus
@@ -11,7 +12,7 @@ import decimal
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models.fields.files import ImageFieldFile
 from django.template import loader
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.db import DatabaseError, IntegrityError
 from django.core import serializers
 from datetime import date
@@ -323,15 +324,59 @@ def graphic_sales_purchase_view(request):
             user_id = request.user.id
             user_obj = User.objects.get(id=user_id)
             subsidiary_obj = get_subsidiary_by_user(user_obj)
-            week_obj = datetime.strptime(_week + '-1', "%Y-W%W-%V")
-            new_year = week_obj.year
-            new_week = week_obj.weekday()
-            order_set = Order.objects.filter(type='V', subsidiary=subsidiary_obj, status='C', create_at__week=new_week,
-                                             create_at__year=new_year)
+            new_week = int(_week[6:])
+            new_year = _week[:4]
+            date_ = "{}-{}-1".format(new_year, new_week)
+            _day = datetime.strptime(date_, "%Y-%W-%w")
+            sales = []
+            purchase = []
+            i = 0
+            while i <= 6:
+                d = int(str(_day)[8:10])
+                total_sales = Order.objects.filter(type='V', subsidiary=subsidiary_obj, status='C',
+                                                   create_at__year=new_year, create_at__week=new_week,
+                                                   create_at__day=d).aggregate(
+                    r=Coalesce(Sum('total'), 0)).get(
+                    'r')
+                sales.append(float(total_sales))
+                total_purchase = Order.objects.filter(type='C', subsidiary=subsidiary_obj, status='C',
+                                                      create_at__year=new_year, create_at__week=new_week,
+                                                      create_at__day=d).aggregate(r=Coalesce(Sum('total'), 0)).get(
+                    'r')
+                purchase.append(float(total_purchase))
+                i = i + 1
+                _day = _day + timedelta(days=1)
+
             tpl_list = loader.get_template('graphic/graphic_sales_purchase_grid.html')
-            context = ({'subsidiary_obj': subsidiary_obj, })
+            context = ({
+                'subsidiary_obj': subsidiary_obj,
+                'sales': sales,
+                'purchase': purchase,
+            })
 
             return JsonResponse({
                 'message': 'Grafica Lista',
                 'grid': tpl_list.render(context),
             }, status=HTTPStatus.OK)
+
+
+def graphic_sales_payment(request):
+    if request.method == 'GET':
+        my_date = datetime.now()
+        date_now = my_date.strftime("%Y-%m")
+        return render(request, 'graphic/graphic_sales_payment.html', {
+            'date_now': date_now,
+        })
+
+
+def graphic_sales_payment_view(request):
+    if request.method == 'GET':
+        tpl_list = loader.get_template('graphic/graphic_sales_payment_grid.html')
+        context = ({
+            'subsidiary_obj': 1,
+        })
+
+        return JsonResponse({
+            'message': 'Grafica Lista',
+            'grid': tpl_list.render(context),
+        }, status=HTTPStatus.OK)

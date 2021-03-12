@@ -19,9 +19,12 @@ urlpatterns = [
     path('get_provider_update_form/', login_required(get_provider_update_form), name='get_provider_update_form'),
     path('update_provider/', login_required(update_provider), name='update_provider'),
 
-    # Graphic
+    # Graphic sales purchase
     path('graphic_sales_purchase/', login_required(graphic_sales_purchase), name='graphic_sales_purchase'),
     path('graphic_sales_purchase_view/', login_required(graphic_sales_purchase_view),
          name='graphic_sales_purchase_view'),
+    # Graphic payment
+    path('graphic_sales_payment/', login_required(graphic_sales_payment), name='graphic_sales_payment'),
+    path('graphic_sales_payment_view/', login_required(graphic_sales_payment_view), name='graphic_sales_payment_view'),
 
 ]
