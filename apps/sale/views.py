@@ -1231,8 +1231,8 @@ def get_order_sales_list(request):
             user_id = request.user.id
             user_obj = User.objects.get(id=int(user_id))
             subsidiary_obj = get_subsidiary_by_user(user_obj)
-            orders_set = Order.objects.filter(create_at__range=(start_date, end_date), type='V', status='C',
-                                              subsidiary=subsidiary_obj)
+            orders_set = Order.objects.filter(create_at__range=(start_date, end_date), type='V',
+                                              subsidiary=subsidiary_obj).order_by('correlative_order')
             tpl_list = loader.get_template('sale/sales_grid_list.html')
             context = ({'orders_set': orders_set, })
 
@@ -1258,8 +1258,8 @@ def get_order_sales_by_client(request):
             user_id = request.user.id
             user_obj = User.objects.get(id=int(user_id))
             subsidiary_obj = get_subsidiary_by_user(user_obj)
-            orders_set = Order.objects.filter(type='V', status='C',
-                                              subsidiary=subsidiary_obj, client=client_obj)
+            orders_set = Order.objects.filter(type='V', subsidiary=subsidiary_obj, client=client_obj).order_by(
+                'correlative_order')
             tpl_list = loader.get_template('sale/sales_grid_list.html')
             context = ({'orders_set': orders_set, })
             return JsonResponse({
@@ -1279,4 +1279,26 @@ def get_sales_detail(request):
         })
         return JsonResponse({
             'grid': t.render(c, request),
+        }, status=HTTPStatus.OK)
+
+
+def set_sales_annular(request):
+    if request.method == 'GET':
+        order_pk = request.GET.get('pk', '')
+        order_obj = Order.objects.get(pk=int(order_pk))
+        order_obj.status = 'A'
+        order_obj.save()
+        return JsonResponse({
+            'message': 'Anulado',
+        }, status=HTTPStatus.OK)
+
+
+def set_sales_reactive(request):
+    if request.method == 'GET':
+        order_pk = request.GET.get('pk', '')
+        order_obj = Order.objects.get(pk=int(order_pk))
+        order_obj.status = 'C'
+        order_obj.save()
+        return JsonResponse({
+            'message': 'Completado',
         }, status=HTTPStatus.OK)

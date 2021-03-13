@@ -1,12 +1,12 @@
 {% if orders_set %}
-    <div class="card m-0">
-        <div class="card-header m-0 p-0  align-self">
-            <h6 class="card-title text-center m-1">ORDENES DE VENTA</h6>
+    <div class="card m-0 border-warning">
+        <div class="card-header m-0 p-0 bg-gradient-warning align-self">
+            <h6 class="card-title text-center m-1 text-white-50">ORDENES DE VENTA</h6>
         </div>
         <div class="card-body m-0 p-2">
             <div class="table-responsive dataTables_wrapper">
                 <table id="id-table-orders-sale"
-                       class="table table-striped table-light table-sm align-content-center table-hover m-0"
+                       class="table table-sm align-content-center table-hover m-0"
                        cellspacing="0" width="100%">
                     <thead>
                     <tr class="text-center" style="height: 20px">
@@ -16,7 +16,7 @@
                         <th class="th-sm font-weight-normal">Fecha venta</th>
                         <th class="th-sm font-weight-normal">Cliente</th>
                         <th class="th-sm font-weight-normal">Empleado</th>
-                        <th class="th-sm font-weight-normal">Total</th>
+                        <th class="th-sm font-weight-normal">Total S/.</th>
                         <th class="th-sm font-weight-normal">Descuento</th>
                         <th class="th-sm font-weight-normal">Acción</th>
                     </tr>
@@ -26,14 +26,14 @@
                         <tr class="text-center align-middle" pk="{{ o.id }}">
                             <td class="align-middle">{{ o.correlative_order }}</td>
                             <td class="align-middle">{{ o.get_type_display }}</td>
-                            <td class="align-middle">{{ o.get_status_display }}</td>
-                            <td class="align-middle">{{ o.create_at }}</td>
+                            <td class="align-middle font-weight-bold item-status '{% if o.status == 'C' %} text-primary {% else %} text-danger {% endif %}'">{{ o.get_status_display }}</td>
+                            <td class="align-middle">{{ o.create_at|date:'d-M-Y' }}</td>
                             <td class="text-left align-middle" style="font-size: 13px;">{{ o.client.full_names }}</td>
-                            <td class="text-left align-middle"
+                            <td class="align-middle"
                                 style="font-size: 13px;">{{ o.user.employee_set.last.names }}</td>
-                            <td class="text-right align-middle">{{ o.total }}</td>
-                            <td class="text-right align-middle">{{ o.discount }}</td>
-                            <td class="align-middle">
+                            <td class="text-right align-middle text-primary font-weight-bold">{{ o.total|safe }}</td>
+                            <td class="text-right align-middle font-weight-bold">{{ o.discount|safe }}</td>
+                            <td class="align-middle item-action">
                                 <div class="btn-group">
                                     <button type="button" class="btn btn-success  dropdown-toggle"
                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
@@ -44,9 +44,18 @@
                                         <a class="dropdown-item btn-sales-detail"
                                            style="cursor: pointer; font-size: 12px;" pk="{{ o.id }}"><i
                                                 class="fas fa-shopping-basket fa-2x pr-1"></i> Ver detalle </a>
-                                        <a class="dropdown-item btn-sales-download"
+                                        {% if o.status == 'C' or o.status == 'P' %}
+                                            <a class="dropdown-item btn-sales-download"
                                            style="cursor: pointer; font-size: 12px;" pk="{{ o.id }}"><i
                                                 class="fas fa-file-pdf fa-2x pl-1 pr-2"></i> Descargar </a>
+                                            <a class="dropdown-item btn-sales-annular item-function"
+                                               style="cursor: pointer; font-size: 12px;" pk="{{ o.id }}"><i
+                                                    class="fas fa-briefcase fa-2x pl-1 pr-2"></i> <b>Anular</b> </a>
+                                        {% else %}
+                                            <a class="dropdown-item btn-sales-reactive item-function"
+                                               style="cursor: pointer; font-size: 12px;" pk="{{ o.id }}"><i
+                                                    class="fas fa-briefcase fa-2x pl-1 pr-2"></i> <b>Reactivar</b></a>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </td>
@@ -78,25 +87,5 @@
     <h5>No existen ventas realizadas</h5>
 {% endif %}
 <script type="text/javascript">
-    $(document).on('click', '.btn-sales-detail', function () {
-        let _pk = $(this).attr('pk');
-        let _table = $(this).parent('div').parent('div').parent('td').parent('tr').next('tr').children('td.table-row-details-sales');
-        $('#id-table-orders-sale tbody.table-details-sales tr td.table-row-details-sales').parent('tr').slideUp(800);
-        $('#id-table-orders-sale tbody.table-details-sales tr td.table-row-details-sales').empty();
-        $.ajax({
-            url: '/sale/get_sales_detail/',
-            async: true,
-            dataType: 'json',
-            type: 'GET',
-            data: {'pk': _pk},
-            success: function (response) {
-                _table.html(response.grid);
-                _table.parent('tr').slideDown(800);
-            },
-        });
-    });
-    $(document).on('click', '.btn-sales-download', function () {
-        let pk = $(this).attr('pk');
-        window.open("/sale/print_ticket_order_sales/" + pk + "/", '_blank');
-    });
+
 </script>

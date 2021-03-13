@@ -6,10 +6,10 @@
         <div class="card-body m-0 p-2">
             <div class="table-responsive dataTables_wrapper">
                 <table id="id-table-sale-credit"
-                       class="table table-striped table-light m-0"
+                       class="table table-hover m-0"
                        cellspacing="0" width="100%">
                     <thead>
-                    <tr class="text-center" style="height: 20px">
+                    <tr class="text-center" style="height: 15px">
                         <th class="th-sm font-weight-normal">N°</th>
                         <th class="th-sm font-weight-normal">Tipo</th>
                         <th class="th-sm font-weight-normal">Estado</th>
@@ -31,8 +31,8 @@
                             <td class="text-left align-middle" style="font-size: 13px;">{{ o.client.full_names }}</td>
                             <td class="text-left align-middle"
                                 style="font-size: 13px;">{{ o.user.employee_set.last.names }}</td>
-                            <td class="text-right align-middle">{{ o.total }}</td>
-                            <td class="text-right align-middle">{{ o.discount }}</td>
+                            <td class="text-right align-middle">{{ o.total|safe }}</td>
+                            <td class="text-right align-middle">{{ o.discount|safe }}</td>
                             <td class="align-middle">
                                 <div class="btn-group">
                                     <button type="button" class="btn btn-success  dropdown-toggle"
@@ -55,7 +55,7 @@
                     {% endfor %}
                     </tbody>
                     <tfoot>
-                    <tr class="text-center" style="height: 20px">
+                    <tr class="text-center" style="height: 15px">
                         <th class="th-sm font-weight-normal">N°</th>
                         <th class="th-sm font-weight-normal">Tipo</th>
                         <th class="th-sm font-weight-normal">Estado</th>

@@ -34,26 +34,8 @@
         </div>
         <div class="card-body" style="overflow-y: scroll; height: 500px; width: auto;">
             <div id="id-orders-sales-grid-list" class="col-md-12 m-0 p-0"></div>
-            <div class="container text-center pt-5" id="loading" style="display: none">
-                <div class="row m-5">
-                    <div class="col-md-12 m-5">
-                        <div class="loader">
-                            <div class="loader-inner">
-                                <div class="loading one"></div>
-                            </div>
-                            <div class="loader-inner">
-                                <div class="loading two"></div>
-                            </div>
-                            <div class="loader-inner">
-                                <div class="loading three"></div>
-                            </div>
-                            <div class="loader-inner">
-                                <div class="loading four"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
+            <div class="col-sm-12 col-md-12 col-lg-12 d-flex justify-content-center">
+                {# div que centra #}
             </div>
         </div>
     </div>
@@ -96,6 +78,7 @@
             opacity: 1;
             right: 0;
         }
+
     </style>
 {% endblock body %}
 {% block extrajs %}
@@ -121,7 +104,6 @@
                 toastr.warning("Seleccione correctamente la fecha", '¡Mensaje!');
                 return false;
             }
-            $('#loading').show();
             $.ajax({
                 url: '/sale/order_sales_list/',
                 async: true,
@@ -135,14 +117,12 @@
                     $('#id-orders-sales-grid-list').html(response['grid']);
                 },
             });
-            $('#loading').hide();
         });
         $('#id-client').change(function () {
             $('#id-orders-sales-grid-list').empty();
             if ($('#id-client').val() === 0 || $('#id-client').val() === '') {
                 return false;
             }
-            $('#loading').show();
             $.ajax({
                 url: '/sale/get_order_sales_by_client/',
                 async: true,
@@ -155,8 +135,76 @@
                     $('#id-orders-sales-grid-list').html(response['grid']);
                 },
             });
-            $('#loading').hide();
         });
+        $(document).on('click', '.btn-sales-detail', function () {
+            let _pk = $(this).attr('pk');
+            let _table = $(this).parent('div').parent('div').parent('td').parent('tr').next('tr').children('td.table-row-details-sales');
+            $('#id-table-orders-sale tbody.table-details-sales tr td.table-row-details-sales').parent('tr').slideUp(800);
+            $('#id-table-orders-sale tbody.table-details-sales tr td.table-row-details-sales').empty();
+            $.ajax({
+                url: '/sale/get_sales_detail/',
+                async: true,
+                dataType: 'json',
+                type: 'GET',
+                data: {'pk': _pk},
+                success: function (response) {
+                    toastr.success('Vista de detalle');
+                    _table.html(response.grid);
+                    _table.parent('tr').slideDown(800);
+                },
+            });
+        });
+        $(document).on('click', '.btn-sales-download', function () {
+            let pk = $(this).attr('pk');
+            window.open("/sale/print_ticket_order_sales/" + pk + "/", '_blank');
+        });
+        $(document).on('click', '.btn-sales-annular', function () {
+            let pk = $(this).attr('pk');
+            let row = $(this).parent('div').parent('div').parent('td').parent('tr');
+            $.ajax({
+                url: '/sale/set_sales_annular/',
+                async: true,
+                dataType: 'json',
+                type: 'GET',
+                data: {'pk': pk},
+                success: function (response) {
+                    toastr.success('Venta anulada con exito', 'Mensaje');
+                    row.find('td.item-status').text(response.message);
+                    row.find('td.item-status').removeClass('text-primary');
+                    row.find('td.item-status').addClass('text-danger');
 
+                    row.find('td.item-action div.btn-group div.dropdown-menu a.item-function').removeClass('btn-sales-annular');
+                    row.find('td.item-action div.btn-group div.dropdown-menu a.item-function').addClass('btn-sales-reactive');
+                    row.find('td.item-action div.btn-group div.dropdown-menu a.item-function b').text('Reactive');
+                },
+                error: function (response) {
+                    toastr.error('Problema al anular la venta', 'Mensaje');
+                }
+            });
+        });
+        $(document).on('click', '.btn-sales-reactive', function () {
+            let pk = $(this).attr('pk');
+            let row = $(this).parent('div').parent('div').parent('td').parent('tr');
+            $.ajax({
+                url: '/sale/set_sales_reactive/',
+                async: true,
+                dataType: 'json',
+                type: 'GET',
+                data: {'pk': pk},
+                success: function (response) {
+                    toastr.success('Venta reactivada con exito', 'Mensaje');
+                    row.find('td.item-status').text(response.message);
+                    row.find('td.item-status').removeClass('text-danger');
+                    row.find('td.item-status').addClass('text-primary');
+
+                    row.find('td.item-action div.btn-group div.dropdown-menu a.item-function').removeClass('btn-sales-reactive');
+                    row.find('td.item-action div.btn-group div.dropdown-menu a.item-function').addClass('btn-sales-annular');
+                    row.find('td.item-action div.btn-group div.dropdown-menu a.item-function b').text('Anular');
+                },
+                error: function (response) {
+                    toastr.error('Problemas al reactivar la venta', 'Mensaje');
+                }
+            });
+        });
     </script>
 {% endblock extrajs %}
