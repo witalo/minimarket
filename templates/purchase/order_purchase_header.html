@@ -1,17 +1,21 @@
 <div class="row pl-3 pr-3">
     <div class="col-md-3 p-1 ">
-        <select id="id_document_provider" name="document_provider"
+      <!--  <select id="id_document_provider" name="document_provider"
                 class="form-control form-control-sm combo">
             <option selected value="0">Documento</option>
             {% for d in provider_set %}
                 <option value="{{ d.id }}">{{ d.document }}</option>
             {% endfor %}
-        </select>
+        </select> -->
+        <input type="text" class="form-control form-control-sm text-uppercase"
+               id="id-nro-document-sender"
+               name="nro-document-sender"
+               placeholder="">
     </div>
     <div class="col-md-9 p-1">
         <select id="id_names_provider" name="names_provider"
                 class="form-control form-control-sm combo">
-            <option selected value="0">Nombre o razón social - proveedor</option>
+            <option selected value="0">Seleccione</option>
             {% for p in provider_set %}
                 <option value="{{ p.id }}">{{ p.full_names }}</option>
             {% endfor %}
