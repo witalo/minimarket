@@ -423,3 +423,27 @@ def payment_credit(request):
         return JsonResponse({
             'success': True,
         }, status=HTTPStatus.OK)
+
+
+def get_payment_list(request):
+    if request.method == 'GET':
+        start_date = request.GET.get('_init', '')
+        if start_date != '':
+            user_id = request.user.id
+            user_obj = User.objects.get(id=int(user_id))
+            subsidiary_obj = get_subsidiary_by_user(user_obj)
+            payment_set = Payments.objects.filter(date_payment__date=start_date,
+                                                  subsidiary=subsidiary_obj).exclude(type='E')
+            tpl_list = loader.get_template('accounting/payment_grid_list.html')
+            context = ({'payment_set': payment_set, })
+
+            return JsonResponse({
+                'message': 'Detalle de pagos',
+                'grid': tpl_list.render(context),
+            }, status=HTTPStatus.OK)
+        else:
+            my_date = datetime.now()
+            date_now = my_date.strftime("%Y-%m-%d")
+            return render(request, 'accounting/payment_list.html', {
+                'date_now': date_now,
+            })

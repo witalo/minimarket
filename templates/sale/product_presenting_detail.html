@@ -13,13 +13,13 @@
 {#                        </label>#}
 {#                     </div>#}
 {#                </th>#}
-                <th class="th-sm" style="width: 14%;">Unidad</th>
-                <th class="th-sm" style="width: 16%;">Cantidad</th>
-                <th class="th-sm" style="width: 14%;">Moneda</th>
-                <th class="th-sm" style="width: 20%;">Precio</th>
-                <th class="th-sm" style="width: 10%;">Estado</th>
-                <th class="th-sm" style="width: 13%;">Eliminar</th>
-                <th class="th-sm" style="width: 13%;">Edit</th>
+                <th class="th-sm font-weight-normal" style="width: 14%;">Unidad</th>
+                <th class="th-sm font-weight-normal" style="width: 16%;">Cantidad</th>
+                <th class="th-sm font-weight-normal" style="width: 14%;">Moneda</th>
+                <th class="th-sm font-weight-normal" style="width: 20%;">Precio</th>
+                <th class="th-sm font-weight-normal" style="width: 10%;">Estado</th>
+                <th class="th-sm font-weight-normal" style="width: 13%;">Eliminar</th>
+                <th class="th-sm font-weight-normal" style="width: 13%;">Edit</th>
             </tr>
             </thead>
             <tbody class="presenting_details">
@@ -36,10 +36,10 @@
 {#                         </div>#}
 {#                    </td>#}
                     <td class="text-center align-middle" style="font-size: 13px;">{{ obj.unit.description }}</td>
-                     <td class="presenting_decimal text-center align-middle" style="font-size: 13px;">{{ obj.quantity_minimum|floatformat:2 }}</td>
+                     <td class="presenting_decimal text-center align-middle" style="font-size: 13px;">{{ obj.quantity_minimum|safe }}</td>
                     <td class="text-center align-middle" style="font-size: 14px;">{{ obj.coin }}</td>
 
-                    <td class="presenting_decimal" style="font-size: 13px;">{{ obj.price_sale|floatformat:2 }}</td>
+                    <td class="presenting_decimal text-right" style="font-size: 13px;">{{ obj.price_sale|safe }}</td>
                     <td class="text-center align-middle">
                          <div class="form-check-inline">
                             <label class="form-check-label customcheck">

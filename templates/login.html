@@ -20,7 +20,14 @@
     <!-- Custom styles for this template-->
     <link href="{% static 'css/sb-admin-2.min.css' %}" rel="stylesheet">
 </head>
-<body style="background: #6d5702">
+<body style="background-color: #c81818;
+        background-image: url({% static 'img/fondo3.jpg' %}); /* Imagen */
+        background-blend-mode: multiply; /* Efecto */
+        no-repeat: center center fixed;
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        background-size: 70% 100%;">
 <div id="layoutAuthentication">
     <div id="layoutAuthentication_content">
         <main>
@@ -51,7 +58,8 @@
                                         <div class="custom-control custom-checkbox text-center">
                                             <input class="custom-control-input" id="rememberPasswordCheck"
                                                    type="checkbox"/>
-                                            <label class="custom-control-label font-weight-bold" for="rememberPasswordCheck">Recordar
+                                            <label class="custom-control-label font-weight-bold"
+                                                   for="rememberPasswordCheck">Recordar
                                                 credencial</label>
                                         </div>
                                     </div>

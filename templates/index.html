@@ -63,7 +63,7 @@
         <li class="nav-item active">
             <a class="nav-link" href="{% url 'home' %}">
                 <i class="fas fa-fw fa-building"></i>
-                <span>Inicio</span></a>
+                <span class="font-weight-normal">Inicio</span></a>
         </li>
         <!-- Divider -->
         <hr class="sidebar-divider">
@@ -150,8 +150,7 @@
             <div id="collapseCash" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
                     <h6 class="collapse-header">Finanza</h6>
-                    <!--<a class="collapse-item" href="{% url 'sale:product_list' %}">Aperturar caja</a>
-                    <a class="collapse-item" href="{% url 'sale:product_list' %}">Cerrar caja</a>-->
+                    <a class="collapse-item" href="{% url 'accounting:payment_list' %}">Detalle pagos</a>
                     <a class="collapse-item" href="{% url 'accounting:sales_credit_list' %}">Creditos cliente</a>
                 </div>
             </div>
@@ -702,26 +701,25 @@
 
                             </div>
 
-                            <!-- <div class="col-lg-6 mb-4">
+                            <div class="col-lg-6 mb-4">
 
-                                 Illustrations
+                                 Tecnologia
                                 <div class="card shadow mb-4">
                                     <div class="card-header py-3">
-                                        <h6 class="m-0 font-weight-bold text-primary">Illustrations</h6>
+                                        <h6 class="m-0 font-weight-bold text-primary">Tecnologia</h6>
                                     </div>
                                     <div class="card-body">
                                         <div class="text-center">
                                             <img class="img-fluid px-3 px-sm-4 mt-3 mb-4" style="width: 25rem;"
-                                                 src="{% static 'img/undraw_posting_photo.svg' %}" alt="">
+                                                 src="{% static 'img/ico.png' %}" alt="">
                                         </div>
-                                        <p>Add some quality, svg illustrations to your project courtesy of <a
+                                        <p>Sistema <a
                                                 target="_blank"
                                                 rel="nofollow"
                                                 href="https://undraw.co/">Uno</a></p>
                                     </div>
                                 </div>
                             </div>
-                    -->
                         </div>
                     </div>
                     </div>

@@ -14,16 +14,16 @@
                             <div class="col-md-6 text-center align-self-center">
                                 <h6 class="text-primary text-uppercase">{{ product.names }}</h6>
                             </div>
-                            <div class="col-md-6 text-center">
+                            <div class="col-md-6 text-center montserrat">
                                 <ul class="list-group  m-1" id="product-list"
-                                    style="font-size: 12px;">
+                                    style="font-size: 13px;">
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
                                         Stock Minimo
-                                        <span class="badge badge-primary badge-pill p-1">{{ product.stock_min }}</span>
+                                        <span class="badge badge-primary badge-pill p-1">{{ product.stock_min|safe }}</span>
                                     </li>
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
                                         Stock Maximo
-                                        <span class="badge badge-primary badge-pill p-1">{{ product.stock_max }}</span>
+                                        <span class="badge badge-primary badge-pill p-1">{{ product.stock_max|safe }}</span>
                                     </li>
                                 </ul>
                             </div>
@@ -55,7 +55,7 @@
                                 <div class="col-md-3 align-middle p-1 m-0">
                                     <label for="id_quantity-store">Cantidad</label>
                                     <input type="text" id="id-quantity-store" name="quantity-store"
-                                           class="form-control decimal" required>
+                                           class="form-control text-right decimal" required>
                                 </div>
                                 <div class="col-md-3 align-middle  p-1 m-0">
                                     <label for="id_unit">Unidades</label>

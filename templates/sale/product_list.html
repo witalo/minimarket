@@ -196,7 +196,6 @@
                 type: 'GET',
                 data: {'pk': _pk},
                 success: function (response) {
-                    console.log(response);
                     if (response.success) {
                         $('#show-kardex').html(response.form);
                         $('#show-kardex').modal('show');

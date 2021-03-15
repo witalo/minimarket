@@ -25,9 +25,9 @@
                             <td class="align-middle">
                                 <address class="text-left" style="font-size: 11px;">
                                     Codigo: {{ product.code }}<br>
-                                    Stock Minimo: <i>{{ product.stock_min|floatformat:2 }}</i><br>
-                                    Stock Maximo: <i>{{ product.stock_max|floatformat:2 }}</i><br>
-                                    Categoria, {{ product.category }}<br>
+                                    Stock Min: {{ product.stock_min|safe }}<br>
+                                    Stock Max: {{ product.stock_max|safe }}<br>
+                                    Categoria: {{ product.category }}<br>
                                 </address>
                             </td>
                             <td class="p-0">
@@ -43,7 +43,7 @@
                                             <tr class="{% if product_store.subsidiary_store__subsidiary__id == subsidiary.id %}text-danger font-weight-bolder{% endif %}">
                                                 <td class="align-middle text-danger">{{ product_store.subsidiary_store__subsidiary__name }}</td>
                                                 <td class="align-middle">{{ product_store.subsidiary_store__name }}</td>
-                                                <td class="align-middle text-danger">{{ product_store.stock|floatformat:2 }}</td>
+                                                <td class="align-middle text-right text-danger">{{ product_store.stock|safe }}</td>
                                             </tr>
                                         {% endfor %}
                                         </tbody>
@@ -67,8 +67,8 @@
                                             <tr class="align-self-center">
                                                 <td class="text-primary font-weight-bolder align-middle">{{ presenting.unit__name }}</td>
                                                 <td class="align-middle">{{ presenting.unit__description }}</td>
-                                                <td class="align-middle">{{ presenting.price_sale|floatformat:2 }}</td>
-                                                <td class="align-middle">{{ presenting.quantity_minimum|floatformat:2 }}</td>
+                                                <td class="align-middle text-right">{{ presenting.price_sale|safe }}</td>
+                                                <td class="align-middle text-right">{{ presenting.quantity_minimum|safe }}</td>
                                                 <td class="align-middle code_text"><i
                                                         class="fas fa-barcode fa-2x"></i><br><span>{{ presenting.code|default_if_none:'***' }}</span>
                                                 </td>

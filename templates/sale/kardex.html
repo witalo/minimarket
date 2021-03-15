@@ -23,10 +23,10 @@
                     <form>
                         {% csrf_token %}
                         <div class="form-group row mx-sm-3">
-                            <label for="id_subsidiary_store mt-1"
-                                   class="col-sm-2 col-form-label align-self-md-center text-center font-weight-normal">Almacen
-                            </label>
-                            <div class="col-sm-4 align-self-md-center mt-2">
+                            <div class="col-sm-2 align-self-center text-center p-1">
+                                Almacen
+                            </div>
+                            <div class="col-sm-4 align-self-md-center p-1">
                                 <select class="form-control form-control-sm" id="id_subsidiary_store" required>
                                     <option value=""> Seleccione</option>
                                     {% for subsidiary_store in subsidiaries_stores %}
@@ -37,20 +37,21 @@
                                     {% endfor %}
                                 </select>
                             </div>
-                            <div class="col-sm-4 text-center align-self-md-center mt-2">
-                                <input type="month" class="form-control form-control-sm" id="id-month-kardex" name="month-kardex"
-                                   value="{{ date_now }}" required>
+                            <div class="col-sm-4 text-center align-self-md-center p-1">
+                                <input type="month" class="form-control form-control-sm" id="id-month-kardex"
+                                       name="month-kardex"
+                                       value="{{ date_now }}" required>
                             </div>
-                            <div class="col-sm-2 text-center align-self-md-center mt-2">
+                            <div class="col-sm-2 text-center align-self-md-center p-1">
                                 <button type="button" id="btn-search" class="btn btn-sm btn-primary pl-3 pr-3"><i
-                                        class="fas fa-search pr-2"></i>Buscar
+                                        class="fas fa-search pr-2"></i> Buscar
                                 </button>
                             </div>
                         </div>
                     </form>
                 </div>
             </div>
-            <div class="card mt-2" style="border-color: #047ee9" id="kardex-grid-list">{% include "sale/kardex_grid_list.html" %}</div>
+            <div class="card mt-2 table-responsive" style="border-color: #047ee9" id="kardex-grid-list"></div>
         </div><!-- modal-body -->
         <div class="modal-footer">
             <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Cerrar</button>
@@ -61,20 +62,37 @@
 <script type="text/javascript">
     $('#btn-search').on('click', function () {
         let _pk = $("#id-product-kardex").attr('pk');
+        let store = $("#id_subsidiary_store").val();
+        if (store === '' || store === 0 || store === '0') {
+            toastr.warning('Seleccione un almacen del producto');
+            return false;
+        }
         let _date = $("#id-month-kardex").val();
+        if (_date === '') {
+            toastr.warning('Seleccione el mes correctamente');
+            return false;
+        }
+        $('#kardex-grid-list').empty();
         $.ajax({
             url: '/sale/get_list_kardex/',
             dataType: 'json',
             type: 'GET',
-            data: {'pk': _pk, 'subsidiary_store': $("#id_subsidiary_store").val(),'mount':_date},
-            success: function (response) {
-                console.log(response);
-                if (response.success) {
+            data: {'pk': _pk, 'subsidiary_store': store, 'mount': _date},
+            success: function (response, textStatus, xhr) {
+                if (xhr.status === 200) {
                     $('#kardex-grid-list').html(response.form);
                 }
             },
-            fail: function (response) {
-                console.log(response);
+            error: function (jqXhr, textStatus, xhr) {
+                if (jqXhr.status === 500) {
+                    toastr.error(jqXhr.responseJSON.error, 'Mensaje');
+                } else {
+                    if (textStatus === 'timeout') {
+                        toastr.error('Fallo al consultar', 'Mensaje');
+                    } else {
+                        toastr.error(" STATUS: " + xhr + " " + textStatus);
+                    }
+                }
             }
         });
     });

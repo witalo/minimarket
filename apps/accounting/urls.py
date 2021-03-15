@@ -19,8 +19,10 @@ urlpatterns = [
     # payment credit
     path('modal_payment_credit/', login_required(get_modal_payment_credit), name='modal_payment_credit'),
     path('payment_credit/', login_required(payment_credit), name='payment_credit'),
+    path('payment_list/', login_required(get_payment_list), name='payment_list'),
     # Generate PDF
     path('print_ticket_closing_cash/<int:pk>/', login_required(print_ticket_closing_cash),
          name='print_ticket_closing_cash'),
-
+    # Detail payment
+    path('payment_list/', login_required(get_payment_list), name='payment_list'),
 ]

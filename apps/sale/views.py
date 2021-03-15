@@ -774,6 +774,11 @@ def get_list_kardex(request):
     if request.method == 'GET':
         pk = request.GET.get('pk', '')
         _mount = request.GET.get('mount', '')
+        if pk == '':
+            data['error'] = "Seleccione un almacen del producto"
+            response = JsonResponse(data)
+            response.status_code = HTTPStatus.INTERNAL_SERVER_ERROR
+            return response
         pk_subsidiary_store = request.GET.get('subsidiary_store', '')
         if _mount == '':
             data['error'] = "Seleccione el mes"
@@ -814,7 +819,6 @@ def get_list_kardex(request):
         c = ({'product': product_obj, 'inventories': inventories})
 
         return JsonResponse({
-            'success': True,
             'form': t.render(c),
         })
 

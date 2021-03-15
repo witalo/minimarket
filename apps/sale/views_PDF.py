@@ -71,10 +71,9 @@ pdfmetrics.registerFont(TTFont('Jd-Lcd-Rounded', 'JdLcdRoundedRegular-vXwE.ttf')
 logo = "static/img/logo1.jpg"
 
 
-def print_ticket_order_sales(request, pk=None):  # Boleto de viaje boleta / factura
+def print_ticket_order_sales(request, pk=None):  # Comprobante interno
 
     _wt = 3.25 * inch - 8 * 0.05 * inch
-    # _wt = 3.14 * inch - 8 * 0.05 * inch
 
     order_obj = Order.objects.get(pk=int(pk))
     client_id = order_obj.client.id

@@ -1,0 +1,77 @@
+{% if payment_set %}
+    <div class="card m-0 border-warning">
+        <div class="card-header bg-warning m-0 p-0  align-self">
+            <h6 class="card-title text-center m-1">DETALLE DE PAGOS</h6>
+        </div>
+        <div class="card-body m-0 p-2">
+            <div class="table-responsive dataTables_wrapper">
+                <table id="id-table-payment"
+                       class="table table-hover m-0"
+                       cellspacing="0" width="100%">
+                    <thead>
+                    <tr class="text-center bg-gradient-warning text-white">
+                        <th class="th-sm font-weight-normal">Accion</th>
+                        <th class="th-sm font-weight-normal">Modo Pago</th>
+                        <th class="th-sm font-weight-normal">Fuente de Ingreso</th>
+                        <th class="th-sm font-weight-normal">Fecha Pago</th>
+                        <th class="th-sm font-weight-normal">Fecha - registro</th>
+                        <th class="th-sm font-weight-normal">Caja - Cliente</th>
+                        <th class="th-sm font-weight-normal">Usuario</th>
+                        <th class="th-sm font-weight-normal">Total</th>
+                    </tr>
+                    </thead>
+                    <tbody class="table-details-credit">
+                    {% for p in payment_set %}
+                        <tr class="text-center align-middle" pk="{{ p.id }}">
+                            <td class="align-middle">
+                                {% if p.type == 'A' or p.type == 'C' %}
+                                    <span class="badge badge-danger badge-pill p-2">{{ p.get_type_display }}</span>
+                                {% else %}
+                                    <span class="text-primary"><b>Venta: </b>{{ p.order.correlative_order|default:'-' }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="align-middle">{{ p.get_type_payment_display }}</td>
+                            <td class="align-middle text-left font-weight-bold">
+                                {% if p.type_payment == 'E' %}
+                                    <span class="text-success"> {{ p.casing.name }}</span>
+                                {% elif p.type_payment == 'D' %}
+                                    <span class="text-info">{{ p.get_type_bank_display }}</span><br>
+                                        <b class="text-black-50">Codigo: </b> <label class="font-weight-normal">{{ p.code_operation|default:'-' }}</label>
+                                {% else %}
+                                    {% if p.amount == 0 %}
+                                        <span class="text-danger">Credito cancelado</span>
+                                    {% else %}
+                                        <span class="text-danger">Credito pendiente</span>
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                            <td class="align-middle">{{ p.date_payment|date:'d-M-Y' }}</td>
+                            <td class="align-middle">{{ p.create_at|date:'d-M-Y h:m' }}</td>
+                            <td class="text-left align-middle"
+                                style="font-size: 13px;">{{ p.order.client.full_names|default:'APERTURA DE CAJA' }}</td>
+                            <td class="align-middle" style="font-size: 13px;">{{ p.user }}</td>
+                            <td class="text-right align-middle text-primary">{{ p.amount|safe }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                    <tfoot>
+                    <tr class="text-center bg-gradient-warning text-white">
+                         <th class="th-sm font-weight-normal">Accion</th>
+                        <th class="th-sm font-weight-normal">Modo Pago</th>
+                        <th class="th-sm font-weight-normal">Fuente de Ingreso</th>
+                        <th class="th-sm font-weight-normal">Fecha Pago</th>
+                        <th class="th-sm font-weight-normal">Fecha - registro</th>
+                        <th class="th-sm font-weight-normal">Caja - Cliente</th>
+                        <th class="th-sm font-weight-normal">Usuario</th>
+                        <th class="th-sm font-weight-normal">Total</th>
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+{% else %}
+    <h5>No existen pagos en la fecha</h5>
+{% endif %}
+<script type="text/javascript">
+</script>

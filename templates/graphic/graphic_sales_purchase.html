@@ -5,24 +5,24 @@
 {% endblock title %}
 
 {% block body %}
-    <div class="card-header p-0 m-0 pb-1 small border-bottom-primary">
+    <div class="card-header p-0 m-0  small border-bottom-primary">
         <div class="row col-sm-12 col-md-12 col-lg-12">
-            <div class="col-sm-2 col-md-2 col-lg-2 align-self-center text-center p-0">
+            <div class="col-sm-2 col-md-2 col-lg-2 text-center align-self-center mt-1 mb-1">
                 <input type="week" id="id-week" class="form-control form-control-sm" value="">
             </div>
-            <div class="col-sm-2 col-md-2 col-lg-2 align-self-center text-center p-0">
+            <div class="col-sm-2 col-md-2 col-lg-2 text-center align-self-center mt-1 mb-1">
                 <button type="button" onclick="ShowGraphic('graphic_sales_purchase_view')"
                         class="btn btn-sm btn-outline-success" style="font-size: 14px;"><i class="fas fa-chart-bar"></i>
                     Mostrar grafica
                 </button>
             </div>
-            <div class="col-sm-3 col-md-3 col-lg-3"></div>
-            <div class="col-sm-5 col-md-5 col-lg-5"></div>
+            <div class="col-sm-3 col-md-3 col-lg-3 text-center align-self-center mt-1 mb-1"></div>
+            <div class="col-sm-5 col-md-5 col-lg-5 text-center align-self-center mt-1 mb-1"></div>
         </div>
     </div>
     <!-- Content -->
-    <div class="container-fluid p-2">
-        <div class="col-sm-12 col-md-12 col-lg-12" id="id-table-graphic" style="height: 100%; overflow-y: scroll;"></div>
+    <div class="container-fluid  p-0 m-0">
+        <div class="col-sm-12 col-md-12 col-lg-12  p-0 m-0" id="id-table-graphic" style="height: 100%; overflow-y: scroll;"></div>
     </div>
 {% endblock body %}
 

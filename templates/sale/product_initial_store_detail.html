@@ -31,9 +31,9 @@
                             ({{ s.subsidiary_store.get_category_display }})</p>
                     </td>
                     <td class="align-middle td-stock-product-store" pk="{{ s.id }}">
-                        <input class="form-control form-control-sm decimal"
+                        <input class="form-control form-control-sm text-right decimal"
                                type="text" id="id-stock-product-store"
-                               value="{{ s.stock|floatformat:2 }}">
+                               value="{{ s.stock|safe }}">
                     </td>
                     <td class="align-middle td-unit-product-store">
                         <select id="id-unit-product-store" name="unit-product-store"
