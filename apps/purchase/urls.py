@@ -18,6 +18,7 @@ urlpatterns = [
     path('save_provider/', login_required(save_provider), name='save_provider'),
     path('get_provider_update_form/', login_required(get_provider_update_form), name='get_provider_update_form'),
     path('update_provider/', login_required(update_provider), name='update_provider'),
+    path('get_provider_by_document/', login_required(get_provider_by_document), name='get_provider_by_document'),
 
     # Graphic sales purchase
     path('graphic_sales_purchase/', login_required(graphic_sales_purchase), name='graphic_sales_purchase'),

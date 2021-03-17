@@ -404,12 +404,12 @@
                 }
             });
         };
-        $('.combo').select2({
-            {#theme: 'bootstrap4',#}
+       /** $('.combo').select2({
+            theme: 'bootstrap4'
             {#theme: 'classic',#}
             {#language: "es",#}
-        });
-       /** $('#id_document_provider').change(function () {
+        });**/
+        /** $('#id_document_provider').change(function () {
             let _pk = $(this).val();
             if (_pk != '0') {
                 $('#id_names_provider').val(_pk);
@@ -432,51 +432,57 @@
                 let _document_number = $('#id-nro-document-sender').val();
                 let type_document = '01';
                 if (_document_number.length === 8) {
-                    type_document = '01'
-                    toastr.warning('El DNI debe contener 8 digitos', 'Mensaje');
-                    return false;
+                    Consult('01');
                 } else {
                     if (_document_number.length === 11) {
-                        type_document = '06'
-                        toastr.warning('El RUC debe contener 11 digitos', 'Mensaje');
-                        return false;
+                        Consult('06');
                     }
                 }
-                $('#id-loading').html(loader).show()
-                $.ajax({
-                    url: '/sale/get_client_by_document/',
-                    async: true,
-                    dataType: 'json',
-                    type: 'GET',
-                    data: {
-                        'number_document': $('#id-nro-document-sender').val(),
-                        'type_document': type_document
-                    },
-                    contentType: 'application/json;charset=UTF-8',
-                    headers: {"X-CSRFToken": '{{ csrf_token }}'},
-                    success: function (response, textStatus, xhr) {
-                        if (xhr.status === 200) {
-                            toastr.success(response.message, '¡Bien hecho!');
-                            $("#id_names_provider").val(response.pk);
-                        }
-                    },
-                    error: function (jqXhr, textStatus, xhr) {
-                        if (jqXhr.status === 500) {
-                            toastr.error(jqXhr.responseJSON.error, 'Mensaje');
-                             $("#id_names_provider").val(0);
-                        } else {
-                            if (textStatus === 'timeout') {
-                                toastr.error('Fallo al consultar', 'Mensaje');
-                            } else {
-                                toastr.error(" STATUS: " + xhr + " " + textStatus);
-                            }
-                        }
-
-                    }
-                });
-                $('#id-loading').hide();
                 return false;
             }
         });
+
+        function Consult(type_document) {
+            $('#id-loading').html(loader).show()
+            $.ajax({
+                url: '/purchase/get_provider_by_document/',
+                async: true,
+                dataType: 'json',
+                type: 'GET',
+                data: {
+                    'number_document': $('#id-nro-document-sender').val(),
+                    'type_document': type_document
+                },
+                contentType: 'application/json;charset=UTF-8',
+                headers: {"X-CSRFToken": '{{ csrf_token }}'},
+                success: function (response, textStatus, xhr) {
+                    if (xhr.status === 200) {
+                        toastr.success(response.message, '¡Bien hecho!');
+                        let names = (response.names).toString();
+                        let pk = parseInt(response.pk);
+                        if ($("#id_names_provider option[value='" + pk + "']").length === 0) {
+                            $("#id_names_provider").append("<option value='" + pk + "' >" + names + "</option>");
+                        }
+                       /** $("#id_names_provider").val(pk);**/
+                        $("#id_names_provider").removeClass('selected');
+                        $("#id_names_provider option[value="+ pk +"]").attr("selected",true);
+                    }
+                },
+                error: function (jqXhr, textStatus, xhr) {
+                    if (jqXhr.status === 500) {
+                        toastr.error(jqXhr.responseJSON.error, 'Mensaje');
+                        $("#id_names_provider").val(0);
+                    } else {
+                        if (textStatus === 'timeout') {
+                            toastr.error('Fallo al consultar', 'Mensaje');
+                        } else {
+                            toastr.error(" STATUS: " + xhr + " " + textStatus);
+                        }
+                    }
+
+                }
+            });
+            $('#id-loading').hide();
+        }
     </script>
 {% endblock extrajs %}

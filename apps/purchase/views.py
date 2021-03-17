@@ -23,7 +23,7 @@ from apps.purchase.models import Provider
 from apps.sale.models import Client, Product, ProductCategory, Unit, Coin, ProductPresenting, Kardex, ProductStore, \
     SubsidiaryStore, Order, OrderDetail, OrderBill
 from apps.sale.views import get_order_correlative, minimum_unit, kardex_input
-from apps.sale.views_SUNAT import query_dni, send_f_nubefact, send_b_nubefact
+from apps.sale.views_SUNAT import query_dni, send_f_nubefact, send_b_nubefact, query_api_free_dni, query_api_free_ruc
 from django.core import serializers
 from django.core.serializers.json import DjangoJSONEncoder
 
@@ -380,3 +380,78 @@ def graphic_sales_payment_view(request):
             'message': 'Grafica Lista',
             'grid': tpl_list.render(context),
         }, status=HTTPStatus.OK)
+
+
+def get_provider_by_document(request):
+    if request.method == 'GET':
+        number_document = request.GET.get('number_document', '')
+        type_document = request.GET.get('type_document', '')
+        try:
+            provider_obj_search = Provider.objects.get(document=number_document)
+        except Provider.DoesNotExist:
+            provider_obj_search = None
+        if provider_obj_search is not None:
+            return JsonResponse({
+                'pk': provider_obj_search.id,
+                'names': provider_obj_search.full_names,
+                'address': provider_obj_search.address},
+                status=HTTPStatus.OK)
+
+        else:
+            if type_document == '01':
+                type_name = 'DNI'
+                r = query_api_free_dni(number_document, type_name)
+                if r.get('status') is True:
+                    name = r.get('Nombre')
+                    paternal_name = r.get('Paterno')
+                    maternal_name = r.get('Materno')
+                    # get_birthday = r.get('FechaNac')
+                    if paternal_name is not None and len(paternal_name) > 0:
+                        result = name + ' ' + paternal_name + ' ' + maternal_name
+                        if len(result.strip()) != 0:
+                            provider_obj = Provider(
+                                type_document=type_document,
+                                document=number_document,
+                                full_names=result,
+                                # address=address_business,
+                            )
+                            provider_obj.save()
+
+                        else:
+                            data = {'error': 'No existe el DNI, registre manualmente'}
+                            response = JsonResponse(data)
+                            response.status_code = HTTPStatus.INTERNAL_SERVER_ERROR
+                            return response
+                else:
+                    data = {
+                        'error': 'No se encontro el dni en la reniec, Registre manualmente'}
+                    response = JsonResponse(data)
+                    response.status_code = HTTPStatus.INTERNAL_SERVER_ERROR
+                    return response
+
+            elif type_document == '06':
+                type_name = 'RUC'
+                r = query_api_free_ruc(number_document, type_name)
+                if r.get('ruc') == number_document:
+                    name_business = r.get('razonSocial')
+                    address_business = (r.get('direccion')).strip()
+
+                    provider_obj = Provider(
+                        type_document=type_document,
+                        document=number_document,
+                        full_names=name_business,
+                        address=address_business,
+                    )
+                    provider_obj.save()
+                else:
+                    data = {'error': 'No se encontro el RUC, registre manualmente'}
+                    response = JsonResponse(data)
+                    response.status_code = HTTPStatus.INTERNAL_SERVER_ERROR
+                    return response
+
+        return JsonResponse({
+            'pk': provider_obj.id,
+            'names': provider_obj.full_names,
+            'address': provider_obj.address},
+            status=HTTPStatus.OK)
+    return JsonResponse({'message': 'Error de petición.'}, status=HTTPStatus.BAD_REQUEST)
