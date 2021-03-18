@@ -455,3 +455,24 @@ def get_provider_by_document(request):
             'address': provider_obj.address},
             status=HTTPStatus.OK)
     return JsonResponse({'message': 'Error de petición.'}, status=HTTPStatus.BAD_REQUEST)
+
+
+def get_provider_by_id(request):
+    if request.method == 'GET':
+        pk = request.GET.get('pk', '')
+        if pk != '':
+            try:
+                provider_obj_search = Provider.objects.get(id=int(pk))
+            except Provider.DoesNotExist:
+                provider_obj_search = None
+            if provider_obj_search is not None:
+                return JsonResponse({
+                    'pk': provider_obj_search.id,
+                    'document': provider_obj_search.document},
+                    status=HTTPStatus.OK)
+        else:
+            data = {'error': 'Problemas al seleccionar el proveedor'}
+            response = JsonResponse(data)
+            response.status_code = HTTPStatus.INTERNAL_SERVER_ERROR
+            return response
+

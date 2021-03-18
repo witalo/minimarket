@@ -58,31 +58,9 @@
                     </div>
                 </div>
                 <div class="card-body p-0">
-                    <div id="order-sale-product-grid-list" class="rounded-bottom" style="height: 375px;">
+                    <div id="order-sale-product-grid-list" class="rounded-bottom" style="height: 390px;">
                         {% include "sale/order_sale_products_grid_list.html" with product_dic=product_set %}
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="modal fade modal-prices" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header p-2 text-center" style="background-color: #135d94;">
-                    <h6 class="modal-title text-white" id="exampleModalLabel">TARIFARIO</h6>
-                    <button type="button" class="close ml-0" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body p-0 m-0" id="id-detail-prices">
-                    ...
-                </div>
-                <div class="modal-footer p-1" style="background-color: #135d94;">
-                    <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Cerrar</button> &nbsp;
-                    <button type="button" id="btn-add-details-rate" class="btn btn-sm btn-success float-left">
-                        <i class="fas fa-cart-plus"></i> Agregar
-                    </button>
                 </div>
             </div>
         </div>
@@ -133,6 +111,8 @@
             </div>
         </div>
     </div>
+    <div class="modal fade small" id="id-modal-prices" tabindex="-1" role="dialog" aria-labelledby="ModalHelpTitle"
+         aria-hidden="true"></div>
     <div class="modal fade small" id="id-modal-casing" tabindex="-1" role="dialog" aria-labelledby="ModalHelpTitle"
          aria-hidden="true"></div>
     <div class="modal fade small" id="id-modal-client" tabindex="-1" role="dialog" aria-labelledby="ModalHelpTitle"
@@ -151,7 +131,7 @@
     <style>
         .button {
             border-radius: 4px;
-            background-color: #fa5204;
+            background-color: #ca2629;
             border: none;
             text-align: center;
             font-size: 14px;
@@ -429,7 +409,7 @@
                     success: function (response) {
                         if (response.success) {
                             if (response.pk === 1) {
-                                toastr.info('Caja disponible', 'Mensaje');
+                                toastr.success('Caja disponible');
                             } else {
                                 if (response.pk === 0) {
                                     toastr.error('Aperture la caja antes de hacer el pago', 'Caja');
@@ -455,7 +435,7 @@
         $(document).on('click', '#btn-prices', function () {
             let _product_id = $(this).attr('pk');
             sessionStorage.setItem("product_id", _product_id);
-            $('#id-detail-prices').empty();
+            $('#id-modal-prices').empty();
             $.ajax({
                 url: '/sale/get_prices_by_product/',
                 async: true,
@@ -463,7 +443,8 @@
                 type: 'GET',
                 data: {'pk': _product_id},
                 success: function (response) {
-                    $('#id-detail-prices').html(response.grid);
+                    $('#id-modal-prices').html(response.grid);
+                    $('#id-modal-prices').modal('show');
                 },
                 fail: function (response) {
                     toastr.error('Problemas al mostrar la tarifa', 'Mensaje');
@@ -471,7 +452,7 @@
             });
         });
         {#Agregar detalle de precios#}
-        $('#btn-add-details-rate').click(function () {
+        $(document).on('click', '#btn-add-details-rate', function () {
             let _sum_detail_quantity = 0;
             let _sum_product_rate_quantity = 0;
             let _detail_quantity = 0;
@@ -732,7 +713,7 @@
                 if (_barcode === '') {
                     return false;
                 }
-                let _quantity_search = parseFloat(GetQuantity()).toFixed(2);
+                let _quantity_search = parseFloat('1.00').toFixed(2);/**parseFloat(GetQuantity()).toFixed(2);**/
                 if (_quantity_search > 0) {
                     let _div_barcode = $('div.apd div[code=' + _barcode + ']');
                     let _div_apd = _div_barcode.text().trim();

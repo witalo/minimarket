@@ -15,7 +15,7 @@
     <div class="col-md-9 p-1 align-self-center">
         <select id="id_names_provider" name="names_provider"
                 class="form-control form-control-sm combo">
-            <option value="0">Seleccione</option>
+            <option selected value="0">Seleccione</option>
             {% for p in provider_set %}
                 <option value="{{ p.id }}">{{ p.full_names }}</option>
             {% endfor %}
@@ -80,7 +80,7 @@
     </div>
     <div class="col-md-2 p-1">
         <button type="button" class="button text-white" id="btn-new"><i
-                class="fab fa-neos"></i> <span>  Nuevo </span>
+                class="fas fa-angle-double-right"></i> <span>  Nuevo </span>
         </button>
     </div>
     <div class="col-md-2 p-1">

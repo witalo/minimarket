@@ -33,7 +33,7 @@ def calculate_age(birthdate):
 
 # Create your views here.
 def get_photo(photo=None):
-    # _path = str(settings.MEDIA_URL + p['photo']).replace('/', '\\')
+    # _path = str(settings.MEDIA_URL + photo).replace('/', '\\')
     _path_real_cache = str(
         settings.MEDIA_ROOT + '/CACHE/images/' + photo.replace('.png', '/').replace('.jpg', '/')
     ).replace('/', '\\')
@@ -986,7 +986,7 @@ def get_prices_by_product(request):
         product_stores_obj = ProductStore.objects.filter(product=product_obj,
                                                          subsidiary_store__subsidiary=subsidiary_obj,
                                                          subsidiary_store__category='3').first()
-        tpl = loader.get_template('sale/order_sale_rate.html')
+        tpl = loader.get_template('sale/order_sales_rates.html')
         context = ({
             'product_store': product_stores_obj,
             'product_presenting_set': product_presenting_set,

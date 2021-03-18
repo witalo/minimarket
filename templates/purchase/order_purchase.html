@@ -205,7 +205,7 @@
                     success: function (response) {
                         if (response.success) {
                             if (response.pk === 1) {
-                                toastr.info('Caja disponible', 'Mensaje');
+                                toastr.success('Caja disponible');
                             } else {
                                 if (response.pk === 0) {
                                     toastr.error('Aperture la caja antes de hacer el pago', 'Caja');
@@ -345,7 +345,7 @@
                     }
                 }
             }
-            if ($('#id_document_provider').val() == '0' || $('#id_names_provider').val() == '0') {
+            if ($('#id-nro-document-sender').val() === '' || $('#id_names_provider').val() == '0') {
                 toastr.warning('Seleccione el proveedor por favor', 'Mensaje');
                 return false;
             }
@@ -359,7 +359,7 @@
             {#Encabezado de la compra#}
             let order_purchase = {
                 "Details": [],
-                "provider": $('#id_document_provider').val(),
+                "provider": $('#id_names_provider').val(),
                 "date_order": $('#id-date').val(),
                 "invoice_order": $('#id-invoice').val(),
                 "purchase_total": $('#sum-total').val(),
@@ -404,11 +404,11 @@
                 }
             });
         };
-       /** $('.combo').select2({
-            theme: 'bootstrap4'
+        $('.combo').select2({
+            {# theme: 'bootstrap4'#}
             {#theme: 'classic',#}
             {#language: "es",#}
-        });**/
+        });
         /** $('#id_document_provider').change(function () {
             let _pk = $(this).val();
             if (_pk != '0') {
@@ -420,9 +420,37 @@
         $('#id_names_provider').change(function () {
             let _pk = $(this).val();
             if (_pk != '0') {
-                $('#id_document_provider').val(_pk);
+                $.ajax({
+                    url: '/purchase/get_provider_by_id/',
+                    async: true,
+                    dataType: 'json',
+                    type: 'GET',
+                    data: {'pk': _pk},
+                    contentType: 'application/json;charset=UTF-8',
+                    headers: {"X-CSRFToken": '{{ csrf_token }}'},
+                    success: function (response, textStatus, xhr) {
+                        if (xhr.status === 200) {
+                            toastr.success('Bien hecho');
+                            let document = (response.document).toString();
+                            $('#id-nro-document-sender').val(document);
+                        }
+                    },
+                    error: function (jqXhr, textStatus, xhr) {
+                        if (jqXhr.status === 500) {
+                            toastr.error(jqXhr.responseJSON.error, 'Mensaje');
+                            $('#id-nro-document-sender').val('');
+                        } else {
+                            if (textStatus === 'timeout') {
+                                toastr.error('Fallo al consultar', 'Mensaje');
+                            } else {
+                                toastr.error(" STATUS: " + xhr + " " + textStatus);
+                            }
+                        }
+
+                    }
+                });
             } else {
-                $('#id_document_provider').val(0);
+                $('#id-nro-document-sender').val('');
             }
         })
         $('#id-nro-document-sender').keypress(function (e) {
@@ -463,9 +491,10 @@
                         if ($("#id_names_provider option[value='" + pk + "']").length === 0) {
                             $("#id_names_provider").append("<option value='" + pk + "' >" + names + "</option>");
                         }
-                       /** $("#id_names_provider").val(pk);**/
-                        $("#id_names_provider").removeClass('selected');
-                        $("#id_names_provider option[value="+ pk +"]").attr("selected",true);
+                        $("#id_names_provider option:selected").removeAttr("selected");
+                        $("#id_names_provider option:selected").prop("selected", false);
+                        $("#id_names_provider option[value=" + pk + "]").attr("selected", true);
+                        $('#id_names_provider').val(pk).trigger('change.select2');
                     }
                 },
                 error: function (jqXhr, textStatus, xhr) {

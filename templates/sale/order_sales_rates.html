@@ -1,0 +1,142 @@
+<div class="modal-dialog modal-dialog-centered modal-prices montserrat" role="document">
+    <div class="modal-content">
+        <div class="modal-header bg-gradient-primary">
+            <h6 class="modal-title  text-white">Tarifario</h6>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body p-1">
+            <div class="col-md-12 p-1">
+                <div class="card  p-0 mt-1">
+                    <div class="card-body text-center font-weight-bold">
+                        <div class="input-group">
+                            <input type="text" class="form-control form-control-sm text-center font-weight-bolder"
+                                   value="{{ product_store.product.names }}" id="id-product-name-rates"
+                                   aria-label="Recipient's username" aria-describedby="button-addon2"
+                                   readonly="true">
+                            <input type="hidden" class="form-control form-control-sm" id="id-product-rates"
+                                   value="{{ product_store.product.id }}">
+                        </div>
+                    </div>
+                </div>
+                <div class="card p-0 mt-1">
+                    <div class="card-body text-center">
+                        <input type="text" class="form-control form-control-sm text-center font-weight-bolder"
+                               value="{{ product_store.stock|safe }}"
+                               id="id-stock-product"
+                               readonly="true">
+                        <input type="hidden" class="form-control form-control-sm"
+                               value="{{ product_store.id }}" id="id-product-store"
+                               readonly="true">
+                    </div>
+                </div>
+                <div class="card p-0  mt-1">
+                    <div class="card-body table-responsive">
+                        <table class="table table-hover table-bordered rounded m-0 w-100">
+                            <thead class="text-center">
+                            <tr class="text-center bg-gradient-primary text-white">
+                                <th style="width: 33%;" class="font-weight-normal">Unidad</th>
+                                <th style="width: 32%;" class="font-weight-normal">Precio</th>
+                                <th style="width: 21%;" class="font-weight-normal">Cantidad</th>
+                                <th style="width: 14%;" class="font-weight-normal">Acción</th>
+                            </tr>
+                            </thead>
+                            <tbody id="product-rates">
+                            {% for item in product_presenting_set %}
+                                <tr product_presenting_id="{{ item.id }}"
+                                    unit_id="{{ item.unit.id }}"
+                                    unit_name="{{ item.unit.name }}"
+                                    product_id="{{ item.product.id }}"
+                                    unit_min="{{ item.get_quantity_minimum_with_dot }}">
+                                    <td class="text-center align-middle item-unit">{{ item.unit.description }}
+                                        ({{ item.get_quantity_minimum_with_dot|safe }})
+                                    </td>
+                                    <td class="text-center align-middle item-price">
+                                        <div class="dollar">
+                                            <input type="text"
+                                                   class="form-control form-control-sm price text-center money"
+                                                   value="{{ item.price_sale|safe }}">
+                                        </div>
+                                    </td>
+                                    <td class="text-center align-middle item-quantity">
+                                        <input type="text" class="form-control form-control-sm text-right quantity">
+                                    </td>
+                                    <td class="text-center align-middle item-add">
+                                        <button class="btn btn-sm btn-primary card-add-product btn-block text-center"
+                                                disabled data-dismiss="modal"><i
+                                                class="fas fa-cart-plus"></i> <b>+</b>
+                                        </button>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div><!-- modal-body -->
+        <div class="modal-footer bg-gradient-primary roboto-medium p-1">
+            <button type="button" class="btn btn-sm btn-secondary" id="id-btn-close-modal" data-dismiss="modal">Cerrar
+            </button> &nbsp;
+            <button type="button" id="btn-add-details-rate" class="btn btn-sm btn-warning float-left">
+                <i class="fas fa-cart-plus"></i> Agregar
+            </button>
+        </div>
+        </form>
+    </div>
+</div>
+<script type="text/javascript">
+    setTimeout(() => {
+        $('input.price').focus();
+    }, 700);
+    round2Fixed();
+    $('input.price').keypress(function (e) {
+        if (e.keyCode === 13) {
+            e.preventDefault()
+            $("input.quantity").focus();
+        }
+    });
+    $('input.quantity').keypress(function (e) {
+        if (e.keyCode === 13) {
+            e.preventDefault()
+            let value_ = $(this).val()
+            if (value_ > 0) {
+                $("#btn-add-details-rate").trigger('click');
+                $("#id-btn-close-modal").trigger('click');
+            }
+        }
+    });
+    $("input.quantity").keyup(function (e) {
+        let val = $(this).val();
+        if (isNaN(val)) {
+            $(this).val('');
+        } else {
+            let qt = parseFloat($(this).val());
+            let _product_presenting_id = $(this).parent('td').parent('tr').attr('product_presenting_id');
+            let _unit_id = $(this).parent('td').parent('tr').attr('unit_id');
+            if (qt > 0) {
+                $('tr[product_presenting_id=' + _product_presenting_id + '] button.card-add-product').removeAttr('disabled');
+            } else {
+                $('tr[product_presenting_id=' + _product_presenting_id + '] button.card-add-product').attr('disabled', 'disabled');
+            }
+        }
+    });
+    $("button.card-add-product").click(function () {
+        $("#btn-add-details-rate").trigger('click');
+    });
+
+    function round2Fixed() {
+        $('.money').each(function () {
+            $(this).val(parseFloat($(this).val()).toFixed(2));
+            $(this).addClass('text-right font-weight-normal');
+        });
+    }
+
+    $("input.money").keyup(function (e) {
+        let val = $(this).val();
+        if (isNaN(val)) {
+            $(this).val('');
+        }
+    });
+</script>
