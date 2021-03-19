@@ -2,6 +2,7 @@ from datetime import datetime
 from http import HTTPStatus
 from django.contrib.auth.models import User
 from django.db.models import Min, Max, Sum, Count, Q
+from django.db.models.functions import Coalesce
 from django.http import JsonResponse
 from django.contrib import messages
 from django.shortcuts import render
@@ -252,19 +253,19 @@ def get_total_casing(request):
             payment_total_cash = Payments.objects.filter(casing=casing_obj, subsidiary=subsidiary_obj,
                                                          type_payment='E', type='I',
                                                          create_at__gte=payment_aperture_obj.create_at).aggregate(
-                Sum('amount'))
+                r=Coalesce(Sum('amount'), 0))
             if payment_total_cash is not None:
                 total_cash = payment_total_cash['amount__sum']
             payment_total_deposit = Payments.objects.filter(user=user_obj, subsidiary=subsidiary_obj,
                                                             type_payment='D', type='I',
                                                             create_at__gte=payment_aperture_obj.create_at).aggregate(
-                Sum('amount'))
+                r=Coalesce(Sum('amount'), 0))
             if payment_total_deposit is not None:
                 total_deposit = payment_total_deposit['amount__sum']
             payment_total_credit = Payments.objects.filter(user=user_obj, subsidiary=subsidiary_obj,
                                                            type_payment='C', type='I',
                                                            create_at__gte=payment_aperture_obj.create_at).aggregate(
-                Sum('amount'))
+                r=Coalesce(Sum('amount'), 0))
             if payment_total_credit is not None:
                 total_credit = payment_total_credit['amount__sum']
         else:

@@ -1,5 +1,8 @@
 import decimal
 import reportlab
+from django.contrib.auth.models import User
+from django.db.models import Sum
+from django.db.models.functions import Coalesce
 from django.http import HttpResponse
 from reportlab.lib.pagesizes import landscape, A5, portrait
 from reportlab.pdfbase import pdfmetrics
@@ -13,6 +16,9 @@ from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_JUSTIFY, TA_RIGHT
 from reportlab.lib import colors
 from reportlab.lib.units import cm, inch
 from reportlab.rl_settings import defaultPageSize
+
+from apps.accounting.models import Payments
+from apps.hrm.views import get_subsidiary_by_user
 from ventura import settings
 from apps.sale.format_to_dates import utc_to_local
 from apps.sale.number_to_letters import numero_a_moneda
@@ -85,11 +91,12 @@ def print_ticket_order_sales(request, pk=None):  # Comprobante interno
 
     tbh_business_name_address = 'COMERCIALIZADORA DE PRODUCTOS NACIONALES E INTERNACIONALES DON PEPITO S.A.C.\nAV. MARISCAL CASTILLA NUMERO 327 URB. SIMON BOLIVAR AREQUIPA - AREQUIPA - MIRAFLORES\n RUC: 20601927820'
 
-    date = order_obj.update_at
-    _format_time = datetime.now().strftime('%H:%M:%S')
+    date = utc_to_local(order_obj.update_at)
+    _format_time = date.strftime('%H:%M:%S')
     _format_date = date.strftime("%d/%m/%Y")
 
     tbn_document = 'ORDEN DE VENTA'
+    number_sales = 'Nº ' + str(order_obj.correlative_order)
 
     client_type = client_obj.type_document
     client_name = client_obj.full_names
@@ -156,7 +163,7 @@ def print_ticket_order_sales(request, pk=None):  # Comprobante interno
     ]
 
     ana_header = Table(
-        [('PRODUCTO', 'CANT', 'UND', 'PRECIO UND', 'IMPORTE')],
+        [('PRODUCTO', 'CANT', 'UND', 'PRECIO', 'IMPORTE')],
         colWidths=[_wt * 40 / 100, _wt * 10 / 100, _wt * 10 / 100, _wt * 20 / 100, _wt * 20 / 100]
     )
     ana_header.setStyle(TableStyle(my_style_header))
@@ -216,8 +223,56 @@ def print_ticket_order_sales(request, pk=None):  # Comprobante interno
     ]
 
     datatable = 'https://www.italoventuraflores.com'
-    ana_c9 = Table([(qr_code(datatable), '')], colWidths=[_wt * 99 / 100, _wt * 1 / 100])
-    ana_c9.setStyle(TableStyle(my_style_table6))
+    qr = Table([(qr_code(datatable), '')], colWidths=[_wt * 99 / 100, _wt * 1 / 100])
+    qr.setStyle(TableStyle(my_style_table6))
+    user_id = request.user.id
+    user_obj = User.objects.get(id=int(user_id))
+    subsidiary_obj = get_subsidiary_by_user(user_obj)
+    total_payment_cash = Payments.objects.filter(order=order_obj, type='I', type_payment='E',
+                                                 subsidiary=subsidiary_obj).aggregate(
+        r=Coalesce(Sum('amount'), 0))
+    total_payment_deposit = Payments.objects.filter(order=order_obj, type='I', type_payment='D',
+                                                    subsidiary=subsidiary_obj).aggregate(
+        r=Coalesce(Sum('amount'), 0))
+    total_payment_credit = Payments.objects.filter(order=order_obj, type='I', type_payment='C',
+                                                   subsidiary=subsidiary_obj).aggregate(
+        r=Coalesce(Sum('amount'), 0))
+
+    my_style_payment = [
+        ('FONTNAME', (0, 0), (-1, -1), 'Square'),  # all columns
+        ('FONTSIZE', (0, 0), (-1, -1), 8),  # all columns
+        ('BOTTOMPADDING', (0, 0), (-1, -1), -6),  # all columns
+        ('RIGHTPADDING', (2, 0), (2, -1), 0),  # third column
+        ('ALIGNMENT', (2, 0), (2, -1), 'RIGHT'),  # third column
+        ('RIGHTPADDING', (3, 0), (3, -1), 0.3),  # four column
+        ('ALIGNMENT', (3, 0), (3, -1), 'RIGHT'),  # four column
+        ('LEFTPADDING', (0, 0), (0, -1), 0.5),  # first column
+    ]
+
+    tab_payment = Table(
+        [('CANCELADO EN EFECTIVO', '', 'S/.  ', str(round(total_payment_cash['r'], 2)))] +
+        [('CANCELADO EN DEPOSITO ', '', 'S/.  ', str(round(total_payment_deposit['r'], 2)))],
+        colWidths=[_wt * 60 / 100, _wt * 10 / 100, _wt * 10 / 100, _wt * 20 / 100]
+    )
+    tab_payment.setStyle(TableStyle(my_style_payment))
+
+
+    my_style_payment_total = [
+        ('FONTNAME', (0, 0), (-1, -1), 'Square-Bold'),  # all columns
+        ('FONTSIZE', (0, 0), (-1, -1), 10),  # all columns
+        ('BOTTOMPADDING', (0, 0), (-1, -1), -6),  # all columns
+        ('RIGHTPADDING', (2, 0), (2, -1), 0),  # third column
+        ('ALIGNMENT', (2, 0), (2, -1), 'RIGHT'),  # third column
+        ('RIGHTPADDING', (3, 0), (3, -1), 0.3),  # four column
+        ('ALIGNMENT', (3, 0), (3, -1), 'RIGHT'),  # four column
+        ('LEFTPADDING', (0, 0), (0, -1), 0.5),  # first column
+    ]
+    tab_payment_total = Table(
+        [('TOTAL CANCELADO ', '', 'S/.  ', str(round(total_payment_deposit['r'] + total_payment_cash['r'], 2)))] +
+        [('SALDO PENDIENTE', '', 'S/.  ', str(round(total_payment_credit['r'], 2)))],
+        colWidths=[_wt * 60 / 100, _wt * 10 / 100, _wt * 10 / 100, _wt * 20 / 100]
+    )
+    tab_payment_total.setStyle(TableStyle(my_style_payment_total))
 
     _dictionary = []
     _dictionary.append(I)
@@ -225,6 +280,8 @@ def print_ticket_order_sales(request, pk=None):  # Comprobante interno
     _dictionary.append(Paragraph(tbh_business_name_address.replace("\n", "<br />"), styles["Center"]))
     _dictionary.append(Paragraph(line, styles["Center2"]))
     _dictionary.append(Paragraph(tbn_document, styles["Center_Regular"]))
+    _dictionary.append(Spacer(1, 3))
+    _dictionary.append(Paragraph(number_sales, styles["Center_Regular"]))
     _dictionary.append(Spacer(1, 3))
     _dictionary.append(ana_c1)
     _dictionary.append(Paragraph(line, styles["Center2"]))
@@ -235,22 +292,30 @@ def print_ticket_order_sales(request, pk=None):  # Comprobante interno
     _dictionary.append(ana_header)
     _dictionary.append(Spacer(1, 2))
     _dictionary.append(Paragraph(line, styles["Center2"]))
-    _dictionary.append(ana_c_detail)  # "ana_c2"
+    _dictionary.append(ana_c_detail)
     _dictionary.append(Spacer(1, 3))
     _dictionary.append(Paragraph(line, styles["Center2"]))
     _dictionary.append(ana_total)
-    _dictionary.append(Spacer(1, 3))
+    _dictionary.append(Spacer(1, 4))
     _dictionary.append(Paragraph(line, styles["Center2"]))
+    _dictionary.append(Spacer(1, 3))
     _dictionary.append(Paragraph(footer, styles["Center"]))
     _dictionary.append(Paragraph(line, styles["Center2"]))
+    _dictionary.append(tab_payment)
+    _dictionary.append(Spacer(1, 3))
+    _dictionary.append(Paragraph(line, styles["Center2"]))
+    _dictionary.append(tab_payment_total)
+    _dictionary.append(Spacer(1, 4))
+    _dictionary.append(Paragraph(line, styles["Center2"]))
+    _dictionary.append(Spacer(1, 3))
     _dictionary.append(
         Paragraph("***COMPROBANTE INTERNO NO TRIBUTARIO***".replace('***', '"'), styles["Center2"]))
-    _dictionary.append(ana_c9)
+    _dictionary.append(qr)
     _dictionary.append(Paragraph("DESARROLLADO POR IVANET",
                                  styles["Center2"]))
     _dictionary.append(Spacer(1, 2))
     _dictionary.append(Paragraph(line, styles["Center2"]))
-    _dictionary.append(Spacer(1, 2))
+    _dictionary.append(Spacer(1, 1))
     _dictionary.append(Paragraph(
         "www.ivanet.com",
         styles["Center2"]))
@@ -262,7 +327,7 @@ def print_ticket_order_sales(request, pk=None):  # Comprobante interno
     mi = 0.039 * inch
 
     doc = SimpleDocTemplate(buff,
-                            pagesize=(3.14961 * inch, 7.0 * inch + (inch * 0.13 * counter)),
+                            pagesize=(3.14961 * inch, 7.5 * inch + (inch * 0.13 * counter)),
                             rightMargin=mr,
                             leftMargin=ml,
                             topMargin=ms,
