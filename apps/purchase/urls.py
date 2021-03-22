@@ -28,5 +28,8 @@ urlpatterns = [
     # Graphic payment
     path('graphic_sales_payment/', login_required(graphic_sales_payment), name='graphic_sales_payment'),
     path('graphic_sales_payment_view/', login_required(graphic_sales_payment_view), name='graphic_sales_payment_view'),
+    # Graphic sales product
+    path('graphic_sales_product/', login_required(graphic_sales_product), name='graphic_sales_product'),
+    path('graphic_sales_product_grid/', login_required(graphic_sales_product_grid), name='graphic_sales_product_grid'),
 
 ]

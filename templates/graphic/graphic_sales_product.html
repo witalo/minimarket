@@ -1,0 +1,73 @@
+{% extends 'index.html' %}
+
+{% block title %}
+    Grafico|Producto
+{% endblock title %}
+
+{% block body %}
+    <div class="card">
+        <div class="card-header p-0 m-0  small">
+            <div class="row col-sm-12 col-md-12 col-lg-12">
+                <div class="col-sm-8 col-md-8 col-lg-8 align-self-center mt-1 mb-1 pl-2">
+                    <select id="id-product" name="id-product[]" class="form-control"
+                            multiple="multiple">
+                        <option value="0">Producto</option>
+                        {% for p in product_set %}
+                            <option value="{{ p.id }}">{{ p.names }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-sm-2 col-md-2 col-lg-2  text-center align-self-center mt-1 mb-1">
+                    <input type="week" id="id-week" class="form-control form-control-sm" value="">
+                </div>
+                <div class="col-sm-2 col-md-2 col-lg-2 text-center align-self-center mt-1 mb-1">
+                    <button type="button" onclick="ShowGraphic('graphic_sales_product_grid')"
+                            class="btn btn-sm btn-outline-primary" style="font-size: 14px;"><i
+                            class="fas fa-chart-bar"></i>
+                        Mostrar grafica
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Content -->
+    <div class="container-fluid  p-0 m-0">
+        <div class="col-sm-12 col-md-12 col-lg-12  p-0 m-0" id="id-table-graphic"
+             style="height: 100%; overflow-y: scroll;"></div>
+    </div>
+{% endblock body %}
+
+{% block extrajs %}
+    <script type="text/javascript">
+        $('#id-product').select2();
+
+        function ShowGraphic(route) {
+            if ($('#id-week').val() === '' || $('#id-week').val() === 0) {
+                toastr.warning('Seleccione la semana', 'Grafica');
+                return false;
+            }
+            if($('#id-product').text() === ""){
+                 toastr.warning('Seleccione los productos', 'Grafica');
+                return false;
+            }
+            $('#id-table-graphic').empty();
+            $.ajax({
+                url: '/purchase/' + route + '/',
+                dataType: 'json',
+                type: 'GET',
+                data: {'week': $('#id-week').val(), 'products': JSON.stringify($('#id-product').val())},
+                success: function (response) {
+                    if(response.success){
+                        $('#id-table-graphic').html(response['grid']);
+                    }
+                    else{
+                        toastr.warning(response.message);
+                    }
+                },
+                fail: function (response) {
+                    toastr.error('Problemas al mostrar la grafica', '¡Mensaje!');
+                }
+            });
+        };
+    </script>
+{% endblock extrajs %}

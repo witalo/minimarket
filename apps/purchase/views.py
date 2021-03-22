@@ -371,15 +371,67 @@ def graphic_sales_payment(request):
 
 def graphic_sales_payment_view(request):
     if request.method == 'GET':
-        tpl_list = loader.get_template('graphic/graphic_sales_payment_grid.html')
-        context = ({
-            'subsidiary_obj': 1,
-        })
+        _week = request.GET.get('week', '')
+        if _week != '':
+            user_id = request.user.id
+            user_obj = User.objects.get(id=user_id)
+            subsidiary_obj = get_subsidiary_by_user(user_obj)
+            new_week = int(_week[6:])
+            new_year = _week[:4]
+            date_ = "{}-{}-1".format(new_year, new_week)
+            _day = datetime.strptime(date_, "%Y-%W-%w")
+            cash_payment = []
+            deposit_payment = []
+            credit_payment = []
+            total_cash_week = 0
+            total_deposit_week = 0
+            total_credit_week = 0
+            cash_deposit_payment = []
+            i = 0
+            while i <= 6:
+                d = int(str(_day)[8:10])
+                total_cash = Payments.objects.filter(type_payment='E', subsidiary=subsidiary_obj, type='I',
+                                                     order__status='C',
+                                                     create_at__year=new_year, create_at__week=new_week,
+                                                     create_at__day=d).aggregate(
+                    r=Coalesce(Sum('amount'), 0)).get(
+                    'r')
+                cash_payment.append(float(total_cash))
+                total_cash_week = total_cash_week + total_cash
+                total_deposit = Payments.objects.filter(type_payment='D', subsidiary=subsidiary_obj, type='I',
+                                                        order__status='C',
+                                                        create_at__year=new_year, create_at__week=new_week,
+                                                        create_at__day=d).aggregate(r=Coalesce(Sum('amount'), 0)).get(
+                    'r')
+                deposit_payment.append(float(total_deposit))
+                total_deposit_week = total_deposit_week + total_deposit
+                cash_deposit_payment.append(float(total_cash + total_deposit))
+                total_credit = Payments.objects.filter(type_payment='C', subsidiary=subsidiary_obj, type='I',
+                                                       order__status='C',
+                                                       create_at__year=new_year, create_at__week=new_week,
+                                                       create_at__day=d).aggregate(r=Coalesce(Sum('amount'), 0)).get(
+                    'r')
+                credit_payment.append(float(total_credit))
+                total_credit_week = total_credit_week + total_credit
 
-        return JsonResponse({
-            'message': 'Grafica Lista',
-            'grid': tpl_list.render(context),
-        }, status=HTTPStatus.OK)
+                i = i + 1
+                _day = _day + timedelta(days=1)
+
+            tpl_list = loader.get_template('graphic/graphic_sales_payment_grid.html')
+            context = ({
+                'cash_payment': cash_payment,
+                'deposit_payment': deposit_payment,
+                'credit_payment': credit_payment,
+                'cash_deposit_payment': cash_deposit_payment,
+                'total_cash_week': float(total_cash_week),
+                'total_deposit_week': float(total_deposit_week),
+                'total_credit_week': float(total_credit_week),
+            })
+
+            return JsonResponse({
+                'message': 'Grafica Lista',
+                'grid': tpl_list.render(context),
+            }, status=HTTPStatus.OK)
 
 
 def get_provider_by_document(request):
@@ -476,3 +528,66 @@ def get_provider_by_id(request):
             response.status_code = HTTPStatus.INTERNAL_SERVER_ERROR
             return response
 
+
+def graphic_sales_product(request):
+    if request.method == 'GET':
+        my_date = datetime.now()
+        date_now = my_date.strftime("%Y-%m")
+        product_set = Product.objects.all()
+        return render(request, 'graphic/graphic_sales_product.html', {
+            'product_set': product_set,
+            'date_now': date_now,
+        })
+
+
+def graphic_sales_product_grid(request):
+    if request.method == 'GET':
+        _week = request.GET.get('week', '')
+        product_dict = request.GET.get('products', [])
+        if _week != '' and product_dict != '[]':
+            user_id = request.user.id
+            user_obj = User.objects.get(id=user_id)
+            subsidiary_obj = get_subsidiary_by_user(user_obj)
+            new_week = int(_week[6:])
+            new_year = _week[:4]
+            date_ = "{}-{}-1".format(new_year, new_week)
+            _day = datetime.strptime(date_, "%Y-%W-%w")
+            str1 = product_dict.replace(']', '').replace('[', '')
+            _arr = str1.replace('"', '').split(",")
+            product_grid_list = []
+            for a in _arr:
+                product_obj = Product.objects.get(id=int(a))
+                i = 0
+                product_list = []
+                while i <= 6:
+                    d = int(str(_day)[8:10])
+                    total_quantity = OrderDetail.objects.filter(order__type='V', order__subsidiary=subsidiary_obj,
+                                                                order__status='C', product=product_obj,
+                                                                order__create_at__year=new_year,
+                                                                order__create_at__week=new_week,
+                                                                order__create_at__day=d).aggregate(
+                        r=Coalesce(Sum('quantity'), 0)).get(
+                        'r')
+                    product_list.append(float(total_quantity))
+                    i = i + 1
+                    _day = _day + timedelta(days=1)
+                item_dict = {
+                    'name': product_obj.names,
+                    'data': product_list
+                }
+                product_grid_list.append(item_dict)
+
+            tpl_list = loader.get_template('graphic/graphic_sales_product_grid.html')
+            context = ({
+                'product_grid_list': product_grid_list
+            })
+
+            return JsonResponse({
+                'success': True,
+                'grid': tpl_list.render(context),
+            }, status=HTTPStatus.OK)
+        else:
+            return JsonResponse({
+                'success': False,
+                'message': 'Seleccione los productos por favor',
+            }, status=HTTPStatus.OK)

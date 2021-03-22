@@ -163,9 +163,9 @@
             <div id="collapseGraphic" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
                     <h6 class="collapse-header">Grafica</h6>
-                    <a class="collapse-item" href="{% url 'hrm:report' %}">Reporte</a>
                     <a class="collapse-item" href="{% url 'purchase:graphic_sales_purchase' %}">Ventas - Compras</a>
-                    <a class="collapse-item" href="{% url 'purchase:graphic_sales_payment' %}">Pagos Ventas</a>
+                    <a class="collapse-item" href="{% url 'purchase:graphic_sales_payment' %}">Ventas - Pagos</a>
+                    <a class="collapse-item" href="{% url 'purchase:graphic_sales_product' %}">Venta - Producto</a>
                 </div>
             </div>
         </li>
@@ -814,6 +814,7 @@
 <script src="{% static 'highcharts/modules/accessibility.js' %}"></script>
 <script src="{% static 'highcharts/highcharts-more.js' %}"></script>
 <script src="{% static 'highcharts/highcharts-3d.js' %}"></script>
+<script src="{% static 'highcharts/modules/series-label.js' %}"></script>
 <script type="text/javascript">
     Highcharts.chart('container-line', {
         chart: {
