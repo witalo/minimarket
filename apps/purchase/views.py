@@ -556,6 +556,7 @@ def graphic_sales_product_grid(request):
             _arr = str1.replace('"', '').split(",")
             product_grid_list = []
             for a in _arr:
+                _day = datetime.strptime(date_, "%Y-%W-%w")
                 product_obj = Product.objects.get(id=int(a))
                 i = 0
                 product_list = []

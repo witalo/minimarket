@@ -83,11 +83,11 @@
                 <div class="bg-white py-2 collapse-inner rounded">
                     <h5 class="collapse-header">Entradas - Salidas</h5>
                     <a class="collapse-item" href="{% url 'sale:order_sales' %}"><i
-                            class="fas fa-cart-plus fa-x text-gray-300"></i> Ventas</a>
+                            class="fas fa-cart-plus fa-x text-gray-300"></i> Orden - Venta</a>
                     <a class="collapse-item" href="{% url 'purchase:order_purchase' %}"><i
-                            class="fas fa-cart-plus fa-x text-gray-300"></i> Compras</a>
+                            class="fas fa-cart-plus fa-x text-gray-300"></i> Compra - Venta</a>
                     <a class="collapse-item" href="{% url 'sale:order_sales_list' %}"><i
-                            class="fas fa-cart-plus fa-x text-gray-300"></i> Ordenes de venta</a>
+                            class="fas fa-cart-plus fa-x text-gray-300"></i> Ventas realizadas</a>
                     {#                    <a class="collapse-item" href="{% url 'sale:get_client_list' %}"><i class="fas fa-cart-plus fa-x text-gray-300"></i> Clientes</a>#}
                 </div>
             </div>
@@ -165,7 +165,7 @@
                     <h6 class="collapse-header">Grafica</h6>
                     <a class="collapse-item" href="{% url 'purchase:graphic_sales_purchase' %}">Ventas - Compras</a>
                     <a class="collapse-item" href="{% url 'purchase:graphic_sales_payment' %}">Ventas - Pagos</a>
-                    <a class="collapse-item" href="{% url 'purchase:graphic_sales_product' %}">Venta - Producto</a>
+                    <a class="collapse-item" href="{% url 'purchase:graphic_sales_product' %}">Ventas - Productos</a>
                 </div>
             </div>
         </li>
@@ -410,7 +410,7 @@
                 </div> -->
                 {% block body %}
                     <!-- Content Row -->
-                    <div style="overflow-y: scroll; height: 520px; width: auto; overflow-x: hidden;">
+                    <div style="overflow-y: scroll; height: 535px; width: auto; overflow-x: hidden;">
                         <div class="row">
 
                             <!-- Earnings (Monthly) Card Example -->
@@ -514,7 +514,7 @@
                                     <!-- Card Header - Dropdown -->
                                     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                                         <h6 class="m-0 font-weight-bold text-primary">Resumen de ganancias</h6>
-                                        <div class="dropdown no-arrow">
+                                       <!-- <div class="dropdown no-arrow">
                                             <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
                                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                 <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
@@ -527,7 +527,7 @@
                                                 <div class="dropdown-divider"></div>
                                                 <a class="dropdown-item" href="#">Something else here</a>
                                             </div>
-                                        </div>
+                                        </div>-->
                                     </div>
                                     <!-- Card Body -->
                                     <div class="card-body">
@@ -544,7 +544,7 @@
                                     <!-- Card Header - Dropdown -->
                                     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                                         <h6 class="m-0 font-weight-bold text-primary">Reloj</h6>
-                                        <div class="dropdown no-arrow">
+                                       <!-- <div class="dropdown no-arrow">
                                             <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
                                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                 <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
@@ -557,7 +557,7 @@
                                                 <div class="dropdown-divider"></div>
                                                 <a class="dropdown-item" href="#">Something else here</a>
                                             </div>
-                                        </div>
+                                        </div>-->
                                     </div>
                                     <!-- Card Body -->
                                     <div class="card-body">
@@ -584,10 +584,8 @@
                         <!-- Content Row -->
                         <div class="row">
 
-                            <!-- Content Column -->
+                            <!-- Content Column
                             <div class="col-lg-6 mb-4">
-
-                                <!-- Project Card Example -->
                                 <div class="card shadow mb-4">
                                     <div class="card-header py-3">
                                         <h6 class="m-0 font-weight-bold text-primary">Projects</h6>
@@ -629,77 +627,7 @@
                                         </div>
                                     </div>
                                 </div>
-
-                                <!-- Color System -->
-                                <!--<div class="row">
-                                    <div class="col-lg-6 mb-4">
-                                        <div class="card bg-primary text-white shadow">
-                                            <div class="card-body">
-                                                Primary
-                                                <div class="text-white-50 small">#4e73df</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6 mb-4">
-                                        <div class="card bg-success text-white shadow">
-                                            <div class="card-body">
-                                                Success
-                                                <div class="text-white-50 small">#1cc88a</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6 mb-4">
-                                        <div class="card bg-info text-white shadow">
-                                            <div class="card-body">
-                                                Info
-                                                <div class="text-white-50 small">#36b9cc</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6 mb-4">
-                                        <div class="card bg-warning text-white shadow">
-                                            <div class="card-body">
-                                                Warning
-                                                <div class="text-white-50 small">#f6c23e</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6 mb-4">
-                                        <div class="card bg-danger text-white shadow">
-                                            <div class="card-body">
-                                                Danger
-                                                <div class="text-white-50 small">#e74a3b</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6 mb-4">
-                                        <div class="card bg-secondary text-white shadow">
-                                            <div class="card-body">
-                                                Secondary
-                                                <div class="text-white-50 small">#858796</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6 mb-4">
-                                        <div class="card bg-light text-black shadow">
-                                            <div class="card-body">
-                                                Light
-                                                <div class="text-black-50 small">#f8f9fc</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6 mb-4">
-                                        <div class="card bg-dark text-white shadow">
-                                            <div class="card-body">
-                                                Dark
-                                                <div class="text-white-50 small">#5a5c69</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>-->
-
                             </div>
-
                             <div class="col-lg-6 mb-4">
 
                                  Tecnologia
@@ -718,7 +646,7 @@
                                                 href="https://undraw.co/">Uno</a></p>
                                     </div>
                                 </div>
-                            </div>
+                            </div> -->
                         </div>
                     </div>
                     </div>
