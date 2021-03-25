@@ -20,6 +20,8 @@ urlpatterns = [
     path('update_provider/', login_required(update_provider), name='update_provider'),
     path('get_provider_by_document/', login_required(get_provider_by_document), name='get_provider_by_document'),
     path('get_provider_by_id/', login_required(get_provider_by_id), name='get_provider_by_id'),
+    # Transfer Subsidiary store
+    path('transfer_list/', login_required(transfer_list), name='transfer_list'),
 
     # Graphic sales purchase
     path('graphic_sales_purchase/', login_required(graphic_sales_purchase), name='graphic_sales_purchase'),

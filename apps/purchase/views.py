@@ -18,6 +18,7 @@ from django.core import serializers
 from datetime import date
 
 from apps.accounting.models import Casing, Payments
+from apps.hrm.models import Subsidiary
 from apps.hrm.views import get_subsidiary_by_user
 from apps.purchase.models import Provider
 from apps.sale.models import Client, Product, ProductCategory, Unit, Coin, ProductPresenting, Kardex, ProductStore, \
@@ -592,3 +593,11 @@ def graphic_sales_product_grid(request):
                 'success': False,
                 'message': 'Seleccione los productos por favor',
             }, status=HTTPStatus.OK)
+
+
+def transfer_list(request):
+    if request.method == 'GET':
+        subsidiary_set = Subsidiary.objects.all()
+        return render(request, 'purchase/transfer_list.html', {
+            'subsidiary_set': subsidiary_set,
+        })
