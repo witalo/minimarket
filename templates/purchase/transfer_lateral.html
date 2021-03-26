@@ -14,10 +14,7 @@
                 <label class="m-0 mt-3">Almacen Origen</label>
                 <select id="id-store-origin" name="id-store-origin"
                         class="form-control form-control-sm combo">
-                    <option selected value="0">Seleccione</option>
-                    {% for t in store_set %}
-                        <option value="{{ t.id }}">{{ t.name }}</option>
-                    {% endfor %}
+                    <option value="0">Seleccione</option>
                 </select>
             </div>
         </div>
@@ -37,10 +34,7 @@
                 <label class="m-0 mt-3">Almacen Origen</label>
                 <select id="id-store-destination" name="id-store-destination"
                         class="form-control form-control-sm combo">
-                    <option selected value="0">Seleccione</option>
-                    {% for t in store_set %}
-                        <option value="{{ t.id }}">{{ t.name }}</option>
-                    {% endfor %}
+                    <option value="0">Seleccione</option>
                 </select>
             </div>
         </div>
@@ -52,24 +46,24 @@
             <div class="card-header">Producto a trasladar de almacen</div>
             <div class="card-body">
                 <div class="row col-sm-12 col-md-12 col-lg-12 m-0 p-0">
-                    <div class="col-sm-5 col-md-5 col-lg-5 p-1">
+                    <div class="col-sm-5 col-md-5 col-lg-5 p-1 align-self-center">
                         <label class="m-0">Producto</label>
                         <select id="id-product" name="id-product"
                                 class="form-control form-control-sm combo">
-                            <option selected value="0">Seleccione</option>
+                            <option value="0">Seleccione</option>
                             {% for p in product_set %}
                                 <option value="{{ p.id }}">{{ p.names }}</option>
                             {% endfor %}
                         </select>
                     </div>
-                    <div class="col-sm-3 col-md-3 col-lg-3 p-1">
+                    <div class="col-sm-3 col-md-3 col-lg-3 p-1 align-self-center">
                         <label class="m-0">Cantidad</label>
-                        <input type="text" class="form-control form-control-sm"
+                        <input type="text" class="form-control"
                                id="id-quantity"
                                name="id-quantity"
                                placeholder="">
                     </div>
-                    <div class="col-sm-4 col-md-4 col-lg-4 p-1">
+                    <div class="col-sm-4 col-md-4 col-lg-4 p-1 align-self-center">
                         <label class="m-0">Unidad</label>
                         <select id="id-unit" name="id-unit"
                                 class="form-control form-control-sm combo">

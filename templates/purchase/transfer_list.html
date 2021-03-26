@@ -16,7 +16,7 @@
                             <div class="card">
                                 <div class="card-header">Stock de producto en almacen - Origen</div>
                                 <div class="card-body">
-
+                                    <div class="table-responsive" id="id-stock-origin"></div>
                                 </div>
                             </div>
                         </div>
@@ -26,7 +26,7 @@
                             <div class="card">
                                 <div class="card-header">Stock de producto en almacen - Destino</div>
                                 <div class="card-body">
-
+                                    <div class="table-responsive" id="id-stock-destination"></div>
                                 </div>
                             </div>
                         </div>
@@ -56,6 +56,98 @@
 {% endblock body %}
 {% block extrajs %}
     <script type="text/javascript">
+        $('.combo').select2({
+            theme: 'bootstrap4',
+        });
+        /**$("#id-subsidiary-origin").trigger("change");**/
+        $(document).on('change', '#id-subsidiary-origin', function () {
+            let _val = $(this).val();
+            $('#id-store-origin').empty();
+            if (_val != 0) {
+                $.ajax({
+                    url: '/purchase/get_store_by_subsidiary/',
+                    async: true,
+                    dataType: 'json',
+                    type: 'GET',
+                    data: {'_pk': _val},
+                    success: function (response) {
+                        //le da format array
+                        let store_list = JSON.parse(response['stores']);
+                        store_list.forEach(
+                            element =>
+                                $('#id-store-origin').append(
+                                    '<option value="' + element['pk'] + '">' + element['fields']['name'] + '</option>')
+                        );
+                    },
+                });
+            } else {
+                $('#id-store-origin').append('<option value="0">' + "Seleccione" + '</option>');
+            }
+        });
+        $(document).on('change', '#id-subsidiary-destination', function () {
+            let _val = $(this).val();
+            $('#id-store-destination').empty();
+            if (_val != 0) {
+                $.ajax({
+                    url: '/purchase/get_store_by_subsidiary/',
+                    async: true,
+                    dataType: 'json',
+                    type: 'GET',
+                    data: {'_pk': _val},
+                    success: function (response) {
+                        //le da format array
+                        let store_list = JSON.parse(response['stores']);
+                        store_list.forEach(
+                            element =>
+                                $('#id-store-destination').append(
+                                    '<option value="' + element['pk'] + '">' + element['fields']['name'] + '</option>')
+                        );
+                        /**$("#id_type").trigger("change");**/
+                    },
+                });
+            } else {
+                $('#id-store-destination').append('<option value="0">' + "Seleccione" + '</option>');
+            }
+        });
 
+        $(document).on('change', '#id-product', function () {
+            let _val = $(this).val();
+            let _origin = $('#id-store-origin').val();
+            let _destination = $('#id-store-destination').val();
+            if (_origin === '0') {
+                toastr.warning('Seleccione el almacen de origen');
+                return false;
+            }
+            if (_destination === '0') {
+                toastr.warning('Seleccione el almacen de destino');
+                return false;
+            }
+            $('#id-unit').empty();
+            if (_val != 0) {
+                $.ajax({
+                    url: '/sale/get_units_by_product/',
+                    async: true,
+                    dataType: 'json',
+                    type: 'GET',
+                    data: {
+                        '_pk': _val,
+                        '_store_origin': _origin,
+                        '_store_destination': _destination
+                    },
+                    success: function (response) {
+                        let unit_list = JSON.parse(response['units']);
+                        unit_list.forEach(
+                            element =>
+                                $('#id-unit').append(
+                                    '<option value="' + element['pk'] + '">' + element['fields']['description'] + '</option>')
+                        );
+                        $('#id-stock-origin').html(response.grid_origin);
+                        $('#id-stock-destination').html(response.grid_destination);
+                    },
+                });
+            } else {
+                $('#id-unit').append('<option value="0">' + "Seleccione" + '</option>');
+            }
+        });
     </script>
 {% endblock extrajs %}

@@ -1,0 +1,18 @@
+<table class="table table-hover table-bordered table-sm m-0 small text-uppercase tbl-store-origin-stock">
+    <thead>
+        <tr>
+            <td>Nº</td>
+            <td>Almacen</td>
+            <td>Cantidad</td>
+        </tr>
+    </thead>
+    <tbody>
+    {% for s in product_store_origin_set %}
+        <tr>
+           <td>{{ s.id }}</td>
+           <td>{{ s.subsidiary_store.name }}</td>
+           <td>{{ s.stock }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

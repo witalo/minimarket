@@ -390,10 +390,17 @@ def save_product(request):
             photo=_photo,
         )
         product_obj.save()
+        get_cache(product_obj)
         return JsonResponse({
             'success': True,
             'message': 'Registro guardado',
         }, status=HTTPStatus.OK)
+
+
+def get_cache(product=None):
+    if product != None:
+        product.photo.url
+        product.photo_thumbnail.url
 
 
 def get_product_update_form(request):
@@ -439,6 +446,7 @@ def update_product(request):
         if _photo is not False:
             product_obj.photo = _photo
         product_obj.save()
+        get_cache(product_obj)
         return JsonResponse({
             'success': True,
         }, status=HTTPStatus.OK)
@@ -1305,4 +1313,33 @@ def set_sales_reactive(request):
         order_obj.save()
         return JsonResponse({
             'message': 'Completado',
+        }, status=HTTPStatus.OK)
+
+
+def get_units_by_product(request):
+    if request.method == 'GET':
+        product_id = request.GET.get('_pk', '')
+        store_origin_id = request.GET.get('_store_origin', '')
+        store_origin_obj = SubsidiaryStore.objects.get(id=int(store_origin_id))
+        store_destination_id = request.GET.get('_store_destination', '')
+        store_destination_obj = SubsidiaryStore.objects.get(id=int(store_destination_id))
+        product_obj = Product.objects.get(id=int(product_id))
+        unit_set = Unit.objects.filter(productpresenting__product=product_obj)
+        units_serialized_obj = serializers.serialize('json', unit_set)
+
+        product_store_origin_set = ProductStore.objects.filter(product=product_obj, subsidiary_store=store_origin_obj)
+        to = loader.get_template('purchase/transfer_grid_origin.html')
+        co = ({
+            'product_store_origin_set': product_store_origin_set,
+        })
+        product_store_destination_set = ProductStore.objects.filter(product=product_obj,
+                                                                    subsidiary_store=store_destination_obj)
+        td = loader.get_template('purchase/transfer_grid_destination.html')
+        cd = ({
+            'product_store_destination_set': product_store_destination_set,
+        })
+        return JsonResponse({
+            'grid_origin': to.render(co, request),
+            'grid_destination': td.render(cd, request),
+            'units': units_serialized_obj
         }, status=HTTPStatus.OK)

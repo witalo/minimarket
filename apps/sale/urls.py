@@ -47,5 +47,7 @@ urlpatterns = [
     # annular order sales
     path('set_sales_annular/', login_required(set_sales_annular), name='set_sales_annular'),
     path('set_sales_reactive/', login_required(set_sales_reactive), name='set_sales_reactive'),
+    # units
+    path('get_units_by_product/', login_required(get_units_by_product), name='get_units_by_product'),
 
 ]

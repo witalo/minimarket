@@ -598,6 +598,20 @@ def graphic_sales_product_grid(request):
 def transfer_list(request):
     if request.method == 'GET':
         subsidiary_set = Subsidiary.objects.all()
+        product_set = Product.objects.all()
         return render(request, 'purchase/transfer_list.html', {
             'subsidiary_set': subsidiary_set,
+            'product_set': product_set,
         })
+
+
+def get_store_by_subsidiary(request):
+    if request.method == 'GET':
+        subsidiary_id = request.GET.get('_pk', '')
+        subsidiary_obj = Subsidiary.objects.get(id=int(subsidiary_id))
+        store_set = SubsidiaryStore.objects.filter(subsidiary=subsidiary_obj)
+        store_serialized_obj = serializers.serialize('json', store_set)
+
+        return JsonResponse({
+            'stores': store_serialized_obj,
+        }, status=HTTPStatus.OK)

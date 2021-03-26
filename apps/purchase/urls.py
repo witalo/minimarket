@@ -22,6 +22,7 @@ urlpatterns = [
     path('get_provider_by_id/', login_required(get_provider_by_id), name='get_provider_by_id'),
     # Transfer Subsidiary store
     path('transfer_list/', login_required(transfer_list), name='transfer_list'),
+    path('get_store_by_subsidiary/', login_required(get_store_by_subsidiary), name='get_store_by_subsidiary'),
 
     # Graphic sales purchase
     path('graphic_sales_purchase/', login_required(graphic_sales_purchase), name='graphic_sales_purchase'),
