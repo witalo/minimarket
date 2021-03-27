@@ -13,8 +13,10 @@
                 <div id="detail-transfer" class="col-sm-12 col-md-12 col-lg-12 p-0">
                     <div class="row col-sm-12 col-md-12 col-lg-12 m-0 p-0">
                         <div class="col-sm-12 col-md-12 col-lg-12 m-0 p-1">
-                            <div class="card">
-                                <div class="card-header">Stock de producto en almacen - Origen</div>
+                            <div class="card border-primary">
+                                <div class="card-header text-warning" style="background: #0577b3">Stock de producto en
+                                    almacen - Origen
+                                </div>
                                 <div class="card-body">
                                     <div class="table-responsive" id="id-stock-origin"></div>
                                 </div>
@@ -23,8 +25,10 @@
                     </div>
                     <div class="row col-sm-12 col-md-12 col-lg-12 m-0 p-0">
                         <div class="col-sm-12 col-md-12 col-lg-12 m-0 p-1">
-                            <div class="card">
-                                <div class="card-header">Stock de producto en almacen - Destino</div>
+                            <div class="card border-primary">
+                                <div class="card-header text-warning" style="background: #0577b3">Stock de producto en
+                                    almacen - Destino
+                                </div>
                                 <div class="card-body">
                                     <div class="table-responsive" id="id-stock-destination"></div>
                                 </div>
@@ -148,6 +152,68 @@
             } else {
                 $('#id-unit').append('<option value="0">' + "Seleccione" + '</option>');
             }
+        });
+        $("input.decimal").keyup(function (e) {
+            let val = $(this).val();
+            if (isNaN(val)) {
+                $(this).val('');
+            }
+        });
+        $(document).on('click', '#btn-transfer', function () {
+            let _product_id = $('#id-product').val();
+            if (_product_id === '0') {
+                toastr.warning('Seleccione el producto a trasladar');
+                return false;
+            }
+            let _store_origin = $('#id-store-origin').val();
+            if (_store_origin === '0') {
+                toastr.warning('Seleccione el almacen de origen');
+                return false;
+            }
+            let _store_destination = $('#id-store-destination').val();
+            if (_store_destination === '0') {
+                toastr.warning('Seleccione el almacen de destino');
+                return false;
+            }
+            let _quantity = $('#id-quantity').val();
+            if (_quantity === '') {
+                toastr.warning('Ingrese la cantidad a trasladar');
+                return false;
+            }
+            let _unit = $('#id-unit').val();
+            if (_unit === '0') {
+                toastr.warning('Seleccione la unidad de medida del producto');
+                return false;
+            }
+            let stock_origin = $('#stock-origin').val();
+            if (parseFloat(_quantity) > parseFloat(stock_origin)) {
+                toastr.warning('Stock insuficiente en el almecen de origen');
+                return false;
+            }
+
+            $.ajax({
+                url: '/sale/set_transfer_between_store/',
+                async: true,
+                dataType: 'json',
+                type: 'GET',
+                data: {
+                    'product': _product_id,
+                    'store_origin': _store_origin,
+                    'store_destination': _store_destination,
+                    'quantity': _quantity,
+                    'unit': _unit
+                },
+                success: function (response) {
+                    $('#id-stock-origin').empty();
+                    $('#id-stock-destination').empty();
+                    toastr.success('El traslado se realizo con exito');
+                    $('#id-stock-origin').html(response.grid_origin);
+                    $('#id-stock-destination').html(response.grid_destination);
+                },
+                fail: function (response) {
+                    toastr.error('Ocurrio un problema en el traslado');
+                }
+            });
         });
     </script>
 {% endblock extrajs %}

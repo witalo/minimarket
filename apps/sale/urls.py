@@ -49,5 +49,7 @@ urlpatterns = [
     path('set_sales_reactive/', login_required(set_sales_reactive), name='set_sales_reactive'),
     # units
     path('get_units_by_product/', login_required(get_units_by_product), name='get_units_by_product'),
+    # transfer subsidiary_store
+    path('set_transfer_between_store/', login_required(set_transfer_between_store), name='set_transfer_between_store'),
 
 ]

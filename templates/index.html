@@ -515,20 +515,20 @@
                                     <!-- Card Header - Dropdown -->
                                     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                                         <h6 class="m-0 font-weight-bold text-primary">Resumen de ganancias</h6>
-                                       <!-- <div class="dropdown no-arrow">
-                                            <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                                            </a>
-                                            <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                                                 aria-labelledby="dropdownMenuLink">
-                                                <div class="dropdown-header">Dropdown Header:</div>
-                                                <a class="dropdown-item" href="#">Action</a>
-                                                <a class="dropdown-item" href="#">Another action</a>
-                                                <div class="dropdown-divider"></div>
-                                                <a class="dropdown-item" href="#">Something else here</a>
-                                            </div>
-                                        </div>-->
+                                        <!-- <div class="dropdown no-arrow">
+                                             <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                 <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                                             </a>
+                                             <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                                                  aria-labelledby="dropdownMenuLink">
+                                                 <div class="dropdown-header">Dropdown Header:</div>
+                                                 <a class="dropdown-item" href="#">Action</a>
+                                                 <a class="dropdown-item" href="#">Another action</a>
+                                                 <div class="dropdown-divider"></div>
+                                                 <a class="dropdown-item" href="#">Something else here</a>
+                                             </div>
+                                         </div>-->
                                     </div>
                                     <!-- Card Body -->
                                     <div class="card-body">
@@ -545,20 +545,20 @@
                                     <!-- Card Header - Dropdown -->
                                     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                                         <h6 class="m-0 font-weight-bold text-primary">Reloj</h6>
-                                       <!-- <div class="dropdown no-arrow">
-                                            <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                                            </a>
-                                            <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                                                 aria-labelledby="dropdownMenuLink">
-                                                <div class="dropdown-header">Dropdown Header:</div>
-                                                <a class="dropdown-item" href="#">Action</a>
-                                                <a class="dropdown-item" href="#">Another action</a>
-                                                <div class="dropdown-divider"></div>
-                                                <a class="dropdown-item" href="#">Something else here</a>
-                                            </div>
-                                        </div>-->
+                                        <!-- <div class="dropdown no-arrow">
+                                             <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                 <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                                             </a>
+                                             <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                                                  aria-labelledby="dropdownMenuLink">
+                                                 <div class="dropdown-header">Dropdown Header:</div>
+                                                 <a class="dropdown-item" href="#">Action</a>
+                                                 <a class="dropdown-item" href="#">Another action</a>
+                                                 <div class="dropdown-divider"></div>
+                                                 <a class="dropdown-item" href="#">Something else here</a>
+                                             </div>
+                                         </div>-->
                                     </div>
                                     <!-- Card Body -->
                                     <div class="card-body">
@@ -744,278 +744,278 @@
 <script src="{% static 'highcharts/highcharts-more.js' %}"></script>
 <script src="{% static 'highcharts/highcharts-3d.js' %}"></script>
 <script src="{% static 'highcharts/modules/series-label.js' %}"></script>
-<script type="text/javascript">
-    Highcharts.chart('container-line', {
-        chart: {
-            type: 'spline',
-            animation: Highcharts.svg, // don't animate in old IE
-            marginRight: 10,
-            events: {
-                load: function () {
 
-                    // set up the updating of the chart each second
-                    var series = this.series[0];
-                    setInterval(function () {
-                        var x = (new Date()).getTime(), // current time
-                            y = Math.random();
-                        series.addPoint([x, y], true, true);
-                    }, 1000);
-                }
-            }
-        },
-
-        time: {
-            useUTC: false
-        },
-
-        title: {
-            text: 'Movimiento'
-        },
-
-        accessibility: {
-            announceNewData: {
-                enabled: true,
-                minAnnounceInterval: 15000,
-                announcementFormatter: function (allSeries, newSeries, newPoint) {
-                    if (newPoint) {
-                        return 'New point added. Value: ' + newPoint.y;
-                    }
-                    return false;
-                }
-            }
-        },
-
-        xAxis: {
-            type: 'datetime',
-            tickPixelInterval: 150
-        },
-
-        yAxis: {
-            title: {
-                text: 'Value'
-            },
-            plotLines: [{
-                value: 0,
-                width: 1,
-                color: '#808080'
-            }]
-        },
-
-        tooltip: {
-            headerFormat: '<b>{series.name}</b><br/>',
-            pointFormat: '{point.x:%Y-%m-%d %H:%M:%S}<br/>{point.y:.2f}'
-        },
-
-        legend: {
-            enabled: false
-        },
-
-        exporting: {
-            enabled: false
-        },
-
-        series: [{
-            name: 'Movimiento',
-            data: (function () {
-                // generate an array of random data
-                var data = [],
-                    time = (new Date()).getTime(),
-                    i;
-
-                for (i = -19; i <= 0; i += 1) {
-                    data.push({
-                        x: time + i * 100,
-                        y: Math.random()
-                    });
-                }
-                return data;
-            }())
-        }]
-    });
-
-    /** Reloj **/
-    function getNow() {
-        var now = new Date();
-
-        return {
-            hours: now.getHours() + now.getMinutes() / 60,
-            minutes: now.getMinutes() * 12 / 60 + now.getSeconds() * 12 / 3600,
-            seconds: now.getSeconds() * 12 / 60
-        };
-    }
-
-    /**
-     * Pad numbers
-     */
-    function pad(number, length) {
-        // Create an array of the remaining length + 1 and join it with 0's
-        return new Array((length || 2) + 1 - String(number).length).join(0) + number;
-    }
-
-    var now = getNow();
-
-    // Create the chart
-    Highcharts.chart('container-clock', {
-
+{% block extrajs %}
+    <script type="text/javascript">
+        Highcharts.chart('container-line', {
             chart: {
-                type: 'gauge',
-                plotBackgroundColor: null,
-                plotBackgroundImage: null,
-                plotBorderWidth: 0,
-                plotShadow: false,
-                height: '80%'
+                type: 'spline',
+                animation: Highcharts.svg, // don't animate in old IE
+                marginRight: 10,
+                events: {
+                    load: function () {
+
+                        // set up the updating of the chart each second
+                        var series = this.series[0];
+                        setInterval(function () {
+                            var x = (new Date()).getTime(), // current time
+                                y = Math.random();
+                            series.addPoint([x, y], true, true);
+                        }, 1000);
+                    }
+                }
             },
 
-            credits: {
-                enabled: false
+            time: {
+                useUTC: false
             },
 
             title: {
-                text: 'Hora'
+                text: 'Movimiento'
             },
 
-            pane: {
-                background: [{
-                    // default background
-                }, {
-                    // reflex for supported browsers
-                    backgroundColor: Highcharts.svg ? {
-                        radialGradient: {
-                            cx: 0.5,
-                            cy: -0.4,
-                            r: 1.9
-                        },
-                        stops: [
-                            [0.5, 'rgba(255, 255, 255, 0.2)'],
-                            [0.5, 'rgba(200, 200, 200, 0.2)']
-                        ]
-                    } : null
-                }]
+            accessibility: {
+                announceNewData: {
+                    enabled: true,
+                    minAnnounceInterval: 15000,
+                    announcementFormatter: function (allSeries, newSeries, newPoint) {
+                        if (newPoint) {
+                            return 'New point added. Value: ' + newPoint.y;
+                        }
+                        return false;
+                    }
+                }
+            },
+
+            xAxis: {
+                type: 'datetime',
+                tickPixelInterval: 150
             },
 
             yAxis: {
-                labels: {
-                    distance: -20
-                },
-                min: 0,
-                max: 12,
-                lineWidth: 0,
-                showFirstLabel: false,
-
-                minorTickInterval: 'auto',
-                minorTickWidth: 1,
-                minorTickLength: 5,
-                minorTickPosition: 'inside',
-                minorGridLineWidth: 0,
-                minorTickColor: '#047cd7',
-
-                tickInterval: 1,
-                tickWidth: 2,
-                tickPosition: 'inside',
-                tickLength: 10,
-                tickColor: '#0577ab',
                 title: {
-                    text: 'Italo<br/>Ventura',
-                    style: {
-                        color: '#BBB',
-                        fontWeight: 'normal',
-                        fontSize: '8px',
-                        lineHeight: '10px'
-                    },
-                    y: 10
-                }
+                    text: 'Value'
+                },
+                plotLines: [{
+                    value: 0,
+                    width: 1,
+                    color: '#808080'
+                }]
             },
 
             tooltip: {
-                formatter: function () {
-                    return this.series.chart.tooltipText;
-                }
+                headerFormat: '<b>{series.name}</b><br/>',
+                pointFormat: '{point.x:%Y-%m-%d %H:%M:%S}<br/>{point.y:.2f}'
+            },
+
+            legend: {
+                enabled: false
+            },
+
+            exporting: {
+                enabled: false
             },
 
             series: [{
-                data: [{
-                    id: 'hour',
-                    y: now.hours,
-                    dial: {
-                        radius: '60%',
-                        baseWidth: 4,
-                        baseLength: '95%',
-                        rearLength: 0
+                name: 'Movimiento',
+                data: (function () {
+                    // generate an array of random data
+                    var data = [],
+                        time = (new Date()).getTime(),
+                        i;
+
+                    for (i = -19; i <= 0; i += 1) {
+                        data.push({
+                            x: time + i * 100,
+                            y: Math.random()
+                        });
                     }
-                }, {
-                    id: 'minute',
-                    y: now.minutes,
-                    dial: {
-                        baseLength: '95%',
-                        rearLength: 0
-                    }
-                }, {
-                    id: 'second',
-                    y: now.seconds,
-                    dial: {
-                        radius: '100%',
-                        baseWidth: 1,
-                        rearLength: '20%'
-                    }
-                }],
-                animation: false,
-                dataLabels: {
-                    enabled: false
-                }
+                    return data;
+                }())
             }]
-        },
-
-// Move
-        function (chart) {
-            setInterval(function () {
-
-                now = getNow();
-
-                if (chart.axes) { // not destroyed
-                    var hour = chart.get('hour'),
-                        minute = chart.get('minute'),
-                        second = chart.get('second'),
-                        // run animation unless we're wrapping around from 59 to 0
-                        animation = now.seconds === 0 ?
-                            false : {
-                                easing: 'easeOutBounce'
-                            };
-
-                    // Cache the tooltip text
-                    chart.tooltipText =
-                        pad(Math.floor(now.hours), 2) + ':' +
-                        pad(Math.floor(now.minutes * 5), 2) + ':' +
-                        pad(now.seconds * 5, 2);
-
-
-                    hour.update(now.hours, true, animation);
-                    minute.update(now.minutes, true, animation);
-                    second.update(now.seconds, true, animation);
-                }
-
-            }, 1000);
-
         });
 
-    /**
-     * Easing function from https://github.com/danro/easing-js/blob/master/easing.js
-     */
-    Math.easeOutBounce = function (pos) {
-        if ((pos) < (1 / 2.75)) {
-            return (7.5625 * pos * pos);
-        }
-        if (pos < (2 / 2.75)) {
-            return (7.5625 * (pos -= (1.5 / 2.75)) * pos + 0.75);
-        }
-        if (pos < (2.5 / 2.75)) {
-            return (7.5625 * (pos -= (2.25 / 2.75)) * pos + 0.9375);
-        }
-        return (7.5625 * (pos -= (2.625 / 2.75)) * pos + 0.984375);
-    };
+        /** Reloj **/
+        function getNow() {
+            var now = new Date();
 
-</script>
-{% block extrajs %}
+            return {
+                hours: now.getHours() + now.getMinutes() / 60,
+                minutes: now.getMinutes() * 12 / 60 + now.getSeconds() * 12 / 3600,
+                seconds: now.getSeconds() * 12 / 60
+            };
+        }
 
+        /**
+         * Pad numbers
+         */
+        function pad(number, length) {
+            // Create an array of the remaining length + 1 and join it with 0's
+            return new Array((length || 2) + 1 - String(number).length).join(0) + number;
+        }
+
+        var now = getNow();
+
+        // Create the chart
+        Highcharts.chart('container-clock', {
+
+                chart: {
+                    type: 'gauge',
+                    plotBackgroundColor: null,
+                    plotBackgroundImage: null,
+                    plotBorderWidth: 0,
+                    plotShadow: false,
+                    height: '80%'
+                },
+
+                credits: {
+                    enabled: false
+                },
+
+                title: {
+                    text: 'Hora'
+                },
+
+                pane: {
+                    background: [{
+                        // default background
+                    }, {
+                        // reflex for supported browsers
+                        backgroundColor: Highcharts.svg ? {
+                            radialGradient: {
+                                cx: 0.5,
+                                cy: -0.4,
+                                r: 1.9
+                            },
+                            stops: [
+                                [0.5, 'rgba(255, 255, 255, 0.2)'],
+                                [0.5, 'rgba(200, 200, 200, 0.2)']
+                            ]
+                        } : null
+                    }]
+                },
+
+                yAxis: {
+                    labels: {
+                        distance: -20
+                    },
+                    min: 0,
+                    max: 12,
+                    lineWidth: 0,
+                    showFirstLabel: false,
+
+                    minorTickInterval: 'auto',
+                    minorTickWidth: 1,
+                    minorTickLength: 5,
+                    minorTickPosition: 'inside',
+                    minorGridLineWidth: 0,
+                    minorTickColor: '#047cd7',
+
+                    tickInterval: 1,
+                    tickWidth: 2,
+                    tickPosition: 'inside',
+                    tickLength: 10,
+                    tickColor: '#0577ab',
+                    title: {
+                        text: 'Italo<br/>Ventura',
+                        style: {
+                            color: '#BBB',
+                            fontWeight: 'normal',
+                            fontSize: '8px',
+                            lineHeight: '10px'
+                        },
+                        y: 10
+                    }
+                },
+
+                tooltip: {
+                    formatter: function () {
+                        return this.series.chart.tooltipText;
+                    }
+                },
+
+                series: [{
+                    data: [{
+                        id: 'hour',
+                        y: now.hours,
+                        dial: {
+                            radius: '60%',
+                            baseWidth: 4,
+                            baseLength: '95%',
+                            rearLength: 0
+                        }
+                    }, {
+                        id: 'minute',
+                        y: now.minutes,
+                        dial: {
+                            baseLength: '95%',
+                            rearLength: 0
+                        }
+                    }, {
+                        id: 'second',
+                        y: now.seconds,
+                        dial: {
+                            radius: '100%',
+                            baseWidth: 1,
+                            rearLength: '20%'
+                        }
+                    }],
+                    animation: false,
+                    dataLabels: {
+                        enabled: false
+                    }
+                }]
+            },
+
+// Move
+            function (chart) {
+                setInterval(function () {
+
+                    now = getNow();
+
+                    if (chart.axes) { // not destroyed
+                        var hour = chart.get('hour'),
+                            minute = chart.get('minute'),
+                            second = chart.get('second'),
+                            // run animation unless we're wrapping around from 59 to 0
+                            animation = now.seconds === 0 ?
+                                false : {
+                                    easing: 'easeOutBounce'
+                                };
+
+                        // Cache the tooltip text
+                        chart.tooltipText =
+                            pad(Math.floor(now.hours), 2) + ':' +
+                            pad(Math.floor(now.minutes * 5), 2) + ':' +
+                            pad(now.seconds * 5, 2);
+
+
+                        hour.update(now.hours, true, animation);
+                        minute.update(now.minutes, true, animation);
+                        second.update(now.seconds, true, animation);
+                    }
+
+                }, 1000);
+
+            });
+
+        /**
+         * Easing function from https://github.com/danro/easing-js/blob/master/easing.js
+         */
+        Math.easeOutBounce = function (pos) {
+            if ((pos) < (1 / 2.75)) {
+                return (7.5625 * pos * pos);
+            }
+            if (pos < (2 / 2.75)) {
+                return (7.5625 * (pos -= (1.5 / 2.75)) * pos + 0.75);
+            }
+            if (pos < (2.5 / 2.75)) {
+                return (7.5625 * (pos -= (2.25 / 2.75)) * pos + 0.9375);
+            }
+            return (7.5625 * (pos -= (2.625 / 2.75)) * pos + 0.984375);
+        };
+
+    </script>
 {% endblock extrajs %}
 </body>
 

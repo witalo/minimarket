@@ -1327,13 +1327,16 @@ def get_units_by_product(request):
         unit_set = Unit.objects.filter(productpresenting__product=product_obj)
         units_serialized_obj = serializers.serialize('json', unit_set)
 
-        product_store_origin_set = ProductStore.objects.filter(product=product_obj, subsidiary_store=store_origin_obj)
+        product_store_origin_set = ProductStore.objects.filter(product=product_obj,
+                                                               subsidiary_store=store_origin_obj).values(
+            'id', 'stock', 'subsidiary_store__name', 'product__productpresenting__unit__description')
         to = loader.get_template('purchase/transfer_grid_origin.html')
         co = ({
             'product_store_origin_set': product_store_origin_set,
         })
         product_store_destination_set = ProductStore.objects.filter(product=product_obj,
-                                                                    subsidiary_store=store_destination_obj)
+                                                                    subsidiary_store=store_destination_obj).values(
+            'id', 'stock', 'subsidiary_store__name', 'product__productpresenting__unit__description')
         td = loader.get_template('purchase/transfer_grid_destination.html')
         cd = ({
             'product_store_destination_set': product_store_destination_set,
@@ -1342,4 +1345,46 @@ def get_units_by_product(request):
             'grid_origin': to.render(co, request),
             'grid_destination': td.render(cd, request),
             'units': units_serialized_obj
+        }, status=HTTPStatus.OK)
+
+
+def set_transfer_between_store(request):
+    if request.method == 'GET':
+        _product = request.GET.get('product', '')
+        product_obj = Product.objects.get(id=int(_product))
+        _store_origin = request.GET.get('store_origin', '')
+        store_origin_obj = SubsidiaryStore.objects.get(id=int(_store_origin))
+        _store_destination = request.GET.get('store_destination', '')
+        store_destination_obj = SubsidiaryStore.objects.get(id=int(_store_destination))
+        _quantity = decimal.Decimal(request.GET.get('quantity', ''))
+        _unit = request.GET.get('unit', '')
+        unit_obj = Unit.objects.get(id=int(_unit))
+        minimum_quantity = minimum_unit(_quantity, unit_obj, product_obj)
+        product_store_origin_set = ProductStore.objects.filter(product=product_obj,
+                                                               subsidiary_store=store_origin_obj)
+        if product_store_origin_set.exists():
+            product_store_origin_obj = product_store_origin_set.first()
+            product_store_origin_obj.stock = product_store_origin_obj.stock - minimum_quantity
+            product_store_origin_obj.save()
+        product_store_destination_set = ProductStore.objects.filter(product=product_obj,
+                                                                    subsidiary_store=store_destination_obj)
+        if product_store_destination_set.exists():
+            product_store_destination_obj = product_store_destination_set.first()
+            product_store_destination_obj.stock = product_store_destination_obj.stock + minimum_quantity
+            product_store_destination_obj.save()
+
+        to = loader.get_template('purchase/transfer_grid_origin.html')
+        co = ({
+            'product_store_origin_set': product_store_origin_set.values('id', 'stock', 'subsidiary_store__name',
+                                                                        'product__productpresenting__unit__description'),
+        })
+        td = loader.get_template('purchase/transfer_grid_destination.html')
+        cd = ({
+            'product_store_destination_set': product_store_destination_set.values('id', 'stock',
+                                                                                  'subsidiary_store__name',
+                                                                                  'product__productpresenting__unit__description'),
+        })
+        return JsonResponse({
+            'grid_origin': to.render(co, request),
+            'grid_destination': td.render(cd, request)
         }, status=HTTPStatus.OK)

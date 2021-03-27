@@ -615,3 +615,5 @@ def get_store_by_subsidiary(request):
         return JsonResponse({
             'stores': store_serialized_obj,
         }, status=HTTPStatus.OK)
+
+
