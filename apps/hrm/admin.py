@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Subsidiary
+from .models import Subsidiary, Employee
 
 
 class SubsidiaryAdmin(admin.ModelAdmin):
@@ -10,3 +10,5 @@ class SubsidiaryAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Subsidiary, SubsidiaryAdmin)
+
+admin.site.register(Employee)
