@@ -54,14 +54,15 @@ def get_url(photo=None):
     # _path = str(settings.MEDIA_URL + photo).replace('/', '\\')
     _path_real_cache = str(
         settings.MEDIA_ROOT + '/CACHE/images/' + photo.replace('.png', '/').replace('.jpg', '/').replace('.JPG', '/').replace('.PNG', '/')
-    ).replace('/', '\\')
-    file_dir = os.listdir(_path_real_cache) 
-    for file in file_dir:
-    	if os.path.isfile(os.path.join(_path_real_cache, file)) and file.endswith('.jpg'):
-            file_name = str(file)
-    _path_cache = str(
-        settings.MEDIA_URL + 'CACHE/images/' + photo.replace('.png', '/').replace('.jpg', '/').replace('.JPG', '/').replace('.PNG', '/') + _file_name
     )
+    file_dir = os.listdir(_path_real_cache) 
+    url_file = ''
+    for file in file_dir:
+    	# if os.path.isfile(os.path.join(_path_real_cache, file)) and file.endswith('.jpg'):
+          #   file_name = str(file)
+            # print('3>>> : '+ file_name)
+    url_file = str(photo.replace('.png', '/').replace('.jpg', '/').replace('.JPG', '/').replace('.PNG', '/'))
+    _path_cache = '/media/CACHE/images/' + url_file + str(file)
     return _path_cache
 
 
