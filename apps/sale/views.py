@@ -35,7 +35,7 @@ def calculate_age(birthdate):
 def get_photo(photo=None):
     # _path = str(settings.MEDIA_URL + photo).replace('/', '\\')
     _path_real_cache = str(
-        settings.MEDIA_ROOT + '/CACHE/images/' + photo.replace('.png', '/').replace('.jpg', '/')
+        settings.MEDIA_ROOT + '/CACHE/images/' + photo.replace('.png', '/').replace('.jpg', '/').replace('.JPG', '/').replace('.PNG', '/')
     ).replace('/', '\\')
     dir_path = os.path.dirname(_path_real_cache)
     _file_name = ''
@@ -44,7 +44,23 @@ def get_photo(photo=None):
             if file.endswith('.jpg'):
                 _file_name = str(file)
     _path_cache = str(
-        settings.MEDIA_URL + 'CACHE/images/' + photo.replace('.png', '/').replace('.jpg', '/') + _file_name
+        settings.MEDIA_URL + 'CACHE/images/' + photo.replace('.png', '/').replace('.jpg', '/').replace('.JPG', '/').replace('.PNG', '/') + _file_name
+    )
+    return _path_cache
+
+
+# Create your views here.
+def get_url(photo=None):
+    # _path = str(settings.MEDIA_URL + photo).replace('/', '\\')
+    _path_real_cache = str(
+        settings.MEDIA_ROOT + '/CACHE/images/' + photo.replace('.png', '/').replace('.jpg', '/').replace('.JPG', '/').replace('.PNG', '/')
+    ).replace('/', '\\')
+    file_dir = os.listdir(_path_real_cache) 
+    for file in file_dir:
+    	if os.path.isfile(os.path.join(_path_real_cache, file)) and file.endswith('.jpg'):
+            file_name = str(file)
+    _path_cache = str(
+        settings.MEDIA_URL + 'CACHE/images/' + photo.replace('.png', '/').replace('.jpg', '/').replace('.JPG', '/').replace('.PNG', '/') + _file_name
     )
     return _path_cache
 
@@ -897,7 +913,7 @@ def get_products_for_sales(subsidiary_store_obj=None):
             'names': p['names'],
             'code': p['code'],
             'photo': p['photo'],
-            'path_cache': get_photo(p['photo']),
+            'path_cache': get_url(p['photo']),
             'stock_min': p['stock_min'],
             'stock_max': p['stock_max'],
             'product_store_id': p['productstore__id'],
