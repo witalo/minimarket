@@ -35,7 +35,7 @@ def calculate_age(birthdate):
 def get_photo(photo=None):
     # _path = str(settings.MEDIA_URL + photo).replace('/', '\\')
     _path_real_cache = str(
-        settings.MEDIA_ROOT + '/CACHE/images/' + photo.replace('.png', '/').replace('.jpg', '/')
+        settings.MEDIA_ROOT + '/CACHE/images/' + photo.replace('.png', '/').replace('.jpg', '/').replace('.JPG', '/').replace('.PNG', '/')
     ).replace('/', '\\')
     print('1>>>> : ' + _path_real_cache)
     dir_path = os.path.dirname(_path_real_cache)
@@ -47,7 +47,7 @@ def get_photo(photo=None):
                 _file_name = str(file)
                 print('3>>>> : ' + _file_name)
     _path_cache = str(
-        settings.MEDIA_URL + 'CACHE/images/' + photo.replace('.png', '/').replace('.jpg', '/') + _file_name
+        settings.MEDIA_URL + 'CACHE/images/' + photo.replace('.png', '/').replace('.jpg', '/').replace('.JPG', '/').replace('.PNG', '/') + _file_name
     )
     print('3>>>> : ' + _path_cache)
     return _path_cache
@@ -68,6 +68,23 @@ def get_url(photo=None):
                                                                                                        '/').replace(
             '.PNG', '/') + _file_name
     )
+    return _path_cache
+
+
+# Create your views here.
+def get_url(photo=None):
+    # _path = str(settings.MEDIA_URL + photo).replace('/', '\\')
+    _path_real_cache = str(
+        settings.MEDIA_ROOT + '/CACHE/images/' + photo.replace('.png', '/').replace('.jpg', '/').replace('.JPG', '/').replace('.PNG', '/')
+    )
+    file_dir = os.listdir(_path_real_cache) 
+    url_file = ''
+    for file in file_dir:
+    	# if os.path.isfile(os.path.join(_path_real_cache, file)) and file.endswith('.jpg'):
+          #   file_name = str(file)
+            # print('3>>> : '+ file_name)
+    url_file = str(photo.replace('.png', '/').replace('.jpg', '/').replace('.JPG', '/').replace('.PNG', '/'))
+    _path_cache = '/media/CACHE/images/' + url_file + str(file)
     return _path_cache
 
 
