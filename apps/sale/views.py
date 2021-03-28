@@ -57,12 +57,14 @@ def get_url(photo=None):
     )
     file_dir = os.listdir(_path_real_cache) 
     url_file = ''
+    file_url = ''
     for file in file_dir:
+    	file_url = file
     	# if os.path.isfile(os.path.join(_path_real_cache, file)) and file.endswith('.jpg'):
           #   file_name = str(file)
             # print('3>>> : '+ file_name)
     url_file = str(photo.replace('.png', '/').replace('.jpg', '/').replace('.JPG', '/').replace('.PNG', '/'))
-    _path_cache = '/media/CACHE/images/' + url_file + str(file)
+    _path_cache = '/media/CACHE/images/' + url_file + str(file_url)
     return _path_cache
 
 
