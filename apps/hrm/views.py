@@ -2,6 +2,7 @@ import decimal
 from datetime import datetime
 from http import HTTPStatus
 from django.contrib.auth.models import User
+from django.db.models.functions import Coalesce
 from django.http import JsonResponse
 from django.shortcuts import render
 import json
@@ -24,32 +25,32 @@ class Home(TemplateView):
     def get_context_data(self, **kwargs):
         user_id = self.request.user.id
         user_obj = User.objects.get(id=int(user_id))
-        subsidiary_obj = get_subsidiary_by_user(user_obj)
         date_ = datetime.now()
         date_now = date_.strftime("%d-%b-%y")
         year_now = date_.year
         month_now = date_.month
         t_p = decimal.Decimal('0.00')
         t_s = decimal.Decimal('0.00')
+        subsidiary_obj = get_subsidiary_by_user(user_obj)
         total_sales = Payments.objects.filter(subsidiary=subsidiary_obj, date_payment__year=year_now,
                                               date_payment__month=month_now,
                                               ).filter(
-            Q(type='I') | Q(type='A')).filter(Q(type_payment='E') | Q(type_payment='D')).aggregate(
-            Sum('amount'))
-        if total_sales['amount__sum'] is not None:
-            t_s = total_sales['amount__sum']
+            Q(type='I') | Q(type='A')).filter(Q(type_payment='E') | Q(type_payment='D')).aggregate(r=Coalesce(
+            Sum('amount'), 0))
+        if total_sales['r'] is not None:
+            t_s = round(decimal.Decimal(total_sales['r']), 2)
         total_purchase = Payments.objects.filter(subsidiary=subsidiary_obj, date_payment__year=year_now,
                                                  date_payment__month=month_now, type='E'
                                                  ).filter(Q(type_payment='E') | Q(type_payment='D')).aggregate(
-            Sum('amount'))
-        if total_purchase['amount__sum'] is not None:
-            t_p = total_purchase['amount__sum']
-        context = {
-            'total_sales': t_s,
-            'total_purchase': t_p,
-            'quantity_product': Product.objects.all().count(),
-            'date_': date_now,
-        }
+            r=Coalesce(Sum('amount'), 0))
+        if total_purchase['r'] is not None:
+            t_p = round(decimal.Decimal(total_purchase['r']), 2)
+            context = {
+                'total_sales': t_s,
+                'total_purchase': t_p,
+                'quantity_product': Product.objects.all().count(),
+                'date_': date_now,
+            }
         return context
 
 
@@ -253,7 +254,11 @@ def update_employee(request):
 
 # retorna la sucursal
 def get_subsidiary_by_user(user_obj):
-    employee_obj = Employee.objects.get(user=user_obj)
-    if employee_obj.subsidiary:
-        subsidiary = employee_obj.subsidiary
-    return subsidiary
+    try:
+        employee_obj = Employee.objects.get(user=user_obj)
+    except Employee.DoesNotExist:
+        employee_obj = None
+    if employee_obj is not None:
+        if employee_obj.subsidiary:
+            subsidiary = employee_obj.subsidiary
+        return subsidiary
