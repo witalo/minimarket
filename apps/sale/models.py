@@ -174,7 +174,7 @@ class Kardex(models.Model):
 
 class Order(models.Model):
     id = models.AutoField(primary_key=True)
-    TYPE_CHOICES = (('T', 'Cotización'), ('V', 'Venta'), ('R', 'Requerimiento'), ('C', 'Compra'), ('F', 'Fabricacion'))
+    TYPE_CHOICES = (('T', 'Cotización'), ('V', 'Venta'), ('R', 'Requerimiento'), ('C', 'Compra'), ('F', 'Fabricacion'), ('S', 'Traslado'))
     STATUS_CHOICES = (('P', 'Pendiente'), ('C', 'Completado'), ('A', 'Anulado'),)
     type = models.CharField('Tipo', max_length=1, choices=TYPE_CHOICES, default='T', )
     provider = models.ForeignKey('purchase.Provider', verbose_name='Proveedor',

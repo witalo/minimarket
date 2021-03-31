@@ -35,7 +35,9 @@ def calculate_age(birthdate):
 def get_photo(photo=None):
     # _path = str(settings.MEDIA_URL + photo).replace('/', '\\')
     _path_real_cache = str(
-        settings.MEDIA_ROOT + '/CACHE/images/' + photo.replace('.png', '/').replace('.jpg', '/').replace('.JPG', '/').replace('.PNG', '/')
+        settings.MEDIA_ROOT + '/CACHE/images/' + photo.replace('.png', '/').replace('.jpg', '/').replace('.JPG',
+                                                                                                         '/').replace(
+            '.PNG', '/')
     ).replace('/', '\\')
     print('1>>>> : ' + _path_real_cache)
     dir_path = os.path.dirname(_path_real_cache)
@@ -47,13 +49,15 @@ def get_photo(photo=None):
                 _file_name = str(file)
                 print('3>>>> : ' + _file_name)
     _path_cache = str(
-        settings.MEDIA_URL + 'CACHE/images/' + photo.replace('.png', '/').replace('.jpg', '/').replace('.JPG', '/').replace('.PNG', '/') + _file_name
+        settings.MEDIA_URL + 'CACHE/images/' + photo.replace('.png', '/').replace('.jpg', '/').replace('.JPG',
+                                                                                                       '/').replace(
+            '.PNG', '/') + _file_name
     )
     print('3>>>> : ' + _path_cache)
     return _path_cache
 
 
-def get_url(photo=None):
+def get_urls(photo=None):
     _path_real_cache = str(
         settings.MEDIA_ROOT + '/CACHE/images/' + photo.replace('.png', '/').replace('.jpg', '/').replace('.JPG',
                                                                                                          '/').replace(
@@ -75,16 +79,17 @@ def get_url(photo=None):
 def get_url(photo=None):
     # _path = str(settings.MEDIA_URL + photo).replace('/', '\\')
     _path_real_cache = str(
-        settings.MEDIA_ROOT + '/CACHE/images/' + photo.replace('.png', '/').replace('.jpg', '/').replace('.JPG', '/').replace('.PNG', '/')
+        settings.MEDIA_ROOT + '/CACHE/images/' + photo.replace('.png', '/').replace('.jpg', '/').replace('.JPG',
+                                                                                                         '/').replace(
+            '.PNG', '/')
     )
-    file_dir = os.listdir(_path_real_cache) 
+    if os.path.isdir(_path_real_cache):
+        file_dir = os.listdir(_path_real_cache)
     url_file = ''
     file_url = ''
     for file in file_dir:
-    	file_url = file
-    	# if os.path.isfile(os.path.join(_path_real_cache, file)) and file.endswith('.jpg'):
-          #   file_name = str(file)
-            # print('3>>> : '+ file_name)
+        file_url = file
+
     url_file = str(photo.replace('.png', '/').replace('.jpg', '/').replace('.JPG', '/').replace('.PNG', '/'))
     _path_cache = '/media/CACHE/images/' + url_file + str(file_url)
     return _path_cache
@@ -1371,7 +1376,7 @@ def get_units_by_product(request):
         product_store_origin_set = ProductStore.objects.filter(product=product_obj,
                                                                subsidiary_store=store_origin_obj).values(
             'id', 'stock', 'subsidiary_store__name', 'product__productpresenting__unit__description')
-        to = loader.get_template('purchase/transfer_grid_origin.html')
+        to = loader.get_template('purchase/transfer_product_grid.html')
         co = ({
             'product_store_origin_set': product_store_origin_set,
         })
@@ -1403,18 +1408,81 @@ def set_transfer_between_store(request):
         minimum_quantity = minimum_unit(_quantity, unit_obj, product_obj)
         product_store_origin_set = ProductStore.objects.filter(product=product_obj,
                                                                subsidiary_store=store_origin_obj)
+        user_id = request.user.id
+        user_obj = User.objects.get(id=int(user_id))
+        subsidiary_obj = get_subsidiary_by_user(user_obj)
         if product_store_origin_set.exists():
             product_store_origin_obj = product_store_origin_set.first()
-            product_store_origin_obj.stock = product_store_origin_obj.stock - minimum_quantity
-            product_store_origin_obj.save()
-        product_store_destination_set = ProductStore.objects.filter(product=product_obj,
-                                                                    subsidiary_store=store_destination_obj)
-        if product_store_destination_set.exists():
-            product_store_destination_obj = product_store_destination_set.first()
-            product_store_destination_obj.stock = product_store_destination_obj.stock + minimum_quantity
-            product_store_destination_obj.save()
+            product_presenting = ProductPresenting.objects.filter(quantity_minimum=minimum_quantity,
+                                                                  product=product_obj)
+            product_presenting_obj = product_presenting.first()
+            new_order = {
+                'type': 'S',
+                'correlative_order': get_order_correlative(subsidiary_obj.id, 'S'),
+                'status': 'C',
+                'create_at': (datetime.now()).date(),
+                'total': decimal.Decimal(product_presenting_obj.price_sale * minimum_quantity),
+                'user': user_obj,
+                'subsidiary': subsidiary_obj,
+            }
+            order_obj = Order.objects.create(**new_order)
+            order_obj.save()
 
-        to = loader.get_template('purchase/transfer_grid_origin.html')
+            new_detail_order = {
+                'order': order_obj,
+                'product': product_obj,
+                'quantity': minimum_quantity,
+                'price_unit': decimal.Decimal(product_presenting_obj.price_sale),
+                'unit': unit_obj,
+            }
+            new_detail_order_obj = OrderDetail.objects.create(**new_detail_order)
+            new_detail_order_obj.save()
+
+            kardex_output(product_store_origin_obj, minimum_quantity,
+                          new_detail_order_obj.price_unit,
+                          order_detail_obj=new_detail_order_obj)
+
+        if subsidiary_obj.id == store_destination_obj.subsidiary.id:
+            product_store_destination_set = ProductStore.objects.filter(product=product_obj,
+                                                                    subsidiary_store=store_destination_obj)
+            if product_store_destination_set.exists():
+                product_store_destination_obj = product_store_destination_set.first()
+
+                product_presenting = ProductPresenting.objects.filter(quantity_minimum=minimum_quantity,
+                                                                      product=product_obj)
+                product_presenting_obj = product_presenting.first()
+                new_order = {
+                    'type': 'S',
+                    'correlative_order': get_order_correlative(subsidiary_obj.id, 'S'),
+                    'status': 'C',
+                    'create_at': (datetime.now()).date(),
+                    'total': decimal.Decimal(product_presenting_obj.price_sale * minimum_quantity),
+                    'user': user_obj,
+                    'subsidiary': subsidiary_obj,
+                }
+                order_obj = Order.objects.create(**new_order)
+                order_obj.save()
+
+                new_detail_order = {
+                    'order': order_obj,
+                    'product': product_obj,
+                    'quantity': minimum_quantity,
+                    'price_unit': decimal.Decimal(product_presenting_obj.price_sale),
+                    'unit': unit_obj,
+                }
+                new_detail_order_obj = OrderDetail.objects.create(**new_detail_order)
+                new_detail_order_obj.save()
+
+                kardex_output(product_store_origin_obj, minimum_quantity,
+                              new_detail_order_obj.price_unit,
+                              order_detail_obj=new_detail_order_obj)
+
+
+
+                product_store_destination_obj.stock = product_store_destination_obj.stock + minimum_quantity
+                product_store_destination_obj.save()
+
+        to = loader.get_template('purchase/transfer_product_grid.html')
         co = ({
             'product_store_origin_set': product_store_origin_set.values('id', 'stock', 'subsidiary_store__name',
                                                                         'product__productpresenting__unit__description'),

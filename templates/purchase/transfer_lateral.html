@@ -1,7 +1,7 @@
 <div class="row col-sm-12 col-md-12 col-lg-12 m-0 p-0">
-    <div class="col-sm-6 col-md-6 col-lg-6 m-0 p-1">
+    <div class="col-sm-12 col-md-12 col-lg-12 m-0 p-1">
         <div class="card border-primary">
-            <div class="card-header text-warning"  style="background: #0577b3">Origen</div>
+            <div class="card-header text-warning" style="background: #0577b3">Origen</div>
             <div class="card-body">
                 <label class="m-0">Sucursal Origen</label>
                 <select id="id-subsidiary-origin" name="id-subsidiary-origin"
@@ -19,9 +19,11 @@
             </div>
         </div>
     </div>
-    <div class="col-sm-6 col-md-6 col-lg-6 m-0 p-1">
+</div>
+<div class="row col-sm-12 col-md-12 col-lg-12 m-0 p-0">
+    <div class="col-sm-12 col-md-12 col-lg-12 m-0 p-1">
         <div class="card border-primary">
-            <div class="card-header text-warning"  style="background: #0577b3">Destino</div>
+            <div class="card-header text-warning" style="background: #0577b3">Destino</div>
             <div class="card-body">
                 <label class="m-0">Sucursal Destino</label>
                 <select id="id-subsidiary-destination" name="id-subsidiary-destination"
@@ -36,47 +38,6 @@
                         class="form-control form-control-sm combo">
                     <option value="0">Seleccione</option>
                 </select>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="row col-sm-12 col-md-12 col-lg-12 m-0 p-1">
-    <div class="col-sm-12 col-md-12 col-lg-12 m-0 p-0">
-        <div class="card border-primary">
-            <div class="card-header text-warning"  style="background: #0577b3">Producto a trasladar de almacen</div>
-            <div class="card-body">
-                <div class="row col-sm-12 col-md-12 col-lg-12 m-0 p-0">
-                    <div class="col-sm-5 col-md-5 col-lg-5 p-1 align-self-center">
-                        <label class="m-0">Producto</label>
-                        <select id="id-product" name="id-product"
-                                class="form-control form-control-sm combo">
-                            <option value="0">Seleccione</option>
-                            {% for p in product_set %}
-                                <option value="{{ p.id }}">{{ p.names }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="col-sm-3 col-md-3 col-lg-3 p-1 align-self-center">
-                        <label class="m-0">Cantidad</label>
-                        <input type="text" class="form-control text-right decimal"
-                               id="id-quantity"
-                               name="id-quantity"
-                               placeholder="">
-                    </div>
-                    <div class="col-sm-4 col-md-4 col-lg-4 p-1 align-self-center">
-                        <label class="m-0">Unidad</label>
-                        <select id="id-unit" name="id-unit"
-                                class="form-control form-control-sm combo">
-                            <option selected value="0">Seleccione</option>
-                            {% for u in unit_set %}
-                                <option value="{{ u.id }}">{{ u.name }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                </div>
-            </div>
-            <div class="card-footer text-center" style="display: flex; align-items: center; justify-content: center;">
-                <button id="btn-transfer" class="btn btn-sm btn-login col-sm-12 col-md-12 col-lg-12 m-0 align-self-center"><i class="fas fa-box"></i> Trasladar producto</button>
             </div>
         </div>
     </div>

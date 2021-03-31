@@ -6,31 +6,33 @@
 {% block body %}
     <div class="container h-100 w-100 montserrat m-0 p-0 col-sm-12 col-md-12 col-lg-12">
         <div class="row justify-content-center h-100 w-100 m-0 p-0">
-            <div class="col-sm-6 col-md-6 col-lg-6 p-0 m-0 montserrat">
+            <div class="col-sm-4 col-md-4 col-lg-4 p-0 m-0 montserrat">
                 {% include "purchase/transfer_lateral.html" %}
             </div>
-            <div class="col-sm-6 col-md-6 col-lg-6 p-0 m-0">
+            <div class="col-sm-8 col-md-8 col-lg-8 p-0 m-0">
                 <div id="detail-transfer" class="col-sm-12 col-md-12 col-lg-12 p-0">
                     <div class="row col-sm-12 col-md-12 col-lg-12 m-0 p-0">
                         <div class="col-sm-12 col-md-12 col-lg-12 m-0 p-1">
                             <div class="card border-primary">
-                                <div class="card-header text-warning" style="background: #0577b3">Stock de producto en
-                                    almacen - Origen
+                                <div class="card-header text-warning" style="background: #0577b3">Item de Productos a
+                                    trasladar
                                 </div>
                                 <div class="card-body">
-                                    <div class="table-responsive" id="id-stock-origin"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row col-sm-12 col-md-12 col-lg-12 m-0 p-0">
-                        <div class="col-sm-12 col-md-12 col-lg-12 m-0 p-1">
-                            <div class="card border-primary">
-                                <div class="card-header text-warning" style="background: #0577b3">Stock de producto en
-                                    almacen - Destino
-                                </div>
-                                <div class="card-body">
-                                    <div class="table-responsive" id="id-stock-destination"></div>
+                                    <table id="id-item-translate"
+                                           class="table-sm rounded roboto-medium table-responsive h-100">
+                                        <thead class="text-center h-100">
+                                        <tr class="text-white h-100" style="background: #0386cb;">
+                                            <th class="border-right font-weight-normal">N°</th>
+                                            <th class="border-right font-weight-normal">Producto</th>
+                                            <th class="border-right font-weight-normal">Cantidad</th>
+                                            <th class="border-right font-weight-normal">Unidad</th>
+                                            <th class="border-right font-weight-normal">Stock</th>
+                                            <th class="font-weight-normal">Accion</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="items-detail">
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
@@ -39,24 +41,6 @@
             </div>
         </div>
     </div>
-
-    <div class="modal fade" id="modal-add-details" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-         aria-hidden="true">
-    </div>
-    <div class="modal fade small" id="id-modal-casing" tabindex="-1" role="dialog" aria-labelledby="ModalHelpTitle"
-         aria-hidden="true"></div>
-    <div class="text-center align-self-center" style="
-        display: none;
-        position: absolute;
-        top: 0px;
-        left: 0px;
-        background: #e9ecef;
-        opacity: 0.5;
-        width: 100%;
-        height: 46em;
-        padding-top: 21em;" id="id-loading">
-    </div>
-
 {% endblock body %}
 {% block extrajs %}
     <script type="text/javascript">

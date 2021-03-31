@@ -69,6 +69,8 @@
                             Compra
                         {% elif kardex.order_detail.order.type == 'F' %}
                             Fabricación
+                        {% elif kardex.order_detail.order.type == 'S' %}
+                            Traslado
                         {% else %}
                             Inicio
                         {% endif %}
