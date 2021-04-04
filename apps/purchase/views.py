@@ -607,7 +607,10 @@ def transfer_list(request):
 
 def get_pending_transfer(request):
     if request.method == 'GET':
-        order_set = Order.objects.filter(type='S', status='P')
+        user_id = request.user.id
+        user_obj = User.objects.get(id=user_id)
+        subsidiary_obj = get_subsidiary_by_user(user_obj)
+        order_set = Order.objects.filter(type='S', status='P', store_destination__subsidiary=subsidiary_obj)
         return render(request, 'purchase/transfers_validate_grid.html', {
             'order_set': order_set,
         })
