@@ -14,27 +14,58 @@
                     <div class="row col-sm-12 col-md-12 col-lg-12 m-0 p-0">
                         <div class="col-sm-12 col-md-12 col-lg-12 m-0 p-1">
                             <div class="card border-primary">
-                                <div class="card-header text-warning" style="background: #0577b3">Item de Productos a
-                                    trasladar
+                                <div class="card-header text-warning" style="background: #0577b3">ITEM DE PRODUCTOS A
+                                    TRASLADAR
                                 </div>
-                                <div class="card-body">
+                                <div class="card-body table-responsive">
                                     <table id="id-item-translate"
-                                           class="table-sm rounded roboto-medium table-responsive h-100">
-                                        <thead class="text-center h-100">
+                                           class="table table-sm rounded roboto-medium table-bordered"
+                                           style="width: 100%;">
+                                        <thead class="text-center">
                                         <tr class="text-white h-100" style="background: #0386cb;">
-                                            <th class="border-right font-weight-normal">N°</th>
-                                            <th class="border-right font-weight-normal">Producto</th>
-                                            <th class="border-right font-weight-normal">Cantidad</th>
-                                            <th class="border-right font-weight-normal">Unidad</th>
-                                            <th class="border-right font-weight-normal">Stock</th>
-                                            <th class="font-weight-normal">Accion</th>
+                                            <th class="font-weight-normal" style="width: 5%;">N°</th>
+                                            <th class="font-weight-normal" style="width: 35%;">Producto</th>
+                                            <th class="font-weight-normal" style="width: 13%;">Cantidad</th>
+                                            <th class="font-weight-normal" style="width: 20%;">Unidad</th>
+                                            <th class="font-weight-normal" style="width: 10%;">Stock O.</th>
+                                            <th class="font-weight-normal" style="width: 10%;">Stock D.</th>
+                                            <th class="font-weight-normal" style="width: 7%;">Accion</th>
                                         </tr>
                                         </thead>
                                         <tbody id="items-detail">
                                         </tbody>
                                     </table>
                                 </div>
+                                <div class="card-footer text-center"
+                                     style="display: flex; align-items: center; justify-content: center;">
+                                    <button id="bt-add-product" onclick="AddRow()"
+                                            class="btn btn-outline-primary  m-0 align-self-center">
+                                        <i class="fas fa-briefcase-medical"></i> Agregar producto
+                                    </button>
+                                </div>
                             </div>
+
+                        </div>
+                    </div>
+                    <div class="row col-sm-12 col-md-12 col-lg-12 m-0 p-0">
+                        <div class="col-sm-12 col-md-12 col-lg-12 m-0 p-1">
+                            <div class="card border-primary">
+                                <div class="card-body">
+                                    <input type="text" class="form-control text-center"
+                                           id="id-subsidiary-name"
+                                           name="id-subsidiary-name" value=""
+                                           placeholder="" readonly>
+                                </div>
+                                <div class="card-footer text-center"
+                                     style="display: flex; align-items: center; justify-content: center;">
+                                    <button id="btn-transfer"
+                                            class="btn btn-sm btn-login col-sm-12 col-md-12 col-lg-12 m-0 align-self-center">
+                                        <i class="fas fa-calendar-minus"></i> <i class="fas fa-angle-double-right"></i>
+                                        <i class="fas fa-calendar-plus"></i> Ejecutar traslado de producto
+                                    </button>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -51,6 +82,7 @@
         $(document).on('change', '#id-subsidiary-origin', function () {
             let _val = $(this).val();
             $('#id-store-origin').empty();
+            $("table#id-item-translate > tbody#items-detail").empty();
             if (_val != 0) {
                 $.ajax({
                     url: '/purchase/get_store_by_subsidiary/',
@@ -72,10 +104,19 @@
                 $('#id-store-origin').append('<option value="0">' + "Seleccione" + '</option>');
             }
         });
+         $(document).on('change', '#id-store-origin', function () {
+             $("table#id-item-translate > tbody#items-detail").empty();
+         });
+         $(document).on('change', '#id-store-destination', function () {
+             $("table#id-item-translate > tbody#items-detail").empty();
+         });
         $(document).on('change', '#id-subsidiary-destination', function () {
             let _val = $(this).val();
+            let _name = $(this).find('option:selected').text();
             $('#id-store-destination').empty();
+            $("table#id-item-translate > tbody#items-detail").empty();
             if (_val != 0) {
+                $('#id-subsidiary-name').val(_name);
                 $.ajax({
                     url: '/purchase/get_store_by_subsidiary/',
                     async: true,
@@ -95,60 +136,91 @@
                 });
             } else {
                 $('#id-store-destination').append('<option value="0">' + "Seleccione" + '</option>');
+                $('#id-subsidiary-name').val('');
             }
         });
 
-        $(document).on('change', '#id-product', function () {
-            let _val = $(this).val();
-            let _origin = $('#id-store-origin').val();
-            let _destination = $('#id-store-destination').val();
-            if (_origin === '0') {
-                toastr.warning('Seleccione el almacen de origen');
-                return false;
-            }
-            if (_destination === '0') {
-                toastr.warning('Seleccione el almacen de destino');
-                return false;
-            }
-            $('#id-unit').empty();
-            if (_val != 0) {
-                $.ajax({
-                    url: '/sale/get_units_by_product/',
-                    async: true,
-                    dataType: 'json',
-                    type: 'GET',
-                    data: {
-                        '_pk': _val,
-                        '_store_origin': _origin,
-                        '_store_destination': _destination
-                    },
-                    success: function (response) {
-                        let unit_list = JSON.parse(response['units']);
-                        unit_list.forEach(
-                            element =>
-                                $('#id-unit').append(
-                                    '<option value="' + element['pk'] + '">' + element['fields']['description'] + '</option>')
-                        );
-                        $('#id-stock-origin').html(response.grid_origin);
-                        $('#id-stock-destination').html(response.grid_destination);
-                    },
-                });
-            } else {
-                $('#id-unit').append('<option value="0">' + "Seleccione" + '</option>');
-            }
-        });
         $("input.decimal").keyup(function (e) {
             let val = $(this).val();
             if (isNaN(val)) {
                 $(this).val('');
             }
         });
-        $(document).on('click', '#btn-transfer', function () {
-            let _product_id = $('#id-product').val();
-            if (_product_id === '0') {
-                toastr.warning('Seleccione el producto a trasladar');
-                return false;
+
+        function hasRowDetails() {
+            let _response = false;
+            if ($("table#id-item-translate tbody#items-detail tr").length > 0) {
+                _response = true;
             }
+            return _response;
+        };
+        $(document).on('click', '#btn-transfer', function () {
+                let _store_origin = $('#id-store-origin').val();
+                if (_store_origin === '0') {
+                    toastr.warning('Seleccione el almacen de origen');
+                    return false;
+                }
+                let _store_destination = $('#id-store-destination').val();
+                if (_store_destination === '0') {
+                    toastr.warning('Seleccione el almacen de destino');
+                    return false;
+                }
+                if (hasRowDetails() == false) {
+                    toastr.warning('Necesita seleccionar un producto almenos', 'Mensaje');
+                    return false;
+                }
+                let order_transfer = {
+                    "Details": [],
+                    "store_origin": $('#id-store-origin').val(),
+                    "store_destination": $('#id-store-destination').val(),
+                };
+                {#Detalle de la transferencia#}
+                $("table#id-item-translate tbody#items-detail tr").each(function () {
+                    let order_details = {
+                        "product": $(this).attr('product'),
+                        "unit": $(this).find("td.item-unit select").val(),
+                        "quantity": $(this).find("td.item-quantity input").val(),
+                        "price": 0,
+                    };
+                    order_transfer.Details.push(order_details);
+                });
+                let message = confirm("¿Esta seguro de realizar el traslado?");
+                if (message) {
+                    $.ajax({
+                        url: '/sale/set_transfer_between_store/',
+                        async: true,
+                        dataType: 'json',
+                        type: 'GET',
+                        data: {'order_transfer': JSON.stringify(order_transfer)},
+                        contentType: 'application/json;charset=UTF-8',
+                        headers: {"X-CSRFToken": '{{ csrf_token }}'},
+                        success: function (response, textStatus, xhr) {
+                            if (xhr.status == 200) {
+                                toastr.success(response.message, 'Mensaje');
+                                setTimeout(() => {
+                                    location.reload();
+                                }, 200);
+                            }
+                        },
+                        error: function (jqXhr, textStatus, xhr) {
+                            toastr.error(jqXhr.responseJSON.error, 'Error');
+                        }
+                    });
+                }
+            }
+        );
+
+        productList =
+            [
+                {% for p in product_set %}
+                    [
+                        {{ p.id }},
+                        '{{ p.names }}'
+                    ],
+                {% endfor %}
+            ];
+
+        function AddRow() {
             let _store_origin = $('#id-store-origin').val();
             if (_store_origin === '0') {
                 toastr.warning('Seleccione el almacen de origen');
@@ -159,45 +231,152 @@
                 toastr.warning('Seleccione el almacen de destino');
                 return false;
             }
-            let _quantity = $('#id-quantity').val();
-            if (_quantity === '') {
-                toastr.warning('Ingrese la cantidad a trasladar');
-                return false;
-            }
-            let _unit = $('#id-unit').val();
-            if (_unit === '0') {
-                toastr.warning('Seleccione la unidad de medida del producto');
-                return false;
-            }
-            let stock_origin = $('#stock-origin').val();
-            if (parseFloat(_quantity) > parseFloat(stock_origin)) {
-                toastr.warning('Stock insuficiente en el almecen de origen');
-                return false;
-            }
+            let options = '<option value="0">Seleccione</option>';
+            let unit_options = '<option value="0">Seleccione</option>';
 
-            $.ajax({
-                url: '/sale/set_transfer_between_store/',
-                async: true,
-                dataType: 'json',
-                type: 'GET',
-                data: {
-                    'product': _product_id,
-                    'store_origin': _store_origin,
-                    'store_destination': _store_destination,
-                    'quantity': _quantity,
-                    'unit': _unit
-                },
-                success: function (response) {
-                    $('#id-stock-origin').empty();
-                    $('#id-stock-destination').empty();
-                    toastr.success('El traslado se realizo con exito');
-                    $('#id-stock-origin').html(response.grid_origin);
-                    $('#id-stock-destination').html(response.grid_destination);
-                },
-                fail: function (response) {
-                    toastr.error('Ocurrio un problema en el traslado');
-                }
+            for (let i = 0; i < productList.length; i++) {
+                options = options + '<option value="' + productList[i][0] + '">' + productList[i][1] + '</option>'
+            }
+            $('#items-detail').append(
+                '<tr product="0">' +
+                '<td class="text-center align-middle item-number">' + '</td>' +
+                '<td class="align-middle item-product"><select id="" class="form-control">' + options + '</td>' +
+                '<td class="align-middle item-quantity"><input type="number" class="form-control"></td>' +
+                '<td class="align-middle text-center item-unit" unit_min="0"><select id="" class="form-control">' + unit_options + '</td>' +
+                '<td class="align-middle text-center item-sock-origin" store_origin="0"></td>' +
+                '<td class="align-middle text-center item-sock-destination" store_destination="0"></td>' +
+                '<td class="align-middle text-center item-delete"> ' + "<button type='button' onclick='deleteItem(0)' " +
+                "class='btn btn-sm btn-danger delete-detail'><i class='fa fa-trash'></i></button>" + "</td>" +
+                '</tr>'
+            );
+            counterStrike();
+            $('table#id-item-translate tbody#items-detail tr td.item-product select').select2({
+                theme: 'bootstrap4',
             });
-        });
+        }
+
+        function counterStrike() {
+            let l = 1;
+            $('#items-detail tr').each(function () {
+                $(this).attr('f', l);
+                $(this).children('td:first').text(l);
+                /***$(this).find('td.item-product select').addClass("combo" + l);***/
+                l++;
+            });
+        }
+
+        function deleteItem($p) {
+            $('#items-detail').find('tr[product="' + $p + '"]').remove();
+            counterStrike();
+        }
+
+        $(document).on('change', '#items-detail tr td.item-product select', function () {
+            let value = $(this).val();
+            let _tr = $(this).parent('td').parent('tr');
+            let _td_delete = _tr.find('td.item-delete button');
+            _tr.attr('product', 0);
+            _td_delete.attr('onclick', 'deleteItem(0)');
+            _tr.find('td.item-unit select').empty();
+            if (value != 0) {
+                let _origin = $('#id-store-origin').val();
+                if (_origin === '0') {
+                    toastr.warning('Seleccione el almacen de origen');
+                    return false;
+                }
+                let _destination = $('#id-store-destination').val();
+                if (_destination === '0') {
+                    toastr.warning('Seleccione el almacen de destino');
+                    return false;
+                }
+                if ($('#items-detail tr[product="' + value + '"]').length > 0) {
+                    $(this).find('option[value=0]').attr('selected', 'selected');
+                    $('#items-detail tr[product=' + value + '] td.item-product select option[value=' + value + ']').removeAttr('selected');
+                    $('#items-detail tr[product="0"] td.item-product select option[value="0"]').attr('selected', 'selected');
+                    toastr.warning('Seleccione un producto diferente', 'Mensaje');
+                    return false;
+                }
+                $.ajax({
+                    url: '/sale/get_units_by_product/',
+                    async: true,
+                    dataType: 'json',
+                    type: 'GET',
+                    data: {
+                        '_pk': value,
+                        '_store_origin': _origin,
+                        '_store_destination': _destination
+                    },
+                    success: function (response) {
+                        let unit_list = JSON.parse(response['units']);
+                        unit_list.forEach(
+                            element =>
+                                _tr.find('td.item-unit select').append(
+                                    '<option value="' + element['pk'] + '">' + element['fields']['description'] + '</option>')
+                        );
+                        _tr.attr('product', value);
+                        _td_delete.attr('onclick', 'deleteItem(' + value + ')');
+                        _tr.find('td.item-product select option[value="' + value + '"]').attr('selected', 'selected');
+                        _tr.find('td.item-quantity input').val('');
+                        _tr.find('td.item-sock-origin').text((parseFloat(response.store_origin)).toFixed(2));
+                        _tr.find('td.item-sock-destination').text((parseFloat(response.store_destination).toFixed(2)));
+                        _tr.find('td.item-unit select').trigger("change");
+                    },
+                });
+            } else {
+                _tr.find('td.item-unit select').append('<option value="0">' + "Seleccione" + '</option>');
+                _tr.attr('product', 0);
+                _td_delete.attr('onclick', 'deleteItem(' + 0 + ')');
+                _tr.find('td.item-product select option[value="' + 0 + '"]').attr('selected', 'selected');
+                _tr.find('td.item-quantity input').val('');
+                _tr.find('td.item-sock-origin').text('0.00');
+                _tr.find('td.item-sock-destination').text('0.00');
+                _tr.find('td.item-unit select').trigger("change");
+            }
+        })
+        $(document).on('keyup', '#items-detail tr td.item-quantity input', function () {
+            let _quantity = parseFloat($(this).val());
+            let _min = parseFloat($(this).parent('td').parent('tr').find('td.item-unit').attr('unit_min'));
+            if (_min == '0' || _min == '') {
+                toastr.warning('no se obtuvo la unidad minima del producto');
+                return false
+            }
+            if (_quantity != '') {
+                if (_quantity < 0) {
+                    toastr.warning('La cantidad no puede ser un valor negativo');
+                    $(this).val('');
+                    return false
+                } else {
+                    let _item_stock = parseFloat($(this).parent('td').parent('tr').find('td.item-sock-origin').text());
+                    if (_quantity * _min > _item_stock) {
+                        toastr.warning('No cuenta con la cantidad requerida en stock', 'Cantidad: ' + parseFloat(_quantity * _min).toFixed(2));
+                        $(this).val('');
+                    }
+                }
+            }
+        })
+
+        $(document).on('change', '#items-detail tr td.item-unit select', function () {
+            let _unit = $(this).val();
+            let _tr = $(this).parent('td').parent('tr');
+            let _product = _tr.attr('product');
+            if (_unit != 0 && _product != 0) {
+                $.ajax({
+                    url: '/sale/get_quantity_minimum_by_unit/',
+                    async: true,
+                    dataType: 'json',
+                    type: 'GET',
+                    data: {
+                        'unit': _unit,
+                        'product': _product,
+                    },
+                    success: function (response) {
+                        _tr.find('td.item-unit').attr('unit_min', parseFloat(response.min));
+                        _tr.find('td.item-quantity input').val('');
+                    },
+                });
+            } else {
+                _tr.find('td.item-unit').attr('unit_min', parseFloat(0));
+                _tr.find('td.item-quantity input').val('');
+            }
+        })
     </script>
 {% endblock extrajs %}

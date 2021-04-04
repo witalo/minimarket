@@ -23,7 +23,7 @@ from apps.hrm.views import get_subsidiary_by_user
 from apps.purchase.models import Provider
 from apps.sale.models import Client, Product, ProductCategory, Unit, Coin, ProductPresenting, Kardex, ProductStore, \
     SubsidiaryStore, Order, OrderDetail, OrderBill
-from apps.sale.views import get_order_correlative, minimum_unit, kardex_input
+from apps.sale.views import get_order_correlative, minimum_unit, kardex_input, kardex_initial
 from apps.sale.views_SUNAT import query_dni, send_f_nubefact, send_b_nubefact, query_api_free_dni, query_api_free_ruc
 from django.core import serializers
 from django.core.serializers.json import DjangoJSONEncoder
@@ -605,6 +605,60 @@ def transfer_list(request):
         })
 
 
+def get_pending_transfer(request):
+    if request.method == 'GET':
+        order_set = Order.objects.filter(type='S', status='P')
+        return render(request, 'purchase/transfers_validate_grid.html', {
+            'order_set': order_set,
+        })
+
+
+def get_transfer_detail(request):
+    if request.method == 'GET':
+        pk = request.GET.get('pk', '')
+        order_obj = Order.objects.get(pk=int(pk))
+        order_detail_set = OrderDetail.objects.filter(order=order_obj)
+        t = loader.get_template('purchase/transfer_validate_detail.html')
+        c = ({
+            'order_detail_set': order_detail_set,
+        })
+        return JsonResponse({
+            'grid': t.render(c, request),
+        }, status=HTTPStatus.OK)
+
+
+def get_validate_transfer(request):
+    if request.method == 'GET':
+        pk = request.GET.get('pk', '')
+        order_obj = Order.objects.get(pk=int(pk))
+        order_obj.status = 'C'
+        order_obj.save()
+        for detail in OrderDetail.objects.filter(order=order_obj):
+            quantity_minimum_unit = minimum_unit(detail.quantity, detail.unit, detail.product)
+            product_store = ProductStore.objects.filter(product=detail.product,
+                                                        subsidiary_store=order_obj.store_destination)
+            product_store_obj = None
+            if product_store.exists():
+                product_store_obj = product_store.first()
+                kardex_input(product_store_obj, quantity_minimum_unit, detail.price_unit,
+                             order_detail_obj=detail)
+            else:
+                new_product_store = {
+                    'product': detail.product,
+                    'subsidiary_store': order_obj.store_destination,
+                    'stock': quantity_minimum_unit
+                }
+                product_store_obj = ProductStore.objects.create(**new_product_store)
+                product_store_obj.save()
+                kardex_initial(product_store_obj, quantity_minimum_unit, detail.price_unit,
+                               order_detail_obj=detail)
+
+        return JsonResponse({
+            'success': True,
+            'message': 'Traslado aceptado correctamente',
+        }, status=HTTPStatus.OK)
+
+
 def get_store_by_subsidiary(request):
     if request.method == 'GET':
         subsidiary_id = request.GET.get('_pk', '')
@@ -615,5 +669,3 @@ def get_store_by_subsidiary(request):
         return JsonResponse({
             'stores': store_serialized_obj,
         }, status=HTTPStatus.OK)
-
-

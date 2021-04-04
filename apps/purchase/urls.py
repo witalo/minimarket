@@ -23,6 +23,9 @@ urlpatterns = [
     # Transfer Subsidiary store
     path('transfer_list/', login_required(transfer_list), name='transfer_list'),
     path('get_store_by_subsidiary/', login_required(get_store_by_subsidiary), name='get_store_by_subsidiary'),
+    path('pending_transfer/', login_required(get_pending_transfer), name='pending_transfer'),
+    path('get_transfer_detail/', login_required(get_transfer_detail), name='get_transfer_detail'),
+    path('get_validate_transfer/', login_required(get_validate_transfer), name='get_validate_transfer'),
 
     # Graphic sales purchase
     path('graphic_sales_purchase/', login_required(graphic_sales_purchase), name='graphic_sales_purchase'),

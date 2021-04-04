@@ -6,7 +6,7 @@
                 <label class="m-0">Sucursal Origen</label>
                 <select id="id-subsidiary-origin" name="id-subsidiary-origin"
                         class="form-control form-control-sm combo">
-                    <option selected value="0">Seleccione</option>
+                    <option value="0">Seleccione</option>
                     {% for s in subsidiary_set %}
                         <option value="{{ s.id }}">{{ s.name }}</option>
                     {% endfor %}
@@ -28,7 +28,7 @@
                 <label class="m-0">Sucursal Destino</label>
                 <select id="id-subsidiary-destination" name="id-subsidiary-destination"
                         class="form-control form-control-sm combo">
-                    <option selected value="0">Seleccione</option>
+                    <option value="0">Seleccione</option>
                     {% for s in subsidiary_set %}
                         <option value="{{ s.id }}">{{ s.name }}</option>
                     {% endfor %}

@@ -1344,6 +1344,14 @@ def set_sales_annular(request):
     if request.method == 'GET':
         order_pk = request.GET.get('pk', '')
         order_obj = Order.objects.get(pk=int(order_pk))
+        for detail in OrderDetail.objects.filter(order=order_obj):
+            quantity_minimum_unit = minimum_unit(detail.quantity, detail.unit, detail.product)
+            product_store_obj = None
+            if detail.kardex_set.exists():
+                kardex_obj = detail.kardex_set.last()
+                product_store_obj = kardex_obj.product_store
+                kardex_input(product_store_obj, quantity_minimum_unit, detail.price_unit,
+                             order_detail_obj=detail)
         order_obj.status = 'A'
         order_obj.save()
         return JsonResponse({
@@ -1355,6 +1363,14 @@ def set_sales_reactive(request):
     if request.method == 'GET':
         order_pk = request.GET.get('pk', '')
         order_obj = Order.objects.get(pk=int(order_pk))
+        for detail in OrderDetail.objects.filter(order=order_obj):
+            quantity_minimum_unit = minimum_unit(detail.quantity, detail.unit, detail.product)
+            product_store_obj = None
+            if detail.kardex_set.exists():
+                kardex_obj = detail.kardex_set.last()
+                product_store_obj = kardex_obj.product_store
+                kardex_output(product_store_obj, quantity_minimum_unit, detail.price_unit,
+                              order_detail_obj=detail)
         order_obj.status = 'C'
         order_obj.save()
         return JsonResponse({
@@ -1372,128 +1388,103 @@ def get_units_by_product(request):
         product_obj = Product.objects.get(id=int(product_id))
         unit_set = Unit.objects.filter(productpresenting__product=product_obj)
         units_serialized_obj = serializers.serialize('json', unit_set)
-
-        product_store_origin_set = ProductStore.objects.filter(product=product_obj,
-                                                               subsidiary_store=store_origin_obj).values(
-            'id', 'stock', 'subsidiary_store__name', 'product__productpresenting__unit__description')
-        to = loader.get_template('purchase/transfer_product_grid.html')
-        co = ({
-            'product_store_origin_set': product_store_origin_set,
-        })
-        product_store_destination_set = ProductStore.objects.filter(product=product_obj,
-                                                                    subsidiary_store=store_destination_obj).values(
-            'id', 'stock', 'subsidiary_store__name', 'product__productpresenting__unit__description')
-        td = loader.get_template('purchase/transfer_grid_destination.html')
-        cd = ({
-            'product_store_destination_set': product_store_destination_set,
-        })
+        origin = 0
+        destination = 0
+        store_origin = ProductStore.objects.filter(product=product_obj,
+                                                   subsidiary_store=store_origin_obj)
+        if store_origin.exists():
+            origin = store_origin.last().stock
+        store_destination = ProductStore.objects.filter(product=product_obj,
+                                                        subsidiary_store=store_destination_obj)
+        if store_destination.exists():
+            destination = store_destination.last().stock
         return JsonResponse({
-            'grid_origin': to.render(co, request),
-            'grid_destination': td.render(cd, request),
+            'store_origin': origin,
+            'store_destination': destination,
             'units': units_serialized_obj
         }, status=HTTPStatus.OK)
 
 
-def set_transfer_between_store(request):
+def get_quantity_minimum_by_unit(request):
     if request.method == 'GET':
-        _product = request.GET.get('product', '')
-        product_obj = Product.objects.get(id=int(_product))
-        _store_origin = request.GET.get('store_origin', '')
-        store_origin_obj = SubsidiaryStore.objects.get(id=int(_store_origin))
-        _store_destination = request.GET.get('store_destination', '')
-        store_destination_obj = SubsidiaryStore.objects.get(id=int(_store_destination))
-        _quantity = decimal.Decimal(request.GET.get('quantity', ''))
-        _unit = request.GET.get('unit', '')
-        unit_obj = Unit.objects.get(id=int(_unit))
-        minimum_quantity = minimum_unit(_quantity, unit_obj, product_obj)
-        product_store_origin_set = ProductStore.objects.filter(product=product_obj,
-                                                               subsidiary_store=store_origin_obj)
+        unit_id = request.GET.get('unit', '')
+        unit_obj = Unit.objects.get(id=int(unit_id))
+        product_id = request.GET.get('product', '')
+        product_obj = Product.objects.get(id=int(product_id))
+        product_presenting_set = ProductPresenting.objects.filter(unit=unit_obj, product=product_obj)
+        min = 0
+        if product_presenting_set.exists():
+            min = product_presenting_set.last().quantity_minimum
+        return JsonResponse({
+            'min': min
+        }, status=HTTPStatus.OK)
+
+
+def set_transfer_between_store(request):
+    data = {}
+    if request.method == 'GET':
+        dictionary_transfer = request.GET.get('order_transfer', '')
+        data_transfer = json.loads(dictionary_transfer)
+        store_origin = data_transfer["store_origin"]
+        if store_origin == '':
+            data['error'] = "El almacen de origen no es valido!"
+            response = JsonResponse(data)
+            response.status_code = HTTPStatus.INTERNAL_SERVER_ERROR
+            return response
+        store_origin_obj = SubsidiaryStore.objects.get(id=int(store_origin))
+        store_destination = data_transfer["store_destination"]
+        if store_destination == '':
+            data['error'] = "El almacen de destino no es valido!"
+            response = JsonResponse(data)
+            response.status_code = HTTPStatus.INTERNAL_SERVER_ERROR
+            return response
+        store_destination_obj = SubsidiaryStore.objects.get(id=int(store_destination))
         user_id = request.user.id
-        user_obj = User.objects.get(id=int(user_id))
+        user_obj = User.objects.get(id=user_id)
         subsidiary_obj = get_subsidiary_by_user(user_obj)
-        if product_store_origin_set.exists():
-            product_store_origin_obj = product_store_origin_set.first()
-            product_presenting = ProductPresenting.objects.filter(quantity_minimum=minimum_quantity,
-                                                                  product=product_obj)
-            product_presenting_obj = product_presenting.first()
-            new_order = {
-                'type': 'S',
-                'correlative_order': get_order_correlative(subsidiary_obj.id, 'S'),
-                'status': 'C',
-                'create_at': (datetime.now()).date(),
-                'total': decimal.Decimal(product_presenting_obj.price_sale * minimum_quantity),
-                'user': user_obj,
-                'subsidiary': subsidiary_obj,
-            }
-            order_obj = Order.objects.create(**new_order)
-            order_obj.save()
+        my_date = datetime.now()
+        date_now = my_date.strftime("%Y-%m-%d")
+        new_order_transfer = {
+            'type': 'S',
+            'correlative_order': get_order_correlative(subsidiary_obj.id, 'S'),
+            'status': 'P',
+            'create_at': date_now,
+            'user': user_obj,
+            'subsidiary': subsidiary_obj,
+            'store_origin': store_origin_obj,
+            'store_destination': store_destination_obj,
+        }
+        order_transfer_obj = Order.objects.create(**new_order_transfer)
+        order_transfer_obj.save()
+        for detail in data_transfer['Details']:
+            quantity = decimal.Decimal(detail['quantity'])
+            price = decimal.Decimal(detail['price'])
+            product_id = int(detail['product'])
+            product_obj = Product.objects.get(id=product_id)
+            unit_id = int(detail['unit'])
+            unit_obj = Unit.objects.get(id=unit_id)
+            product_presenting = ProductPresenting.objects.filter(product=product_obj, unit=unit_obj)
+            if product_presenting.exists():
+                price = product_presenting.first().price_sale
 
             new_detail_order = {
-                'order': order_obj,
+                'order': order_transfer_obj,
                 'product': product_obj,
-                'quantity': minimum_quantity,
-                'price_unit': decimal.Decimal(product_presenting_obj.price_sale),
+                'quantity': quantity,
+                'price_unit': price,
                 'unit': unit_obj,
             }
             new_detail_order_obj = OrderDetail.objects.create(**new_detail_order)
             new_detail_order_obj.save()
 
-            kardex_output(product_store_origin_obj, minimum_quantity,
-                          new_detail_order_obj.price_unit,
+            quantity_minimum_unit = minimum_unit(quantity, unit_obj, product_obj)
+            product_store = ProductStore.objects.filter(product=product_obj, subsidiary_store=store_origin_obj)
+            if product_store.exists():
+                product_store_obj = product_store.first()
+
+            kardex_output(product_store_obj, quantity_minimum_unit, price / quantity,
                           order_detail_obj=new_detail_order_obj)
-
-        if subsidiary_obj.id == store_destination_obj.subsidiary.id:
-            product_store_destination_set = ProductStore.objects.filter(product=product_obj,
-                                                                    subsidiary_store=store_destination_obj)
-            if product_store_destination_set.exists():
-                product_store_destination_obj = product_store_destination_set.first()
-
-                product_presenting = ProductPresenting.objects.filter(quantity_minimum=minimum_quantity,
-                                                                      product=product_obj)
-                product_presenting_obj = product_presenting.first()
-                new_order = {
-                    'type': 'S',
-                    'correlative_order': get_order_correlative(subsidiary_obj.id, 'S'),
-                    'status': 'C',
-                    'create_at': (datetime.now()).date(),
-                    'total': decimal.Decimal(product_presenting_obj.price_sale * minimum_quantity),
-                    'user': user_obj,
-                    'subsidiary': subsidiary_obj,
-                }
-                order_obj = Order.objects.create(**new_order)
-                order_obj.save()
-
-                new_detail_order = {
-                    'order': order_obj,
-                    'product': product_obj,
-                    'quantity': minimum_quantity,
-                    'price_unit': decimal.Decimal(product_presenting_obj.price_sale),
-                    'unit': unit_obj,
-                }
-                new_detail_order_obj = OrderDetail.objects.create(**new_detail_order)
-                new_detail_order_obj.save()
-
-                kardex_output(product_store_origin_obj, minimum_quantity,
-                              new_detail_order_obj.price_unit,
-                              order_detail_obj=new_detail_order_obj)
-
-
-
-                product_store_destination_obj.stock = product_store_destination_obj.stock + minimum_quantity
-                product_store_destination_obj.save()
-
-        to = loader.get_template('purchase/transfer_product_grid.html')
-        co = ({
-            'product_store_origin_set': product_store_origin_set.values('id', 'stock', 'subsidiary_store__name',
-                                                                        'product__productpresenting__unit__description'),
-        })
-        td = loader.get_template('purchase/transfer_grid_destination.html')
-        cd = ({
-            'product_store_destination_set': product_store_destination_set.values('id', 'stock',
-                                                                                  'subsidiary_store__name',
-                                                                                  'product__productpresenting__unit__description'),
-        })
         return JsonResponse({
-            'grid_origin': to.render(co, request),
-            'grid_destination': td.render(cd, request)
+            'success': True,
+            'message': 'Traslado de productos registrado',
         }, status=HTTPStatus.OK)

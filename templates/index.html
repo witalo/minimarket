@@ -130,13 +130,8 @@
                 <div class="bg-white py-2 collapse-inner rounded">
                     <h6 class="collapse-header">Almacen</h6>
                     <a class="collapse-item" href="{% url 'sale:product_list' %}">Lista - Productos</a>
-                    <a class="collapse-item" href="{% url 'purchase:transfer_list' %}">Traslado - Almacenes</a>
-                    {#                    <a class="collapse-item" href="register.html">Kardex</a>#}
-                    {#                    <a class="collapse-item" href="forgot-password.html">Reportes</a>#}
-                    {#                    <div class="collapse-divider"></div>#}
-                    {#                    <h6 class="collapse-header">Otros registros</h6>#}
-                    {#                    <a class="collapse-item" href="404.html">Reporte</a>#}
-                    {#                    <a class="collapse-item" href="blank.html">Cotizaciones</a>#}
+                    <a class="collapse-item" href="{% url 'purchase:transfer_list' %}">Traslados - Almacenes</a>
+                    <a class="collapse-item" href="{% url 'purchase:pending_transfer' %}">Traslados - Pendientes</a>
                 </div>
             </div>
         </li>

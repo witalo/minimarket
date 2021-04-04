@@ -18,7 +18,8 @@ urlpatterns = [
     path('update_product/', login_required(update_product), name='update_product'),
     path('get_product_update_form/', login_required(get_product_update_form), name='get_product_update_form'),
     # Product presenting
-    path('product_presenting_operation/', login_required(product_presenting_operation), name='product_presenting_operation'),
+    path('product_presenting_operation/', login_required(product_presenting_operation),
+         name='product_presenting_operation'),
     path('update_product_presenting/', login_required(update_product_presenting), name='update_product_presenting'),
     path('set_code_presenting/', login_required(set_code_presenting), name='set_code_presenting'),
     path('get_product_presenting/', login_required(get_product_presenting), name='get_product_presenting'),
@@ -39,7 +40,8 @@ urlpatterns = [
     path('get_prices_by_product/', login_required(get_prices_by_product), name='get_prices_by_product'),
     path('create_order_sales/', login_required(create_order_sales), name='create_order_sales'),
     # generate PDF
-    path('print_ticket_order_sales/<int:pk>/', login_required(print_ticket_order_sales), name='print_ticket_order_sales'),
+    path('print_ticket_order_sales/<int:pk>/', login_required(print_ticket_order_sales),
+         name='print_ticket_order_sales'),
     # reports
     path('order_sales_list/', login_required(get_order_sales_list), name='order_sales_list'),
     path('get_sales_detail/', login_required(get_sales_detail), name='get_sales_detail'),
@@ -49,6 +51,8 @@ urlpatterns = [
     path('set_sales_reactive/', login_required(set_sales_reactive), name='set_sales_reactive'),
     # units
     path('get_units_by_product/', login_required(get_units_by_product), name='get_units_by_product'),
+    path('get_quantity_minimum_by_unit/', login_required(get_quantity_minimum_by_unit),
+         name='get_quantity_minimum_by_unit'),
     # transfer subsidiary_store
     path('set_transfer_between_store/', login_required(set_transfer_between_store), name='set_transfer_between_store'),
 

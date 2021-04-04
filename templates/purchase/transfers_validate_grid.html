@@ -1,0 +1,133 @@
+{% extends 'index.html' %}
+
+{% block title %}
+    Validar | Traslado
+{% endblock title %}
+
+{% block body %}
+    {% if order_set %}
+        <div class="card border-primary">
+            <div class="card-header" style="background-color: rgba(7, 134, 193,1);">
+                <h6 class="card-title text-center text-white mb-0">Traslados pendientes</h6>
+            </div>
+            <div class="card-body pb-1">
+                <div class="table-responsive small dataTables_wrapper">
+                    <table id="table-transfer-list"
+                           class="table  table-striped align-content-center table-bordered response"
+                           cellspacing="0" width="100%">
+                        <thead>
+                        <tr class="text-center  text-white"
+                            style="background-color: rgba(7, 134, 193,1); font-size: 13px;">
+                            <th class="th-sm font-weight-normal">N°</th>
+                            <th class="th-sm font-weight-normal">Tipo</th>
+                            <th class="th-sm font-weight-normal">Estado</th>
+                            <th class="th-sm font-weight-normal">Fecha</th>
+                            <th class="th-sm font-weight-normal">Filial</th>
+                            <th class="th-sm font-weight-normal">Almacen origen</th>
+                            <th class="th-sm font-weight-normal">Almacen Destino</th>
+                            <th class="th-sm font-weight-normal">Usuario</th>
+                            <th class="th-sm font-weight-normal">Acción</th>
+                        </tr>
+                        </thead>
+                        <tbody class="details-transfer">
+                        {% for o in order_set %}
+                            <tr class="text-center text-black" pk="{{ o.id }}">
+                                <td>{{ o.correlative_order }}</td>
+                                <td>{{ o.get_type_display }}</td>
+                                <td>{{ o.get_status_display }}</td>
+                                <td>{{ o.create_at|date:'Y-m-d' }}</td>
+                                <td>{{ o.subsidiary.name }}</td>
+                                <td>{{ o.store_origin.name }}</td>
+                                <td>{{ o.store_destination.name }}</td>
+                                <td>{{ o.user.username }}</td>
+                                <td class="p-1">
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-success  dropdown-toggle"
+                                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                                style="font-size: 11px;">
+                                            Acción
+                                        </button>
+                                        <div class="dropdown-menu border-info font-italic">
+                                            <a class="dropdown-item btn-detail"
+                                               style="cursor: pointer; font-size: 12px;"
+                                               pk="{{ o.id }}"><i
+                                                    class="fas fa-edit pr-1"></i> Ver listado </a>
+                                            <a class="dropdown-item btn-validate"
+                                               style="cursor: pointer; font-size: 12px;"
+                                               pk="{{ o.id }}"><i
+                                                    class="fab fa-microsoft pr-1"></i> Validar traslado </a>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr style="display: none">
+                                <td colspan="3" class="p-0"></td>
+                                <td colspan="6" class="table-row-details bg-white p-0"></td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                        <tfoot>
+                        <tr class="text-center text-white" style="background-color: rgba(7, 134, 193, 1);">
+                            <th class="th-sm font-weight-normal">N°</th>
+                            <th class="th-sm font-weight-normal">Tipo</th>
+                            <th class="th-sm font-weight-normal">Estado</th>
+                            <th class="th-sm font-weight-normal">Fecha</th>
+                            <th class="th-sm font-weight-normal">Filial</th>
+                            <th class="th-sm font-weight-normal">Almacen origen</th>
+                            <th class="th-sm font-weight-normal">Almacen Destino</th>
+                            <th class="th-sm font-weight-normal">Usuario</th>
+                            <th class="th-sm font-weight-normal">Acción</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <h6>No existen registros de traslados pendientes</h6>
+    {% endif %}
+{% endblock body %}
+
+{% block extrajs %}
+    <script type="text/javascript">
+        $(document).on('click', '.btn-detail', function () {
+            let _pk = $(this).attr('pk');
+            let _table = $(this).parent('div').parent('div').parent('td').parent('tr').next('tr').children('td.table-row-details');
+            $('#table-transfer-list tbody.details-transfer tr td.table-row-details').parent('tr').slideUp(800);
+            $('#table-transfer-list tbody.details-transfer tr td.table-row-details').empty();
+            $.ajax({
+                url: '/purchase/get_transfer_detail/',
+                async: true,
+                dataType: 'json',
+                type: 'GET',
+                data: {'pk': _pk},
+                success: function (response) {
+                    toastr.success('Detalle del traslado');
+                    _table.html(response.grid);
+                    _table.parent('tr').slideDown(800);
+                },
+            });
+        });
+        $(document).on('click', '.btn-validate', function () {
+            let message = confirm("¿Esta seguro de aceptar el traslado?");
+            if (message) {
+                let _pk = $(this).attr('pk');
+                $.ajax({
+                    url: '/purchase/get_validate_transfer/',
+                    async: true,
+                    dataType: 'json',
+                    type: 'GET',
+                    data: {'pk': _pk},
+                    success: function (response) {
+                        if (response.success) {
+                            toastr.success(response.message, 'OK')
+                            setTimeout(() => {
+                                location.reload();
+                            }, 200);
+                        }
+                    },
+                });
+            }
+        });
+    </script>
+{% endblock extrajs %}

@@ -1,36 +1,38 @@
 {% extends 'index.html' %}
 
 {% block title %}
-    System | Productos
+    Listado | Productos
 {% endblock title %}
 
 {% block body %}
-    <div class="card shadow h-100 montserrat">
+    <div class="card shadow h-100 roboto-medium">
         <div class="card-header d-flex flex-row align-items-center justify-content-between p-0 pt-2 pb-2"
              style="background: #027fde;">
-            <div class="row col-md-12 m-0 p-0">
-                <div class="col-md-2 pt-1">
+            <div class="row col-md-12 m-0">
+                <div class="col-md-2 p-1">
                     <button type="button" class="button text-white" onclick="showModalView('product_form')"><i
-                            class="fas fa-database"></i> <span>  Nuevo producto </span></button>
+                            class="fas fa-database"></i> <span>  Nuevo </span></button>
                 </div>
-                <div class="col-md-2 pt-1">
+                <div class="col-md-2 p-1">
                     <button type="button" id="custom-select-all-products" class="button text-white"><i
-                            class="fas fa-box"></i> <span>  Ver todos</span></button>
+                            class="fas fa-archive"></i> <span>  Ver todos</span></button>
                 </div>
-                <div class="col-md-3 pt-1">
-                    <select class="custom-select form-control form-control-sm mr-sm-2 combo"
+                <div class="col-md-5 p-1 m-0">
+
+                </div>
+                <div class="col-md-3 p-1">
+                    <select class="custom-select w-100 form-control form-control-sm combo"
                             id="custom-select-product-by-name">
                         <option value="" selected disabled>Seleccione...</option>
                         {% for n in names %}
-                            <option value="{{ n.id }}">{{ n.names }}</option>{% endfor %}
+                            <option value="{{ n.id }}">{{ n.names }}</option>
+                        {% endfor %}
                     </select>
-                </div>
-                <div class="col-md-5">
                 </div>
             </div>
         </div>
         <div class="card body p-0 border-0">
-            <div id="product-grid-list" class="montserrat"  style="overflow-y: scroll; height: 470px; width: auto;">
+            <div id="product-grid-list" class="" style="overflow-y: scroll; height: 470px; width: auto;">
                 {#                {% include "sale/product_grid_list.html" %}#}
             </div>
             <div class="text-center align-self-center" style="
@@ -57,7 +59,7 @@
     <style>
         .button {
             border-radius: 4px;
-            background-color: #b72435;
+            background-color: #d72237;
             border: none;
             text-align: center;
             font-size: 14px;
