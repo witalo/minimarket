@@ -289,7 +289,7 @@ def get_provider_update_form(request):
 def update_provider(request):
     if request.method == 'POST':
         _id = int(request.POST.get('pk', ''))
-        client_obj = Client.objects.get(id=_id)
+        provider_obj = Provider.objects.get(id=_id)
         _type_document = request.POST.get('document_type_sender', '')
         _document = request.POST.get('document', '')
         _full_names = request.POST.get('full_names', '')
@@ -297,13 +297,13 @@ def update_provider(request):
         _email = request.POST.get('email', '')
         _address = request.POST.get('address', '')
 
-        client_obj.type_document = _type_document
-        client_obj.document = _document
-        client_obj.full_names = _full_names.upper()
-        client_obj.telephone = _telephone_number
-        client_obj.email = _email
-        client_obj.address = _address.upper()
-        client_obj.save()
+        provider_obj.type_document = _type_document
+        provider_obj.document = _document
+        provider_obj.full_names = _full_names.upper()
+        provider_obj.telephone = _telephone_number
+        provider_obj.email = _email
+        provider_obj.address = _address.upper()
+        provider_obj.save()
         return JsonResponse({
             'success': True,
         }, status=HTTPStatus.OK)

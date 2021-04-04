@@ -290,7 +290,7 @@ def update_client(request):
         _address = request.POST.get('address', '')
 
         client_obj.type_document = _type_document
-        client_obj.document_number = _document
+        client_obj.document = str(_document)
         client_obj.full_names = _full_names.upper()
         client_obj.telephone_number = _telephone_number
         client_obj.email = _email
