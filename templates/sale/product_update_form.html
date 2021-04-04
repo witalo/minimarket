@@ -24,7 +24,7 @@
                                            class="form-control form-control-sm" name="pk" id="id_pk"
                                            value="{{ product_obj.id }}"  required>
                                 <td style="width: 36%">
-                                    <input type="text"
+                                    <input type="text" maxlength="100"
                                            class="form-control form-control-sm text-uppercase" name="name" id="id_name"
                                            placeholder="Producto" style="font-size: 13px; width: 150px;" value="{{ product_obj.names }}" required>
                                 </td>
@@ -38,7 +38,7 @@
                             <tr>
                                 <td class="align-middle">Codigo producto</td>
                                 <td>
-                                    <input type="text"
+                                    <input type="text" maxlength="50"
                                            class="form-control form-control-sm text-uppercase" name="code" id="id_code"
                                            placeholder="Codigo" style="font-size: 13px; width: 150px;" value="{{ product_obj.code }}" required>
                                 </td>
@@ -93,13 +93,13 @@
 
                                 <td class="align-middle" style="width: 22px;">Stock Minimo</td>
                                 <td  style="width: 23px;">
-                                    <input type="text"
+                                    <input type="text" maxlength="30"
                                            class="form-control form-control-sm stock_decimal" name="minimum" id="id_minimum"
                                            placeholder="00.00" style="font-size: 14px;" value="{{ product_obj.stock_min|floatformat:2 }}" required>
                                 </td>
                                 <td class="align-middle" style="width: 22px;">Stock Maximo</td>
                                 <td  style="width: 23px;" >
-                                    <input type="text"
+                                    <input type="text" maxlength="30"
                                            class="form-control form-control-sm stock_decimal" name="maximum" id="id_maximum"
                                            placeholder="00.00" style="font-size: 14px;" value="{{ product_obj.stock_max|floatformat:2 }}" required>
                                 </td>
