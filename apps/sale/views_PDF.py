@@ -327,7 +327,7 @@ def print_ticket_order_sales(request, pk=None):  # Comprobante interno
     mi = 0.039 * inch
 
     doc = SimpleDocTemplate(buff,
-                            pagesize=(3.14961 * inch, 7.5 * inch + (inch * 0.13 * counter)),
+                            pagesize=(3.14961 * inch, 8.5 * inch + (inch * 0.15 * counter)),
                             rightMargin=mr,
                             leftMargin=ml,
                             topMargin=ms,
