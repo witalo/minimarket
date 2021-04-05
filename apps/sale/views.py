@@ -332,7 +332,7 @@ def get_product_list(product=None, pk=None):
     product_dict = []
     product_set = None
     if product == 'all':
-        product_set = Product.objects.filter(is_state=True)
+        product_set = Product.objects.filter()
     elif product == 'name':
         product_set = Product.objects.filter(is_state=True, id=int(pk))
     product_set = product_set.values(
