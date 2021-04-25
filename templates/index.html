@@ -10,7 +10,7 @@
     <meta name="author" content="">
 
     <title>{% block title %}System - Inicio {% endblock title %}</title>
-    <link rel="icon" href="{% static 'img/system/img_ico.ico' %}" type="image/ico"/>
+    <link rel="icon" href="{% static 'img/system/icono.ico' %}" type="image/ico"/>
     <!-- Custom fonts for this template-->
     <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
     <link href="{% static 'css/fonts_list.css' %}"
@@ -133,7 +133,7 @@
             <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
                     <h6 class="collapse-header">Almacen</h6>
-                    <a class="collapse-item" href="{% url 'sale:product_list' %}">Lista - Productos</a>
+                    <a class="collapse-item" href="{% url 'sale:product_list' %}">Listado - Productos</a>
                     <a class="collapse-item" href="{% url 'purchase:transfer_list' %}">Traslados - Almacenes</a>
                     <a class="collapse-item" href="{% url 'purchase:pending_transfer' %}">Traslados - Pendientes</a>
                 </div>
