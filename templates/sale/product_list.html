@@ -5,23 +5,23 @@
 {% endblock title %}
 
 {% block body %}
-    <div class="card shadow h-100 roboto-medium">
-        <div class="card-header d-flex flex-row align-items-center justify-content-between p-0 pt-2 pb-2"
+    <div class="card shadow h-100 roboto-condensed-regular">
+        <div class="card-header d-flex flex-row align-items-center justify-content-between p-0 pt-1 pb-1"
              style="background: #027fde;">
             <div class="row col-md-12 m-0">
                 <div class="col-md-2 p-1">
-                    <button type="button" class="button text-white" onclick="showModalView('product_form')"><i
+                    <button type="button" class="button btn-sm text-white" onclick="showModalView('product_form')"><i
                             class="fas fa-database"></i> <span>  Nuevo </span></button>
                 </div>
                 <div class="col-md-2 p-1">
-                    <button type="button" id="custom-select-all-products" class="button text-white"><i
+                    <button type="button" id="custom-select-all-products" class="button btn-sm text-white"><i
                             class="fas fa-archive"></i> <span>  Ver todos</span></button>
                 </div>
                 <div class="col-md-5 p-1 m-0">
 
                 </div>
                 <div class="col-md-3 p-1">
-                    <select class="custom-select w-100 form-control form-control-sm combo"
+                    <select class="custom-select w-100 form-control form-control-sm combo roboto-condensed-regular"
                             id="custom-select-product-by-name">
                         <option value="" selected disabled>Seleccione...</option>
                         {% for n in names %}
@@ -32,7 +32,7 @@
             </div>
         </div>
         <div class="card body p-0 border-0">
-            <div id="product-grid-list" class="" style="overflow-y: scroll; height: 470px; width: auto;">
+            <div id="product-grid-list" class="" style="overflow-y: scroll; height: 550px; width: auto;">
                 {#                {% include "sale/product_grid_list.html" %}#}
             </div>
             <div class="text-center align-self-center" style="
@@ -62,7 +62,7 @@
             background-color: #d72237;
             border: none;
             text-align: center;
-            font-size: 14px;
+            font-size: 12px;
             padding: 6px;
             width: 100%;
             transition: all 0.5s;
@@ -100,7 +100,7 @@
 {% block extrajs %}
     <script type="text/javascript">
         $('.combo').select2({
-            theme: 'bootstrap4',
+            {# theme: 'bootstrap4', #}
             {#theme: 'classic',#}
             {#language: "es",#}
             placeholder: "Seleccione",

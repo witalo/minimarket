@@ -1,22 +1,22 @@
 {% extends 'index.html' %}
-
+{% load static %}
 {% block title %}
     System | Trabajador
 {% endblock title %}
 
 {% block body %}
 
-    <div class="card-header p-1 m-0 small roboto-medium">
+    <div class="card-header p-1 m-0 small roboto-condensed-regular">
         <button type="button" onclick="showModalView('get_employee_form')"
                 class="btn btn-outline-success" style="font-size: 12px;"><i class="fas fa-database"></i> Nuevo empleado
         </button>
     </div>
-    <div class="container-fluid montserrat p-0 pb-4 roboto-medium">
-        <div id="employee-grid-list" style="overflow-y: scroll; height: 480px; width: auto;">{% include "hrm/employee_grid_list.html" %}</div>
+    <div class="container-fluid p-0 pb-4">
+        <div id="employee-grid-list" style="overflow-y: scroll; height: 550px; width: auto;">{% include "hrm/employee_grid_list.html" %}</div>
     </div>
     <!-- Content -->
-    <div class="container-fluid roboto-medium">
-        <div class="table-responsive bg-info" id="table-fuel_list"></div>
+    <div class="container-fluid">
+        <div class="bg-info" id="table-fuel_list"></div>
     </div>
     <div class="modal fade roboto-medium" id="modal-employee-form" tabindex="-1" role="dialog" aria-labelledby="ModalHelpTitle"
          aria-hidden="true"></div>
@@ -27,13 +27,11 @@
 
     <script type="text/javascript">
         $('#table-employee-list').DataTable({
-            "language": {
-                "url": "//cdn.datatables.net/plug-ins/1.10.15/i18n/Spanish.json"
+           "language": {
+                "url": '{% static "language.datatable.txt" %}'
             },
-            fixedHeader: {
-                header: true,
-                {#footer: true#}
-            }
+            responsive: true,
+            autoWidth: false
         });
 
         function showModalView(route) {

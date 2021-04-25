@@ -1,5 +1,5 @@
 {% extends 'index.html' %}
-
+{% load static %}
 {% block title %}
     System | Proveedor
 {% endblock title %}
@@ -11,7 +11,7 @@
         </button>
     </div>
     <div class="container-fluid p-0">
-        <div id="provider-grid-list" style="overflow-y: scroll; height: 495px; width: auto;">{% include "purchase/provider_grid_list.html" %}</div>
+        <div id="provider-grid-list" style="overflow-y: scroll; height: 550px; width: auto;">{% include "purchase/provider_grid_list.html" %}</div>
     </div>
     <!-- Content -->
     <div class="container-fluid">
@@ -27,8 +27,10 @@
     <script type="text/javascript">
        $('#table-provider-list').DataTable({
             "language": {
-                "url": "//cdn.datatables.net/plug-ins/1.10.15/i18n/Spanish.json"
-            }
+                "url": '{% static "language.datatable.txt" %}'
+            },
+            responsive: true,
+            autoWidth: false
         });
         function showModalView(route) {
             $.ajax({

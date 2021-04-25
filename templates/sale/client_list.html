@@ -1,23 +1,23 @@
 {% extends 'index.html' %}
-
+{% load static %}
 {% block title %}
     System | Clientes
 {% endblock title %}
 
 {% block body %}
-    <div class="card-header p-1 m-0 small">
+    <div class="card-header p-1 m-0 small roboto-condensed-regular">
         <button type="button" onclick="showModalView('get_client_form')"
                 class="btn btn-outline-success" style="font-size: 12px;"><i class="fas fa-database"></i> Nuevo cliente
         </button>
     </div>
-    <div class="container-fluid p-0">
-        <div id="client-grid-list" style="overflow-y: scroll; height: 495px; width: auto;">{% include "sale/client_grid_list.html" %}</div>
+    <div class="container-fluid p-0 roboto-condensed-regular">
+        <div id="client-grid-list" style="overflow-y: scroll; height: 550px; width: auto;">{% include "sale/client_grid_list.html" %}</div>
     </div>
     <!-- Content -->
-    <div class="container-fluid">
-        <div class="table-responsive bg-info small" id="table-client_list"></div>
+    <div class="container-fluid roboto-condensed-regular">
+        <div class="bg-info small" id="table-client_list"></div>
     </div>
-    <div class="modal fade small" id="modal-client-form" tabindex="-1" role="dialog" aria-labelledby="ModalHelpTitle"
+    <div class="modal fade small roboto-condensed-regular" id="modal-client-form" tabindex="-1" role="dialog" aria-labelledby="ModalHelpTitle"
          aria-hidden="true"></div>
 
 {% endblock body %}
@@ -27,8 +27,10 @@
     <script type="text/javascript">
        $('#table-client-list').DataTable({
             "language": {
-                "url": "//cdn.datatables.net/plug-ins/1.10.15/i18n/Spanish.json"
-            }
+                "url": '{% static "language.datatable.txt" %}'
+            },
+            responsive: true,
+            autoWidth: false
         });
         function showModalView(route) {
             $.ajax({

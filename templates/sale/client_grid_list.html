@@ -1,25 +1,25 @@
 {% if client_set %}
     <div class="card border-primary">
         <div class="card-header" style="background-color: rgba(7, 134, 193,1);">
-            <h6 class="card-title text-center text-white mb-0">Lista de clientes</h6>
+            <h6 class="card-title text-center text-white mb-0 roboto-condensed-regular">Lista de clientes</h6>
         </div>
         <div class="card-body pb-1">
-            <div class="table-responsive small dataTables_wrapper ">
+            <div class="small dataTables_wrapper ">
                 <table id="table-client-list"
-                       class="table  table-striped align-content-center table-bordered response"
-                       cellspacing="0" width="100%">
+                       class="table  table-striped align-content-center table-bordered"
+                       width="100%">
                     <thead>
-                    <tr class="text-center  text-white" style="background-color: rgba(7, 134, 193,1); font-size: 11px;">
-                        <th class="th-sm">N°</th>
-                        <th class="th-sm">Documento</th>
-                        <th class="th-sm">Nombres y Apellidos</th>
-                        <th class="th-sm">Telefono</th>
-                        <th class="th-sm">Correo</th>
-                        <th class="th-sm">Direccion</th>
-                        <th class="th-sm">Acción</th>
+                    <tr class="text-center  text-white" style="background-color: rgba(7, 134, 193,1); font-size: 12px;">
+                        <th class="th-sm font-weight-normal">N°</th>
+                        <th class="th-sm font-weight-normal">Documento</th>
+                        <th class="th-sm font-weight-normal">Nombres y Apellidos</th>
+                        <th class="th-sm font-weight-normal">Telefono</th>
+                        <th class="th-sm font-weight-normal">Correo</th>
+                        <th class="th-sm font-weight-normal">Direccion</th>
+                        <th class="th-sm font-weight-normal">Acción</th>
                     </tr>
                     </thead>
-                    <tbody style="font-size: 11px;">
+                    <tbody style="font-size: 12px;">
                     {% for c in client_set %}
                         <tr class="text-center text-black">
                             <td>{{ c.id }}</td>
@@ -28,14 +28,16 @@
                             <td>{% if c.telephone_number %}{{ c.telephone_number }}{% endif %}</td>
                             <td class="text-left">{% if c.email %}{{ c.email }}{% endif %}</td>
                             <td class="text-left">{% if c.address %}{{ c.address }}{% endif %}</td>
-                            <td class="p-1" >
+                            <td class="p-1">
                                 <div class="btn-group">
                                     <button type="button" class="btn btn-success  dropdown-toggle"
-                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="font-size: 11px;">
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                            style="font-size: 11px;">
                                         Acción
                                     </button>
                                     <div class="dropdown-menu border-info font-italic">
-                                        <a class="dropdown-item btn-update-client" style="cursor: pointer; font-size: 11px;"
+                                        <a class="dropdown-item btn-update-client"
+                                           style="cursor: pointer; font-size: 11px;"
                                            pk="{{ c.id }}"><i
                                                 class="fas fa-edit pr-1"></i> Modificar datos </a>
                                     </div>
@@ -46,13 +48,13 @@
                     </tbody>
                     <tfoot>
                     <tr class="text-center text-white" style="background-color: rgba(7, 134, 193, 1);">
-                        <th class="th-sm">N°</th>
-                        <th class="th-sm">Documento</th>
-                        <th class="th-sm">Nombres y Apellidos</th>
-                        <th class="th-sm">Telefono</th>
-                        <th class="th-sm">Correo</th>
-                        <th class="th-sm">Direccion</th>
-                        <th class="th-sm">Acción</th>
+                        <th class="th-sm font-weight-normal">N°</th>
+                        <th class="th-sm font-weight-normal">Documento</th>
+                        <th class="th-sm font-weight-normal">Nombres y Apellidos</th>
+                        <th class="th-sm font-weight-normal">Telefono</th>
+                        <th class="th-sm font-weight-normal">Correo</th>
+                        <th class="th-sm font-weight-normal">Direccion</th>
+                        <th class="th-sm font-weight-normal">Acción</th>
                     </tr>
                     </tfoot>
                 </table>

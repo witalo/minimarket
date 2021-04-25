@@ -1,46 +1,53 @@
 {% if employee_set %}
     <div class="card border-primary">
         <div class="card-header" style="background-color: rgba(7, 134, 193, 1.0);">
-            <h6 class="card-title text-center text-white mb-0" style="font-size: 15px;">Lista de trabajadores de la
+            <h6 class="card-title text-center text-white mb-0 roboto-condensed-regular" style="font-size: 15px;">Lista
+                de trabajadores de la
                 empresa</h6>
         </div>
         <div class="card-body pb-1">
-            <div class="table-responsive small dataTables_wrapper">
+            <div class="small">
                 <table id="table-employee-list"
-                       class="table   align-content-center table-bordered response"
-                       cellspacing="0" width="100%" style="border-collapse:collapse;">
+                       class="table  align-content-center table-bordered"
+                       style="border-collapse:collapse; width: 100%;">
                     <thead>
                     <tr class="text-center  text-white"
-                        style="background-color: rgba(7, 134, 193, 1.0);" style="font-size: 14px;">
-                        <th class="th-sm">N°</th>
-                        <th class="th-sm">Información</th>
-                        <th class="th-sm">Fecha nacimiento</th>
-                        <th class="th-sm">Genero</th>
-                        <th class="th-sm">Telefono</th>
-                        <th class="th-sm">Correo</th>
-                        <th class="th-sm">Dirección</th>
-                        <th class="th-sm">Foto</th>
-                        <th class="th-sm">Acción</th>
+                        style="background-color: rgba(7, 134, 193, 1.0);">
+                        <th class="th-sm font-weight-normal">N°</th>
+                        <th class="th-sm font-weight-normal">Documento</th>
+                        <th class="th-sm font-weight-normal">Nombres - Apellidos</th>
+                        <th class="th-sm font-weight-normal">Fecha nacimiento</th>
+                        <th class="th-sm font-weight-normal">Genero</th>
+                        <th class="th-sm font-weight-normal">Telefono</th>
+                        <th class="th-sm font-weight-normal">Correo</th>
+                        <th class="th-sm font-weight-normal">Dirección</th>
+                        <th class="th-sm font-weight-normal">Ocupacion</th>
+                        <th class="th-sm font-weight-normal">Estado</th>
+                        <th class="th-sm font-weight-normal">Foto</th>
+                        <th class="th-sm font-weight-normal">Acción</th>
                     </tr>
                     </thead>
-                    <tbody style="font-size: 12px;">
+                    <tbody style="font-size: 13px;">
                     {% for e in employee_set %}
                         <tr class="text-center">
-                            <td class="align-middle"><strong>{{ e.id }}</strong></td>
+                            <td class="align-middle">{{ e.id }}</td>
                             <td>
-                                <address class="text-left">
-                                    <strong>Trabajador</strong><br>
-                                    <strong>Apellido Paterno:</strong> <i>{{ e.paternal_last_name }}</i><br>
-                                    <strong>Apellido Materno:</strong> <i>{{ e.maternal_last_name }}</i><br>
-                                    <strong>Nombres:</strong> <i>{{ e.names }}</i><br>
-                                    <strong>Documento:</strong> <i>{{ e.document_number }}</i>
-                                </address>
+                                {{ e.document_number }}
                             </td>
+                            <td>{{ e.full_name }}</td>
                             <td>{{ e.birth_date }}</td>
                             <td>{{ e.get_gender_display }}</td>
                             <td>{{ e.telephone_number }}</td>
                             <td>{{ e.email }}</td>
                             <td>{{ e.address }}</td>
+                            <td>{{ e.get_occupation_display }}</td>
+                            <td>
+                                {% if e.is_state %}
+                                    Activo
+                                {% else %}
+                                    Inactivo
+                                {% endif %}
+                            </td>
                             <td>
                                 <img class="img-thumbnail" src="{{ e.photo.url }}" id="img-photo-employee" width="100px"
                                      height="80px">
@@ -79,15 +86,18 @@
                     </tbody>
                     <tfoot>
                     <tr class="text-center text-white" style="background-color: rgba(7, 134, 193, 1.0);">
-                        <th class="th-sm">N°</th>
-                        <th class="th-sm">Información</th>
-                        <th class="th-sm">Fecha nacimiento</th>
-                        <th class="th-sm">Genero</th>
-                        <th class="th-sm">Telefono</th>
-                        <th class="th-sm">Correo</th>
-                        <th class="th-sm">Dirección</th>
-                        <th class="th-sm">Foto</th>
-                        <th class="th-sm">Acción</th>
+                        <th class="th-sm font-weight-normal">N°</th>
+                        <th class="th-sm font-weight-normal">Documento</th>
+                        <th class="th-sm font-weight-normal">Nombres - Apellidos</th>
+                        <th class="th-sm font-weight-normal">Fecha nacimiento</th>
+                        <th class="th-sm font-weight-normal">Genero</th>
+                        <th class="th-sm font-weight-normal">Telefono</th>
+                        <th class="th-sm font-weight-normal">Correo</th>
+                        <th class="th-sm font-weight-normal">Dirección</th>
+                        <th class="th-sm font-weight-normal">Ocupacion</th>
+                        <th class="th-sm font-weight-normal">Estado</th>
+                        <th class="th-sm font-weight-normal">Foto</th>
+                        <th class="th-sm font-weight-normal">Acción</th>
                     </tr>
                     </tfoot>
                 </table>
@@ -99,88 +109,6 @@
             border-radius: 50%;
             vertical-align: middle;
         }
-
-        /*
-        .GridviewScrollHeader TH, .GridviewScrollHeader TD
-        {
-            padding: 3px;
-            white-space: nowrap;
-            border-right: 1px solid #AAAAAA;
-            border-bottom: 1px solid #AAAAAA;
-           vertical-align: middle;
-            background-color:#03579D;
-            color:#FFF;
-            font-size:20px;
-        }
-        .GridviewScrollItem TD
-        {
-            padding: 3px;
-            white-space: nowrap;
-            border-right: 1px solid #AAAAAA;
-            border-bottom: 0.7px solid #AAAAAA;
-            font-size:20px;
-
-        }
-        .GridviewScrollPager
-        {
-            border-top: 1px solid #AAAAAA;
-            background-color: #FFFFFF;
-        }
-        .GridviewScrollPager TD
-        {
-            padding-top: 3px;
-            font-size: 14px;
-            padding-left: 5px;
-            padding-right: 5px;
-        }
-        .GridviewScrollPager A
-        {
-            color: #666666;
-        }.GridviewScrollPager SPAN
-        {
-            font-size: 16px;
-            font-weight: bold;
-        }
-
-        .container {
-        background-color: #03579D;
-          height: auto;
-          margin-top:0;
-          line-height: 60px;
-          width: 100%;
-          display: inline-block;
-          border-radius: 15px;
-        }
-
-        .container2 {
-        background-color: #03579D;
-         height: auto;
-          margin-top:0;
-          width: 100%;
-          display: inline-block;
-          border-radius: 15px;
-        }
-
-        .GridviewScrollHeader2 TH, .GridviewScrollHeader TD
-        {
-            padding: 3px;
-            white-space: nowrap;
-            border-right: 1px solid #AAAAAA;
-            border-bottom: 1px solid #AAAAAA;
-            vertical-align: middle;
-            background-color:#03579D;
-            color:#FFF;
-            font-size:14px;
-        }
-        .GridviewScrollItem2 TD
-         {
-            padding: 3px;
-            white-space: nowrap;
-            border-right: 1px solid #AAAAAA;
-            border-bottom: 0.7px solid #AAAAAA;
-            font-size:14px;
-
-        }*/
     </style>
 {% else %}
     <h6>No existen registros de empleados</h6>

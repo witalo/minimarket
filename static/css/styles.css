@@ -11086,4 +11086,27 @@ color: #009688;
 
 }
 
-/*----------  Keyframes  ----------*/
+/*----------  estilo scrollbar  ----------*/
+/* Works on Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #076bae #e7e6e5;
+}
+
+/* Works on Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+  width: 7px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #e2e2e1;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #0c6eba;
+  border-radius: 20px;
+  border: 2px solid #fdfdfd;
+}
+*::-webkit-scrollbar:horizontal {
+    height: 7px;
+}

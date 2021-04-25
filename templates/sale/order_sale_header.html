@@ -1,4 +1,4 @@
-<div class="row pl-3 pr-3 roboto-medium">
+<div class="row pl-3 pr-3">
     <div class="col-sm-2 col-md-2  col-lg-2 p-1">
         <input type="text" class="form-control form-control-sm text-center" id="id-serial"
                value="{{ subsidiary_obj.serial }}" readonly>
@@ -21,7 +21,7 @@
         </button>
     </div>
 </div>
-<div class="row pl-3 pr-3 roboto-medium">
+<div class="row pl-3 pr-3">
     <div class="col-sm-2 col-md-2  col-lg-2 p-1">
         <select id="document_type_sender" name="document_type_sender"
                 class="form-control form-control-sm"
@@ -52,7 +52,7 @@
     {#        </button>#}
     {#    </div>#}
 </div>
-<div class="row pl-3 pr-3 roboto-medium" id="id-address-section" style="display: none;">
+<div class="row pl-3 pr-3" id="id-address-section" style="display: none;">
     <div class="col-sm-2 col-md-2 col-lg-2 p-1 align-self-center pl-3">
         <label for="id-client-address" class="m-0">Dirección</label>
     </div>
@@ -64,11 +64,11 @@
                value="">
     </div>
 </div>
-<div class="row pl-3 pr-3 roboto-medium">
+<div class="row pl-3 pr-3">
     <div class="col-sm-2 col-md-2  col-lg-2 p-1">
         <select id="id-type-payment" name="type-payment"
                 class="form-control form-control-sm">
-            <option selected value="0">T Pago</option>
+            <option selected value="0">Modalidad</option>
             {% for py in type_payment %}
                 <option value="{{ py.0 }}">{{ py.1 }}</option>
             {% endfor %}

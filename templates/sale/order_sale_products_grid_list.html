@@ -1,4 +1,4 @@
-<div class="card-body rounded p-1 montserrat"
+<div class="card-body rounded p-1 roboto-condensed-regular"
      style="background-color: rgb(255,255,255)!important; overflow-y: scroll; height:100%; width: 100%;">
     <div class="container" id="grid-products">
         <div class="row grid">
@@ -23,18 +23,20 @@
                                 <p class="text-center m-0  p-0 font-weight-bold text-danger"
                                    style="text-transform: uppercase;">
                                     {{ product.names }}</p>
-                                <div class="form-group row m-0 p-0 pr-2">
-                                    <label class="col-sm-6 py-0 m-0 text-left" style="font-size: 12px;">Stock</label>
+                                <div class="form-group row m-0 p-0 pr-2 mb-2">
+                                    <div class="col-sm-6 text-center align-self-center" style="font-size: 13px;">
+                                        <b>Stock</b>
+                                    </div>
                                     <div class="col-sm-6  stock_product p-0">
                                         <input type="text"
-                                               class="form-control form-control-sm border-0 m-0 p-1  h-100 product-stock text-right"
+                                               class="form-control form-control-sm border-0 m-0 p-1  h-100 product-stock text-center"
                                                style="color: #032b4e; font-size: 13px;"
                                                value="{{ product.stock|safe }}"
                                                readonly="">
                                     </div>
                                 </div>
                                 {% for product_presenting in product.product_presenting_set %}
-                                    <div class="apd pr-2"
+                                    <div class="apd pr-2" style="display: none"
                                          unit-id="{{ product_presenting.unit_id|safe }}"
                                          unit-name="{{ product_presenting.unit__name|safe }}"
                                          product-detail-id="{{ product_presenting.id|safe }}">
@@ -65,7 +67,7 @@
 
                             </div>
                         </div>
-                        <div class="card-footer text-muted text-center roboto-medium"
+                        <div class="card-footer text-muted text-center roboto-condensed-regular"
                              style="background-color: #2f78b0;display: flex; align-items: center; justify-content: center;">
                             <a class="btn btn-sm text-white font-weight-normal" id="btn-prices"
                                pk="{{ product.id }}"

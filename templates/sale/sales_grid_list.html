@@ -7,7 +7,7 @@
             <div class="table-responsive dataTables_wrapper">
                 <table id="id-table-orders-sale"
                        class="table table-sm align-content-center table-hover m-0"
-                       cellspacing="0" width="100%">
+                       width="100%">
                     <thead>
                     <tr class="text-center" style="height: 20px">
                         <th class="th-sm font-weight-normal">N°</th>
@@ -46,8 +46,8 @@
                                                 class="fas fa-shopping-basket fa-2x pr-1"></i> Ver detalle </a>
                                         {% if o.status == 'C' or o.status == 'P' %}
                                             <a class="dropdown-item btn-sales-download"
-                                           style="cursor: pointer; font-size: 12px;" pk="{{ o.id }}"><i
-                                                class="fas fa-file-pdf fa-2x pl-1 pr-2"></i> Descargar </a>
+                                               style="cursor: pointer; font-size: 12px;" pk="{{ o.id }}"><i
+                                                    class="fas fa-file-pdf fa-2x pl-1 pr-2"></i> Descargar </a>
                                             <a class="dropdown-item btn-sales-annular item-function"
                                                style="cursor: pointer; font-size: 12px;" pk="{{ o.id }}"><i
                                                     class="fas fa-briefcase fa-2x pl-1 pr-2"></i> <b>Anular</b> </a>
@@ -84,7 +84,7 @@
         </div>
     </div>
 {% else %}
-    <h5>No existen ventas realizadas</h5>
+    <h6>No existen ventas realizadas</h6>
 {% endif %}
 <script type="text/javascript">
 

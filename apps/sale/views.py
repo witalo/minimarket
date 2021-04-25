@@ -943,7 +943,7 @@ def get_products_for_sales(subsidiary_store_obj=None):
             'names': p['names'],
             'code': p['code'],
             'photo': p['photo'],
-            'path_cache': get_url(p['photo']),
+            'path_cache': get_urls(p['photo']),
             'stock_min': p['stock_min'],
             'stock_max': p['stock_max'],
             'product_store_id': p['productstore__id'],

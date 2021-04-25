@@ -35,11 +35,15 @@
     <link rel="stylesheet" href="{% static 'css/switch.css' %}">
     {# graphic #}
     <link rel="stylesheet" href="{% static 'css/graphic.css' %}">
+    <!-- Datatable responsivo con icono + ---->
+    <link rel="stylesheet" href="{% static 'css/responsive.bootstrap4.min.css' %}">
+    <!-- Datatable ajustar columnas al contenido ---->
+    <link rel="stylesheet" href="{% static 'css/fixedColumns.min.css' %}">
 </head>
 
-<body id="page-top" class="roboto-medium">
+<body id="page-top" class="roboto-condensed-regular">
 <!-- Page Wrapper -->
-<div id="wrapper" class="roboto-medium">
+<div id="wrapper" class="roboto-condensed-regular">
 
     <!-- Sidebar -->
     <ul class="navbar-nav sidebar sidebar-dark accordion toggled" id="accordionSidebar"
@@ -739,6 +743,11 @@
 <script src="{% static 'highcharts/highcharts-more.js' %}"></script>
 <script src="{% static 'highcharts/highcharts-3d.js' %}"></script>
 <script src="{% static 'highcharts/modules/series-label.js' %}"></script>
+<!-- Datatable responsivo con icono + ---->
+<script src="{% static 'js/dataTables.responsive.min.js' %}"></script>
+<script src="{% static 'js/responsive.bootstrap4.min.js' %}"></script>
+<!--ajustar columnas al contenido-->
+<script src="{% static 'js/dataTables.fixedColumns.min.js' %}"></script>
 
 {% block extrajs %}
     <script type="text/javascript">

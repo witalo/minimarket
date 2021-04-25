@@ -1,11 +1,12 @@
+{% load static %}
 {% if products %}
-    <div class="card">
+    <div class="card roboto-condensed-regular">
         <div class="card-body">
-            <div class="table-responsive dataTables_wrapper ">
-                <table id="product-data-grid" class="table table-sm table-bordered" cellspacing="0" width="100%">
+            <div class="dataTables_wrapper ">
+                <table id="product-data-grid" class="table table-sm table-bordered"width="100%">
                     <thead>
-                    <tr class="text-center text-white" style="background: #136ac8">
-                        <th class="font-weight-normal">#</th>
+                    <tr class="text-center text-white" style="background: #136ac8; font-size: 12px;">
+                        <th class="th-sm font-weight-normal">Nº</th>
                         <th class="th-sm font-weight-normal">Nombre</th>
                         <th class="th-sm font-weight-normal">Detalles</th>
                         <th class="th-sm font-weight-normal">Stock en sedes</th>
@@ -15,7 +16,7 @@
                         <th class="th-sm font-weight-normal">Acción</th>
                     </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="roboto-condensed-regular">
 
                     {% for product in products %}
                         <tr class="text-center">
@@ -131,7 +132,7 @@
                     </tbody>
                     <tfoot>
                     <tr class="text-center">
-                        <th>#</th>
+                        <th class="th-sm font-weight-normal">Nº</th>
                         <th class="th-sm font-weight-normal">Nombre</th>
                         <th class="th-sm font-weight-normal">Detalles</th>
                         <th class="th-sm font-weight-normal">Stock en sedes</th>
@@ -170,11 +171,9 @@
 <script type="text/javascript">
     $('#product-data-grid').DataTable({
         "language": {
-            "url": "//cdn.datatables.net/plug-ins/1.10.15/i18n/Spanish.json"
-        },
-        fixedHeader: {
-            header: true,
-            {#footer: true#}
-        }
+                "url": '{% static "language.datatable.txt" %}'
+            },
+            responsive: true,
+            autoWidth: false
     });
 </script>
