@@ -464,7 +464,7 @@
             $('table tbody#product-rates tr').each(function () {
                 let _input_quantity = parseFloat($(this).find("td.item-quantity input.quantity").val());
                 let _input_price = parseFloat($(this).find("td.item-price input.price").val());
-                if ((_input_quantity !== '' && _input_price !== '') && (_input_quantity > 0 && _input_price > 0)) {
+                if ((_input_quantity != '' && _input_price != '') && (_input_quantity > 0 && _input_price > 0)) {
                     let _unit = $(this).attr('unit_id');
                     let _stock = parseFloat($('#id-stock-product').val());
                     _sum_product_rate_quantity = _sum_product_rate_quantity + _input_quantity;
@@ -493,6 +493,9 @@
                         }
                         return false;
                     }
+                }else{
+                    toastr.warning('Ingrese un valor valido');
+                    return false;
                 }
                 AddDetail($(this));
             });
