@@ -1,5 +1,5 @@
 <div class="modal-dialog modal-dialog-centered roboto-condensed-regular" role="document">
-    <div class="modal-content">
+    <div class="modal-content" style="font-size: 13px;">
         <div class="modal-header" style="background-color: rgba(7, 134, 193, 1); font-size: 12px;">
             <h6 class="modal-title  text-warning roboto-condensed-regular">Cierre de Caja</h6>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -12,16 +12,16 @@
 
             <div class="modal-body">
                 <div class="card">
-                    <div class="card-header">
+                    <div class="card-header p-2">
                         <div class="row col-md-12 m-0 p-0">
                             <div class="col-md-6 p-1">
-                                <label>Fecha de cierre</label>
-                                <input type="date" class="form-control form-control-sm" id="id-date-closing"
+                                <label class="text-primary">Fecha de cierre</label>
+                                <input type="datetime-local" class="form-control form-control-sm" id="id-date-closing"
                                        name="date-closing"
                                        value="{{ date_now }}" required>
                             </div>
                             <div class="col-md-6 p-1">
-                                <label>Caja a cerrar</label>
+                                <label class="text-primary">Caja a cerrar</label>
                                 <select id="id-closing-cash" name="closing-cash"
                                         class="form-control form-control-sm" required>
                                     <option value="0">Seleccione</option>
@@ -32,46 +32,101 @@
                             </div>
                         </div>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body pt-1">
                         <div class="row col-md-12 m-0 p-0">
-                            <div class="col-md-6 p-1">
-                                <label>Total Apertura</label>
+                            <div class="col-md-4 p-1"></div>
+                            <div class="col-md-4 p-1 text-center">
+                                <label class="text-primary mb-0">Total Apertura</label>
                                 <input type="text"
                                        class="form-control form-control-sm text-right"
-                                       name="amount-aperture-closing-casing"
+                                       name="amount-aperture-casing"
                                        id="id-amount-aperture-closing-casing" placeholder="S/. 0.00"
                                        readonly required>
                             </div>
-                            <div class="col-md-6 p-1">
-                                <label>Total Credito</label>
+                            <div class="col-md-4 p-1"></div>
+                        </div>
+                        <div class="row col-md-12 m-0 p-0">
+                            <div class="col-md-4 p-1">
+                                <label class="text-primary mb-0">Efectivo venta</label>
                                 <input type="text"
                                        class="form-control form-control-sm text-right"
-                                       name="amount-credit-closing-casing"
-                                       id="id-amount-credit-closing-casing" placeholder="S/. 0.00"
-                                       readonly required>
+                                       name="amount-cash-sales-casing"
+                                       id="id-amount-cash-sales-casing" placeholder="S/. 0.00"
+                                       readonly>
+                            </div>
+                            <div class="col-md-4 p-1">
+                                <label class="text-primary mb-0">Efectivo compra</label>
+                                <input type="text"
+                                       class="form-control form-control-sm text-right"
+                                       name="amount-cash-purchase-casing"
+                                       id="id-amount-cash-purchase-casing" placeholder="S/. 0.00"
+                                       readonly>
+                            </div>
+                            <div class="col-md-4 p-1">
+                                <label class="text-primary mb-0">Efectivo total</label>
+                                <input type="text"
+                                       class="form-control form-control-sm text-right"
+                                       name="amount-cash-casing"
+                                       id="id-amount-cash-casing" placeholder="S/. 0.00"
+                                       readonly>
                             </div>
                         </div>
                         <div class="row col-md-12 m-0 p-0">
-                            <div class="col-md-6 p-1">
-                                <label>Total Efectivo</label>
-                                <input type="text"
-                                       class="form-control form-control-sm text-right" name="amount-cash-closing-casing"
-                                       id="id-amount-cash-closing-casing" placeholder="S/. 0.00"
-                                       readonly required>
-                            </div>
-                            <div class="col-md-6 p-1">
-                                <label>Total Deposito</label>
+                            <div class="col-md-4 p-1">
+                                <label class="text-primary mb-0">Deposito venta</label>
                                 <input type="text"
                                        class="form-control form-control-sm text-right"
-                                       name="amount-deposit-closing-casing"
-                                       id="id-amount-deposit-closing-casing" placeholder="S/. 0.00"
-                                       readonly required>
+                                       name="amount-deposit-sales-bank"
+                                       id="id-amount-deposit-sales-bank" placeholder="S/. 0.00"
+                                       readonly>
+                            </div>
+                            <div class="col-md-4 p-1">
+                                <label class="text-primary mb-0">Deposito compra</label>
+                                <input type="text"
+                                       class="form-control form-control-sm text-right"
+                                       name="amount-deposit-purchase-bank"
+                                       id="id-amount-deposit-purchase-bank" placeholder="S/. 0.00"
+                                       readonly>
+                            </div>
+                            <div class="col-md-4 p-1">
+                                <label class="text-primary mb-0">Deposito total</label>
+                                <input type="text"
+                                       class="form-control form-control-sm text-right"
+                                       name="amount-deposit-bank"
+                                       id="id-amount-deposit-bank" placeholder="S/. 0.00"
+                                       readonly>
+                            </div>
+                        </div>
+                        <div class="row col-md-12 m-0 p-0">
+                            <div class="col-md-4 p-1">
+                                <label class="text-primary mb-0">Credito venta</label>
+                                <input type="text"
+                                       class="form-control form-control-sm text-right" name="amount-credit-sales-client"
+                                       id="id-amount-credit-sales-client" placeholder="S/. 0.00"
+                                       readonly>
+                            </div>
+                            <div class="col-md-4 p-1">
+                                <label class="text-primary mb-0">Credito compra</label>
+                                <input type="text"
+                                       class="form-control form-control-sm text-right"
+                                       name="amount-credit-purchase-client"
+                                       id="id-amount-credit-purchase-client" placeholder="S/. 0.00"
+                                       readonly>
+                            </div>
+                            <div class="col-md-4 p-1">
+                                <label class="text-primary mb-0">Credito Total</label>
+                                <input type="text"
+                                       class="form-control form-control-sm text-right"
+                                       name="amount-credit-casing"
+                                       id="id-amount-credit-client" placeholder="S/. 0.00"
+                                       readonly>
                             </div>
                         </div>
                     </div>
                     <div class="card-footer">
-                        <button id="btn-closing-casing" type="submit" class="btn btn-sm btn-warning col-md-12">
-                            <i class="fas fa-box fa-1x"> </i> <b> cerrar caja</b>
+                        <button id="btn-closing-casing" type="submit"
+                                class="btn btn-sm btn-warning col-md-12 roboto-condensed-regular">
+                            <i class="fas fa-box fa-1x"> </i> Cerrar caja
                         </button>
                     </div>
                 </div>
@@ -107,7 +162,6 @@
             cache: false,
             processData: false,
             contentType: false,
-            headers: {"X-CSRFToken": '{{ csrf_token }}'},
             success: function (response) {
                 if (response.success) {
                     toastr.success(response.message, 'Mensaje');
@@ -129,41 +183,5 @@
             $(this).val('');
         }
     });
-    $("#id-closing-cash").change(function () {
-        if ($('#id-date-closing').val() == '') {
-            toastr.warning('Seleccione la fecha del cierre', 'Mensaje');
-            return false;
-        }
-        if ($("#id-closing-cash").val() != '0') {
-            $.ajax({
-                url: '/accounting/get_total_casing/',
-                async: true,
-                dataType: 'json',
-                type: 'GET',
-                data: {'pk_cash': $("#id-closing-cash").val(), 'date_closing': $('#id-date-closing').val()},
-                contentType: 'application/json;charset=UTF-8',
-                headers: {"X-CSRFToken": '{{ csrf_token }}'},
-                success: function (response, textStatus, xhr) {
-                    if (xhr.status == 200) {
-                        $('#id-amount-aperture-closing-casing').val(response.total_aperture);
-                        $('#id-amount-credit-closing-casing').val(response.total_credit);
-                        $('#id-amount-cash-closing-casing').val(response.total_cash);
-                        $('#id-amount-deposit-closing-casing').val(response.total_deposit);
-                    }
-                },
-                error: function (jqXhr, textStatus, xhr) {
-                    toastr.error(jqXhr.responseJSON.error, 'Mensaje');
-                    $('#id-amount-aperture-closing-casing').val('');
-                    $('#id-amount-credit-closing-casing').val('');
-                    $('#id-amount-cash-closing-casing').val('');
-                    $('#id-amount-deposit-closing-casing').val('');
-                }
-            });
-        } else {
-            $('#id-amount-aperture-closing-casing').val('');
-            $('#id-amount-credit-closing-casing').val('');
-            $('#id-amount-cash-closing-casing').val('');
-            $('#id-amount-deposit-closing-casing').val('');
-        }
-    });
+
 </script>

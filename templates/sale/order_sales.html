@@ -19,12 +19,15 @@
                         </a>
                         <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
                              aria-labelledby="dropdownMenuLink">
-                            <div class="dropdown-header">Complementarios:</div>
-                            <a class="dropdown-item" href="#" onclick="Opening_Casing('A')">Apertura de
+                            <div class="dropdown-header">Funciones caja:</div>
+                            <a class="dropdown-item" href="#" onclick="Opening_Casing('A')"><i
+                                    class="fas fa-donate"></i> Apertura de
                                 caja</a>
-                            <a class="dropdown-item" href="#" onclick="Closing_Casing('C')">Cierre de caja</a>
+                            <a class="dropdown-item" href="#" onclick="Closing_Casing('C')"><i
+                                    class="fas fa-business-time"></i> Cierre de caja</a>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="#" onclick="Register_Client('get_client_form')">Registrar
+                            <a class="dropdown-item" href="#" onclick="Register_Client('get_client_form')"><i
+                                    class="far fa-check-circle"></i> Registrar
                                 cliente</a>
                         </div>
                     </div>
@@ -215,8 +218,8 @@
                 dataType: 'json',
                 type: 'GET',
                 data: {'operation': $a},
-                success: function (response) {
-                    $('#id-modal-casing').html(response.grid);
+                success: function (data) {
+                    $('#id-modal-casing').html(data.grid);
                     $('#id-modal-casing').modal('show');
                 },
                 error: function (response) {
@@ -233,8 +236,8 @@
                 dataType: 'json',
                 type: 'GET',
                 data: {'operation': $a},
-                success: function (response) {
-                    $('#id-modal-casing').html(response.grid);
+                success: function (data) {
+                    $('#id-modal-casing').html(data.grid);
                     $('#id-modal-casing').modal('show');
                 },
                 error: function (response) {
@@ -493,7 +496,7 @@
                         }
                         return false;
                     }
-                }else{
+                } else {
                     toastr.warning('Ingrese un valor valido');
                     return false;
                 }
@@ -850,6 +853,68 @@
                 e.preventDefault()
                 $(this).trigger("enterKey");
                 KeyPress();
+            }
+        });
+        $(document).on('change', '#id-closing-cash', function () {
+            let pk = $("#id-closing-cash").val();
+            if ($('#id-date-closing').val() == '') {
+                toastr.warning('Seleccione la fecha y hora por favor', 'Mensaje');
+                return false;
+            }
+            if (pk != '0') {
+                $.ajax({
+                    url: '/accounting/get_total_casing/',
+                    async: true,
+                    dataType: 'json',
+                    type: 'GET',
+                    data: {'pk_cash': pk, 'date_closing': $('#id-date-closing').val()},
+                    contentType: 'application/json;charset=UTF-8',
+                    headers: {"X-CSRFToken": '{{ csrf_token }}'},
+                    success: function (response, textStatus, xhr) {
+                        if (xhr.status == 200) {
+                            if (response.success) {
+                                let total = response['result'];
+                                $('#id-amount-aperture-closing-casing').val((total[0].total_aperture));
+                                $('#id-amount-cash-sales-casing').val((total[0].total_cash_sales));
+                                $('#id-amount-cash-purchase-casing').val((total[0].total_cash_purchase));
+                                $('#id-amount-deposit-sales-bank').val((total[0].total_deposit_sales));
+                                $('#id-amount-deposit-purchase-bank').val((total[0].total_deposit_purchase));
+                                $('#id-amount-credit-sales-client').val((total[0].total_credit_sales));
+                                $('#id-amount-credit-purchase-client').val((total[0].total_credit_purchase));
+                                $('#id-amount-cash-casing').val(total[0].total_cash)
+                                $('#id-amount-deposit-bank').val(total[0].total_deposit)
+                                $('#id-amount-credit-client').val(total[0].total_credit)
+                            }
+                        }
+                    },
+                    error: function (jqXhr, textStatus, xhr) {
+                        if (jqXhr.status == 500) {
+                            toastr.error(jqXhr.responseJSON.error, 'Mensaje');
+                            $('#id-closing-cash').val(0);
+                            $('#id-amount-aperture-closing-casing').val('');
+                            $('#id-amount-cash-sales-casing').val('');
+                            $('#id-amount-cash-purchase-casing').val('');
+                            $('#id-amount-deposit-sales-bank').val('');
+                            $('#id-amount-deposit-purchase-bank').val('');
+                            $('#id-amount-credit-sales-client').val('');
+                            $('#id-amount-credit-purchase-client').val('');
+                            $('#id-amount-cash-casing').val('')
+                            $('#id-amount-deposit-bank').val('')
+                            $('#id-amount-credit-client').val('')
+                        }
+                    }
+                });
+            } else {
+                $('#id-amount-aperture-closing-casing').val('');
+                $('#id-amount-cash-sales-casing').val('');
+                $('#id-amount-cash-purchase-casing').val('');
+                $('#id-amount-deposit-sales-bank').val('');
+                $('#id-amount-deposit-purchase-bank').val('');
+                $('#id-amount-credit-sales-client').val('');
+                $('#id-amount-credit-purchase-client').val('');
+                $('#id-amount-cash-casing').val('')
+                $('#id-amount-deposit-bank').val('')
+                $('#id-amount-credit-client').val('')
             }
         });
     </script>

@@ -23,6 +23,7 @@ from apps.sale.number_to_letters import numero_a_moneda
 from django.contrib.auth.models import User
 from django.db.models import Min, Max, Sum, Count, Q
 import io
+from .zone import utc_to_local
 import datetime
 from datetime import datetime
 
@@ -87,8 +88,8 @@ def print_ticket_closing_cash(request, pk=None):  # ticket de cierre de caja
 
     tbh_business_name_address = 'COMERCIALIZADORA DE PRODUCTOS NACIONALES E INTERNACIONALES DON PEPITO S.A.C.\nAV. MARISCAL CASTILLA NUMERO 327 URB. SIMON BOLIVAR AREQUIPA - AREQUIPA - MIRAFLORES\n RUC: 20601927820'
 
-    date = payment_obj.create_at
-    _format_time = datetime.now().strftime('%H:%M:%S')
+    date = utc_to_local(payment_obj.create_at)
+    _format_time = date.strftime('%H:%M:%S')
     _format_date = date.strftime("%d/%m/%Y")
 
     title = 'CIERRE DE CAJA'
@@ -101,11 +102,11 @@ def print_ticket_closing_cash(request, pk=None):  # ticket de cierre de caja
     style_table = [
         ('FONTNAME', (0, 0), (-1, -1), 'Square'),  # all columns
         # ('GRID', (0, 0), (-1, -1), 0.5, colors.black),  # all columns
-        ('FONTSIZE', (0, 0), (-1, -1), 8),  # all columns
+        ('FONTSIZE', (0, 0), (-1, -1), 9),  # all columns
         ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),  # all columns
-        ('BOTTOMPADDING', (0, 0), (-1, -1), -2),  # all columns
+        ('BOTTOMPADDING', (0, 0), (-1, -1), -1),  # all columns
         ('LEFTPADDING', (0, 0), (0, -1), 0.5),  # first column
-        ('ALIGNMENT', (1, 0), (1, -1), 'LEFT'),  # second column
+        ('ALIGNMENT', (0, 0), (1, -1), 'LEFT'),  # second column
         ('RIGHTPADDING', (1, 0), (1, -1), 0.5),  # second column
     ]
     colwiths_table = [_wt * 40 / 100, _wt * 60 / 100]
@@ -114,7 +115,7 @@ def print_ticket_closing_cash(request, pk=None):  # ticket de cierre de caja
     if user_obj is not None:
         p0 = Paragraph(employee_obj.document_number, styles["Justify"])
         p1 = Paragraph(employee_obj.full_name(), styles["Justify"])
-        p2 = Paragraph(employee_obj.occupation, styles["Justify"])
+        p2 = Paragraph(employee_obj.get_occupation_display(), styles["Justify"])
         ana_c1 = Table(
             [('Documento: ', p0)] +
             [('Responsable: ', p1)] +
@@ -141,12 +142,12 @@ def print_ticket_closing_cash(request, pk=None):  # ticket de cierre de caja
         ('ALIGNMENT', (1, 0), (1, -1), 'LEFT'),
 
         ('RIGHTPADDING', (4, 0), (4, -1), 0),
-        ('ALIGNMENT', (4, 0), (4, -1), 'RIGHT'),
+        ('ALIGNMENT', (1, 0), (1, -1), 'RIGHT'),
     ]
 
     ana_header = Table(
         [('OPERACION', 'MONTO')],
-        colWidths=[_wt * 60 / 100, _wt * 40 / 100]
+        colWidths=[_wt * 75 / 100, _wt * 25 / 100]
     )
     ana_header.setStyle(TableStyle(my_style_header))
 
@@ -198,20 +199,19 @@ def print_ticket_closing_cash(request, pk=None):  # ticket de cierre de caja
 
     my_style_total = [
         ('FONTNAME', (0, 0), (-1, -1), 'Square-Bold'),  # all columns
+        #('GRID', (0, 0), (-1, -1), 0.5, colors.black),
         ('FONTSIZE', (0, 0), (-1, -1), 10),  # all columns
-        ('BOTTOMPADDING', (0, 0), (-1, -1), -6),  # all columns
-        ('RIGHTPADDING', (2, 0), (2, -1), 0),  # third column
-        ('ALIGNMENT', (2, 0), (2, -1), 'RIGHT'),  # third column
-        ('RIGHTPADDING', (3, 0), (3, -1), 0.3),  # four column
-        ('ALIGNMENT', (3, 0), (3, -1), 'RIGHT'),  # four column
-        ('LEFTPADDING', (0, 0), (0, -1), 0.5),  # first column
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 0),  # all columns
+        ('ALIGNMENT', (1, 0), (3, -1), 'RIGHT'),  # four column
+        ('LEFTPADDING', (0, 0), (-1, -1), 0),  # first column
         ('FONTNAME', (0, 2), (-1, 2), 'Square-Bold'),  # third row
         ('FONTSIZE', (0, 2), (-1, 2), 10),  # third row
+        ('RIGHTPADDING', (0, 0), (-1, -1), 0.9),  # four column
     ]
 
     ana_total = Table(
         [('TOTAL', '', 'S/.  ', str(round(total_cash, 2)))],
-        colWidths=[_wt * 50 / 100, _wt * 5 / 100, _wt * 10 / 100, _wt * 35 / 100]
+        colWidths=[_wt * 50 / 100, _wt * 15 / 100, _wt * 10 / 100, _wt * 25 / 100]
     )
     ana_total.setStyle(TableStyle(my_style_total))
 
@@ -270,7 +270,7 @@ def print_ticket_closing_cash(request, pk=None):  # ticket de cierre de caja
     mi = 0.039 * inch
 
     doc = SimpleDocTemplate(buff,
-                            pagesize=(3.14961 * inch, 11.6 * inch),
+                            pagesize=(3.14961 * inch, 6.6 * inch),
                             rightMargin=mr,
                             leftMargin=ml,
                             topMargin=ms,

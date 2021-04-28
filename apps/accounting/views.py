@@ -67,11 +67,12 @@ def get_valid_opening_cash(request):
             }, status=HTTPStatus.OK)
 
 
+# ------------------modal para la apertura-------------------
 def get_opening_casing(request):
     if request.method == 'GET':
         operation = request.GET.get('operation', '')
         my_date = datetime.now()
-        date_now = my_date.strftime("%Y-%m-%d")
+        date_now = my_date.strftime("%Y-%m-%dT%H:%M")
         user_id = request.user.id
         user_obj = User.objects.get(id=int(user_id))
         subsidiary_obj = get_subsidiary_by_user(user_obj)
@@ -87,11 +88,11 @@ def get_opening_casing(request):
 
         return JsonResponse({
             'grid': tpl.render(context),
-        }, status=HTTPStatus.OK)
+        }, status=HTTPStatus.OK, content_type="application/json")
 
 
+# ----------validar caja si esta disponible para aperturarla------------
 def get_validate_aperture(request):
-    data = dict()
     if request.method == 'GET':
         pk = request.GET.get('pk_cash', '')
         casing_obj = Casing.objects.get(id=int(pk))
@@ -113,21 +114,22 @@ def get_validate_aperture(request):
         if payment_opening_obj is not None:
             if payment_closing_obj is not None:
                 if payment_closing_obj.id <= payment_opening_obj.id:
-                    data['error'] = "Cierre la caja antes de aperturar una nueva"
-                    response = JsonResponse(data)
-                    response.status_code = HTTPStatus.INTERNAL_SERVER_ERROR
-                    return response
+                    return JsonResponse({
+                        'success': False,
+                        'message': 'La caja ya se encuentra aperturada',
+                    }, status=HTTPStatus.OK)
             else:
-                data['error'] = "Cierre la caja antes de aperturar una nueva"
-                response = JsonResponse(data)
-                response.status_code = HTTPStatus.INTERNAL_SERVER_ERROR
-                return response
+                return JsonResponse({
+                    'success': False,
+                    'message': 'La caja ya se encuentra aperturada',
+                }, status=HTTPStatus.OK)
 
     return JsonResponse({
         'success': True,
     }, status=HTTPStatus.OK)
 
 
+# ---------------Aperturar caja-------------------
 @csrf_exempt
 def opening_casing_a(request):
     if request.method == 'POST':
@@ -158,10 +160,11 @@ def opening_casing_a(request):
         }, status=HTTPStatus.OK)
 
 
+# ----------modal cierre de caja------------------------
 def get_closing_casing(request):
     if request.method == 'GET':
-        my_date = datetime.now()
-        date_now = my_date.strftime("%Y-%m-%d")
+        dates = datetime.now()
+        date_now = dates.strftime("%Y-%m-%dT%H:%M")
         user_id = request.user.id
         user_obj = User.objects.get(id=int(user_id))
         subsidiary_obj = get_subsidiary_by_user(user_obj)
@@ -175,7 +178,7 @@ def get_closing_casing(request):
 
         return JsonResponse({
             'grid': tpl.render(context),
-        }, status=HTTPStatus.OK)
+        }, status=HTTPStatus.OK, content_type="application/json")
 
 
 @csrf_exempt
@@ -183,8 +186,8 @@ def closing_casing_c(request):
     if request.method == 'POST':
         _date = request.POST.get('date-closing', '')
         _cashing_pk = request.POST.get('closing-cash', '')
-        _amount_aperture = (request.POST.get('amount-aperture-closing-casing', ''))
-        _amount_cash = (request.POST.get('amount-cash-closing-casing', ''))
+        _amount_aperture = (request.POST.get('amount-aperture-casing', ''))
+        _amount_cash = (request.POST.get('amount-cash-casing', ''))
         if _amount_aperture == '':
             _amount_aperture = 0
         if _amount_cash == '':
@@ -209,33 +212,28 @@ def closing_casing_c(request):
         return JsonResponse({
             'success': True,
             'pk': payment_obj.id,
-            'message': 'Gracias por cerrar la caja',
+            'message': 'Caja cerrada exitosamente',
         }, status=HTTPStatus.OK)
 
 
 def get_total_casing(request):
-    data = dict()
+    data = {}
     if request.method == 'GET':
-        total_aperture = decimal.Decimal(0.00)
-        total_cash = decimal.Decimal(0.00)
-        total_deposit = decimal.Decimal(0.00)
-        total_credit = decimal.Decimal(0.00)
         pk = request.GET.get('pk_cash', '')
-        date_closing = request.GET.get('date_closing', '')
         casing_obj = Casing.objects.get(id=int(pk))
+        date_closing = request.GET.get('date_closing', '')
         user_id = request.user.id
         user_obj = User.objects.get(id=int(user_id))
         subsidiary_obj = get_subsidiary_by_user(user_obj)
         try:
             payment_aperture_obj = Payments.objects.filter(casing=casing_obj, subsidiary=subsidiary_obj,
                                                            type_payment='E', type='A').last()
-            if payment_aperture_obj is not None:
-                total_aperture = payment_aperture_obj.amount
         except Payments.DoesNotExist:
-            data['error'] = "La caja no se encuentra aperturada, no puede hacer cierre de caja"
+            data['error'] = "La caja no se encuentra aperturada, imposible cerrar la caja"
             response = JsonResponse(data)
             response.status_code = HTTPStatus.INTERNAL_SERVER_ERROR
             return response
+
         try:
             payment_closing_obj = Payments.objects.filter(casing=casing_obj, subsidiary=subsidiary_obj,
                                                           type_payment='E', type='C').last()
@@ -243,42 +241,83 @@ def get_total_casing(request):
             payment_closing_obj = None
         if payment_aperture_obj is not None:
             if payment_closing_obj is not None:
-                if payment_closing_obj.id >= payment_aperture_obj.id:
-                    data['error'] = "La caja no se encuentra aperturada, no puede hacer cierre de caja"
+                if payment_closing_obj.id < payment_aperture_obj.id:
+                    return JsonResponse({
+                        'success': True,
+                        'result': get_total(casing_obj, subsidiary_obj, payment_aperture_obj),
+                    }, status=HTTPStatus.OK, content_type="application/json")
+                else:
+                    data['error'] = "La caja no se encuentra aperturada, imposible cerrar la caja"
                     response = JsonResponse(data)
                     response.status_code = HTTPStatus.INTERNAL_SERVER_ERROR
                     return response
-
-        if payment_aperture_obj is not None:
-            payment_total_cash = Payments.objects.filter(casing=casing_obj, subsidiary=subsidiary_obj,
-                                                         type_payment='E', type='I',
-                                                         create_at__gte=payment_aperture_obj.create_at).aggregate(
-                r=Coalesce(Sum('amount'), 0))
-            if payment_total_cash is not None:
-                total_cash = payment_total_cash['amount__sum']
-            payment_total_deposit = Payments.objects.filter(user=user_obj, subsidiary=subsidiary_obj,
-                                                            type_payment='D', type='I',
-                                                            create_at__gte=payment_aperture_obj.create_at).aggregate(
-                r=Coalesce(Sum('amount'), 0))
-            if payment_total_deposit is not None:
-                total_deposit = payment_total_deposit['amount__sum']
-            payment_total_credit = Payments.objects.filter(user=user_obj, subsidiary=subsidiary_obj,
-                                                           type_payment='C', type='I',
-                                                           create_at__gte=payment_aperture_obj.create_at).aggregate(
-                r=Coalesce(Sum('amount'), 0))
-            if payment_total_credit is not None:
-                total_credit = payment_total_credit['amount__sum']
+            else:
+                return JsonResponse({
+                    'success': True,
+                    'result': get_total(casing_obj, subsidiary_obj, payment_aperture_obj),
+                }, status=HTTPStatus.OK, content_type="application/json")
         else:
-            data['error'] = "La caja no se encuentra aperturada, no puede hacer cierre de cajas sin aperturar"
+            data['error'] = "La caja no se encuentra aperturada, imposible cerrar la caja"
             response = JsonResponse(data)
             response.status_code = HTTPStatus.INTERNAL_SERVER_ERROR
             return response
-        return JsonResponse({
-            'total_aperture': total_aperture,
-            'total_cash': total_cash,
-            'total_deposit': total_deposit,
-            'total_credit': total_credit,
-        }, status=HTTPStatus.OK)
+
+
+def get_total(casing_obj=None, subsidiary_obj=None, payment_aperture_obj=None):
+    total = []
+    if payment_aperture_obj is not None:
+        total_aperture = decimal.Decimal(0.00)
+        total_cash_sales = decimal.Decimal(0.00)
+        total_cash_purchase = decimal.Decimal(0.00)
+        total_deposit_sales = decimal.Decimal(0.00)
+        total_deposit_purchase = decimal.Decimal(0.00)
+        total_credit_sales = decimal.Decimal(0.00)
+        total_credit_purchase = decimal.Decimal(0.00)
+        total_aperture = payment_aperture_obj.amount
+        payment_set = Payments.objects.filter(subsidiary=subsidiary_obj,
+                                              create_at__gte=payment_aperture_obj.create_at)
+        payment_total_cash_sales = payment_set.filter(casing=casing_obj, type_payment='E', type='I').aggregate(
+            r=Coalesce(Sum('amount'), 0))
+        if payment_total_cash_sales is not None:
+            total_cash_sales = payment_total_cash_sales['r']
+        payment_total_cash_purchase = payment_set.filter(casing=casing_obj, type_payment='E', type='E').aggregate(
+            r=Coalesce(Sum('amount'), 0))
+        if payment_total_cash_purchase is not None:
+            total_cash_purchase = payment_total_cash_purchase['r']
+
+        payment_total_deposit_sales = payment_set.filter(type_payment='D', type='I').aggregate(
+            r=Coalesce(Sum('amount'), 0))
+        if payment_total_deposit_sales is not None:
+            total_deposit_sales = payment_total_deposit_sales['r']
+
+        payment_total_deposit_purchase = payment_set.filter(type_payment='D', type='E').aggregate(
+            r=Coalesce(Sum('amount'), 0))
+        if payment_total_deposit_purchase is not None:
+            total_deposit_purchase = payment_total_deposit_purchase['r']
+
+        payment_total_credit_sales = payment_set.filter(type_payment='C', type='I').aggregate(
+            r=Coalesce(Sum('amount'), 0))
+        if payment_total_credit_sales is not None:
+            total_credit_sales = payment_total_credit_sales['r']
+
+        payment_total_credit_purchase = payment_set.filter(type_payment='C', type='E').aggregate(
+            r=Coalesce(Sum('amount'), 0))
+        if payment_total_credit_purchase is not None:
+            total_credit_purchase = payment_total_credit_purchase['r']
+        new_total = {
+            'total_aperture': round(total_aperture, 2),
+            'total_cash_sales': round(total_cash_sales, 2),
+            'total_cash_purchase': round(total_cash_purchase, 2),
+            'total_deposit_sales': round(total_deposit_sales, 2),
+            'total_deposit_purchase': round(total_deposit_purchase, 2),
+            'total_credit_sales': round(total_credit_sales, 2),
+            'total_credit_purchase': round(total_credit_purchase, 2),
+            'total_cash': round(total_cash_sales - total_cash_purchase, 2),
+            'total_deposit': round(total_deposit_sales - total_deposit_purchase, 2),
+            'total_credit': round(total_credit_sales - total_credit_purchase, 2),
+        }
+        total.append(new_total)
+        return total
 
 
 def get_sales_credit_list(request):

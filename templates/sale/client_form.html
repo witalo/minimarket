@@ -10,8 +10,8 @@
         <form id="form-client" class="embed-responsive p-0" action="{% url 'sale:save_client' %}" method="POST" style="font-size: 12px;">
             {% csrf_token %}
             <div class="modal-body  m-1 p-0">
-                <div class="card border-success">
-                    <div class="card-header" style="background-color: rgba(55, 194, 11,0.7);">
+                <div class="card border-primary">
+                    <div class="card-header" style="background-color: rgb(11,124,200);">
                         <h6 class="card-title text-center text-white mb-0 roboto-condensed-regular" style="font-size: 15px;">Registre datos del cliente</h6>
                     </div>
                     <div class="card-body table-responsive m-0 p-1">
@@ -28,7 +28,7 @@
                             <tr>
                                 <td class="align-middle">Tipo</td>
                                 <td>
-                                    <select id="document_type_sender" name="document_type_sender"
+                                    <select id="document_type_senders" name="document_type_senders"
                                             class="form-control form-control-sm"
                                             style="font-size: .8375rem;" required>
                                         {% for type in type_document %}
@@ -80,7 +80,7 @@
 <script type="text/javascript">
     sessionStorage.setItem('document', '01')
         {#seleccionar tipo documento#}
-        $(document).on('change', '#document_type_sender', function () {
+        $(document).on('change', '#document_type_senders', function () {
             let _val = $(this).val();
             if (_val === '01') {
                 $("#id_document").attr('maxlength', 8);

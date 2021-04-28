@@ -127,6 +127,8 @@ def create_order_purchase(request):
         user_id = request.user.id
         user_obj = User.objects.get(id=user_id)
         subsidiary_obj = get_subsidiary_by_user(user_obj)
+        coin_pk = int(data_order["amount_coin"])
+        coin_obj = Coin.objects.get(id=coin_pk)
         new_order_purchase = {
             'type': 'C',
             'correlative_order': get_order_correlative(subsidiary_obj.id, 'C'),
@@ -184,8 +186,6 @@ def create_order_purchase(request):
             amount_cash = decimal.Decimal(data_order["amount_cash"])
             cash_pk = int(data_order["cash"])
             cash_obj = Casing.objects.get(id=cash_pk)
-            coin_pk = int(data_order["amount_coin"])
-            coin_obj = Coin.objects.get(id=coin_pk)
             new_payment_e = {
                 'order': order_purchase_obj,
                 'type': 'E',
@@ -199,6 +199,20 @@ def create_order_purchase(request):
             }
             new_payment_e_obj = Payments.objects.create(**new_payment_e)
             new_payment_e_obj.save()
+            if amount_cash < total_order:
+                total_credit = total_order - amount_cash
+                new_payment_ec = {
+                    'order': order_purchase_obj,
+                    'type': 'E',
+                    'type_payment': 'C',
+                    'amount': total_credit,
+                    'coin': coin_obj,
+                    'date_payment': date_order,
+                    'user': user_obj,
+                    'subsidiary': subsidiary_obj,
+                }
+                new_payment_ec_obj = Payments.objects.create(**new_payment_ec)
+                new_payment_ec_obj.save()
         elif type_payment == 'D':
             deposit = str(data_order["deposit"])
             code_operation = str(data_order["code_operation"])
@@ -210,12 +224,40 @@ def create_order_purchase(request):
                 'type_bank': deposit,
                 'code_operation': code_operation,
                 'amount': amount_deposit,
+                'coin': coin_obj,
                 'date_payment': date_order,
                 'user': user_obj,
                 'subsidiary': subsidiary_obj,
             }
             new_payment_d_obj = Payments.objects.create(**new_payment_d)
             new_payment_d_obj.save()
+            if amount_deposit < total_order:
+                total_credit = total_order - amount_deposit
+                new_payment_dc = {
+                    'order': order_purchase_obj,
+                    'type': 'E',
+                    'type_payment': 'C',
+                    'amount': total_credit,
+                    'coin': coin_obj,
+                    'date_payment': date_order,
+                    'user': user_obj,
+                    'subsidiary': subsidiary_obj,
+                }
+                new_payment_dc_obj = Payments.objects.create(**new_payment_dc)
+                new_payment_dc_obj.save()
+        elif type_payment == 'C':
+            new_payment_c = {
+                'order': order_purchase_obj,
+                'type': 'E',
+                'type_payment': type_payment,
+                'amount': total_order,
+                'coin': coin_obj,
+                'date_payment': date_order,
+                'user': user_obj,
+                'subsidiary': subsidiary_obj,
+            }
+            new_payment_c_obj = Payments.objects.create(**new_payment_c)
+            new_payment_c_obj.save()
         return JsonResponse({
             'message': 'Compra registrada correctamente.',
         }, status=HTTPStatus.OK)
